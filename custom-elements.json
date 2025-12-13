@@ -4,29 +4,29 @@
 	"modules": [
 		{
 			"kind": "javascript-module",
-			"path": "COMPONENT-NAME.js",
+			"path": "content-warning.js",
 			"declarations": [
 				{
 					"kind": "class",
-					"description": "COMPONENT_DESCRIPTION",
-					"name": "ComponentNameElement",
+					"description": "A web component for block and inline content warnings.",
+					"name": "ContentWarningElement",
 					"members": [],
 					"events": [],
 					"attributes": [],
 					"superclass": {
 						"name": "HTMLElement"
 					},
-					"tagName": "COMPONENT-NAME",
+					"tagName": "content-warning",
 					"customElement": true
 				}
 			],
 			"exports": [
 				{
 					"kind": "js",
-					"name": "ComponentNameElement",
+					"name": "ContentWarningElement",
 					"declaration": {
-						"name": "ComponentNameElement",
-						"module": "COMPONENT-NAME.js"
+						"name": "ContentWarningElement",
+						"module": "content-warning.js"
 					}
 				}
 			]

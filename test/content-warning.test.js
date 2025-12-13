@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { ComponentNameElement } from '../COMPONENT-NAME.js';
+import { ContentWarningElement } from '../content-warning.js';
 
-describe('ComponentNameElement', () => {
+describe('ContentWarningElement', () => {
 	let element;
 
 	beforeEach(() => {
-		element = document.createElement('COMPONENT-NAME');
+		element = document.createElement('content-warning');
 		document.body.appendChild(element);
 	});
 
@@ -14,11 +14,11 @@ describe('ComponentNameElement', () => {
 	});
 
 	it('should be defined', () => {
-		expect(customElements.get('COMPONENT-NAME')).toBe(ComponentNameElement);
+		expect(customElements.get('content-warning')).toBe(ContentWarningElement);
 	});
 
 	it('should create an instance', () => {
-		expect(element).toBeInstanceOf(ComponentNameElement);
+		expect(element).toBeInstanceOf(ContentWarningElement);
 		expect(element).toBeInstanceOf(HTMLElement);
 	});
 
@@ -28,7 +28,7 @@ describe('ComponentNameElement', () => {
 
 	describe('Shadow DOM Best Practices', () => {
 		it('should create shadow root in constructor', () => {
-			const newElement = new ComponentNameElement();
+			const newElement = new ContentWarningElement();
 			expect(newElement.shadowRoot).toBeTruthy();
 		});
 
@@ -76,7 +76,7 @@ describe('ComponentNameElement', () => {
 		it('should handle lazy property upgrade (property set before element upgrade)', () => {
 			// Create an element but don't connect it yet
 			const uninitializedElement =
-				document.createElement('COMPONENT-NAME');
+				document.createElement('content-warning');
 
 			// Set property before connecting (simulates framework setting property before upgrade)
 			uninitializedElement.exampleAttribute = 'early-value';

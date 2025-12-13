@@ -1,12 +1,12 @@
 import { beforeAll } from 'vitest';
-import { ComponentNameElement } from '../COMPONENT-NAME.js';
+import { ContentWarningElement } from '../content-warning.js';
 
 // Define the custom element before tests run
 beforeAll(() => {
-	if (!customElements.get('COMPONENT-NAME')) {
-		customElements.define('COMPONENT-NAME', ComponentNameElement);
+	if (!customElements.get('content-warning')) {
+		customElements.define('content-warning', ContentWarningElement);
 	}
 
 	// Make the class available globally for testing static methods
-	globalThis.ComponentNameElement = ComponentNameElement;
+	globalThis.ContentWarningElement = ContentWarningElement;
 });

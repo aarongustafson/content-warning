@@ -1,6 +1,6 @@
-import { ComponentNameElement } from './COMPONENT-NAME.js';
+import { ContentWarningElement } from './content-warning.js';
 
-export function defineComponentName(tagName = 'COMPONENT-NAME') {
+export function defineComponentName(tagName = 'content-warning') {
 	const hasWindow = typeof window !== 'undefined';
 	const registry = hasWindow ? window.customElements : undefined;
 
@@ -9,7 +9,7 @@ export function defineComponentName(tagName = 'COMPONENT-NAME') {
 	}
 
 	if (!registry.get(tagName)) {
-		registry.define(tagName, ComponentNameElement);
+		registry.define(tagName, ContentWarningElement);
 	}
 
 	return true;

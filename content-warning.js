@@ -1,17 +1,17 @@
 /**
- * ComponentNameElement - COMPONENT_DESCRIPTION
+ * ContentWarningElement - A web component for block and inline content warnings.
  *
- * @element COMPONENT-NAME
+ * @element content-warning
  *
  * @attr {string} example-attribute - Description of the attribute
  *
- * @fires COMPONENT-NAME:event-name - Description of the event
+ * @fires content-warning:event-name - Description of the event
  *
  * @slot - Default slot for content
  *
  * @cssprop --component-name-color - Description of CSS custom property
  */
-export class ComponentNameElement extends HTMLElement {
+export class ContentWarningElement extends HTMLElement {
 	static get observedAttributes() {
 		return ['example-attribute'];
 	}
@@ -59,7 +59,7 @@ export class ComponentNameElement extends HTMLElement {
 				// Only dispatch if the change came from internal component activity
 				if (this._internals.isRendered) {
 					// Example pattern (commented out by default):
-					// this.dispatchEvent(new CustomEvent('COMPONENT-NAME:change', {
+					// this.dispatchEvent(new CustomEvent('content-warning:change', {
 					//   detail: { exampleAttribute: newValue },
 					//   bubbles: true,
 					//   composed: true

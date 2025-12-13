@@ -1,1 +1,1 @@
-export { ComponentNameElement } from './COMPONENT-NAME.js';
+export { ContentWarningElement } from './content-warning.js';
