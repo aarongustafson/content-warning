@@ -47,16 +47,24 @@ customElements.define('my-custom-name', ContentWarningElement);
 ### Basic Example
 
 ```html
-<content-warning>
-  <!-- Your content here -->
+<!-- Block content warning -->
+<content-warning type="violence spoilers">
+  <p>This content contains violence and spoilers for the series finale.</p>
 </content-warning>
+
+<!-- Inline content warning -->
+<p>
+  The character dies in 
+  <content-warning type="spoilers" inline>episode 5</content-warning>.
+</p>
 ```
 
 ## Attributes
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `example-attribute` | `string` | `""` | Description of the attribute |
+| `type` | `string` | `"content"` | Space-separated list of warning types (e.g., "violence spoilers nsfw") |
+| `inline` | `boolean` | `false` | Display the warning inline instead of as a block overlay |
 
 ## Events
 
@@ -64,31 +72,74 @@ The component fires custom events that you can listen to:
 
 | Event | Description | Detail |
 |-------|-------------|--------|
-| `content-warning:event` | Fired when something happens | `{ data }` |
+| `content-warning:revealed` | Fired when the user reveals the content by clicking or pressing Enter | `{ type: string }` - The type of content warning |
 
 ### Example Event Handling
 
 ```javascript
 const element = document.querySelector('content-warning');
 
-element.addEventListener('content-warning:event', (event) => {
-  console.log('Event fired:', event.detail);
+element.addEventListener('content-warning:revealed', (event) => {
+  console.log('Content revealed:', event.detail.type);
+  // Track analytics, log user action, etc.
 });
 ```
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `type` | `string` | Get/set the warning type(s) |
+| `revealed` | `boolean` (read-only) | Whether the content has been revealed |
 
 ## CSS Custom Properties
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `--example-color` | `#000` | Example color property |
+| `--content-warning-bg` | `rgba(0, 0, 0, 0.9)` | Background color of the warning overlay |
+| `--content-warning-color` | `#fff` | Text color of the warning message |
+| `--content-warning-border` | `2px solid currentColor` | Border style for the warning |
+| `--content-warning-padding` | `1rem` | Padding for the warning overlay |
+| `--content-warning-font-size` | `1rem` | Font size for the warning message |
 
 ### Example Styling
 
 ```css
 content-warning {
-  --example-color: #ff0000;
+  --content-warning-bg: rgba(255, 0, 0, 0.8);
+  --content-warning-color: #fff;
+  --content-warning-border: 3px solid #fff;
+  --content-warning-padding: 2rem;
+  --content-warning-font-size: 1.25rem;
 }
 ```
+
+## Shadow Parts
+
+You can style internal elements using CSS Shadow Parts:
+
+| Part | Description |
+|------|-------------|
+| `overlay` | The warning overlay container |
+| `message` | The warning message text |
+| `instruction` | The instruction text (e.g., "Click to reveal") |
+
+```css
+content-warning::part(message) {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+```
+
+## Accessibility
+
+The component follows accessibility best practices:
+
+- Initially displayed with `role="button"` and `tabindex="0"` to be keyboard accessible
+- Provides appropriate `aria-label` based on the warning type
+- Supports keyboard interaction (Enter key to reveal)
+- Removes interactive attributes after content is revealed
+- Content is blurred and non-interactive until revealed
 
 ## Browser Support
 

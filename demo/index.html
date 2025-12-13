@@ -23,43 +23,235 @@
 		</header>
 
 		<main>
-			<!-- Basic Example -->
+			<!-- Basic Block Example -->
 			<section>
-				<h2>Basic Example</h2>
-				<p>A simple demonstration of the component.</p>
+				<h2>Block Content Warning</h2>
+				<p>
+					A block-level content warning that overlays the entire
+					content area.
+				</p>
 
 				<div class="demo-section">
-					<h3>Basic Usage</h3>
-					<p>Description of this example.</p>
+					<h3>Single Warning Type</h3>
+					<p>Click or press Enter to reveal the content.</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;content-warning&gt;
-  &lt;p&gt;Content goes here&lt;/p&gt;
+						<pre><code>&lt;content-warning type="violence"&gt;
+  &lt;p&gt;This content contains graphic violence.&lt;/p&gt;
+  &lt;p&gt;Lorem ipsum dolor sit amet...&lt;/p&gt;
 &lt;/content-warning&gt;</code></pre>
 						<div class="demo">
-							<content-warning>
-								<p>Content goes here</p>
+							<content-warning type="violence">
+								<p>This content contains graphic violence.</p>
+								<p>
+									Lorem ipsum dolor sit amet, consectetur
+									adipiscing elit. Sed do eiusmod tempor
+									incididunt ut labore et dolore magna
+									aliqua.
+								</p>
+							</content-warning>
+						</div>
+					</div>
+
+					<h3>Multiple Warning Types</h3>
+					<p>
+						Use space-separated types for multiple warning
+						categories.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;content-warning type="violence spoilers nsfw"&gt;
+  &lt;p&gt;Contains violence, spoilers, and mature content.&lt;/p&gt;
+&lt;/content-warning&gt;</code></pre>
+						<div class="demo">
+							<content-warning type="violence spoilers nsfw">
+								<p>
+									Contains violence, spoilers, and mature
+									content.
+								</p>
+								<p>
+									The protagonist dies in the final battle,
+									sacrificing themselves to save their
+									friends.
+								</p>
 							</content-warning>
 						</div>
 					</div>
 				</div>
 			</section>
 
-			<!-- Example with Attributes -->
+			<!-- Inline Content Warning -->
 			<section>
-				<h2>Example with Attributes</h2>
-				<p>Demonstrating component attributes.</p>
+				<h2>Inline Content Warning</h2>
+				<p>
+					An inline content warning that works within text flow.
+				</p>
 
 				<div class="demo-section">
-					<h3>Using Attributes</h3>
-					<p>Description of this example with attributes.</p>
+					<h3>Inline Usage</h3>
+					<p>Click the warning to reveal the hidden text.</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;content-warning example-attribute="value"&gt;
-  &lt;p&gt;Content with attributes&lt;/p&gt;
+						<pre><code>&lt;p&gt;
+  The character dies in 
+  &lt;content-warning type="spoilers" inline&gt;
+    episode 5
+  &lt;/content-warning&gt;.
+&lt;/p&gt;</code></pre>
+						<div class="demo">
+							<p>
+								The character dies in
+								<content-warning type="spoilers" inline
+									>episode 5</content-warning
+								>.
+							</p>
+						</div>
+					</div>
+
+					<h3>Multiple Inline Warnings</h3>
+					<p>You can have multiple inline warnings in one sentence.</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;p&gt;
+  &lt;content-warning type="spoilers" inline&gt;Jon&lt;/content-warning&gt;
+  meets &lt;content-warning type="spoilers" inline&gt;Daenerys&lt;/content-warning&gt;
+  in season 7.
+&lt;/p&gt;</code></pre>
+						<div class="demo">
+							<p>
+								<content-warning type="spoilers" inline
+									>Jon</content-warning
+								>
+								meets
+								<content-warning type="spoilers" inline
+									>Daenerys</content-warning
+								>
+								in season 7.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Custom Styling -->
+			<section>
+				<h2>Custom Styling</h2>
+				<p>Customize the appearance using CSS custom properties.</p>
+
+				<div class="demo-section">
+					<h3>Custom Colors</h3>
+					<div class="code-demo-pair">
+						<pre><code>&lt;style&gt;
+  .custom-warning {
+    --content-warning-bg: rgba(139, 0, 0, 0.95);
+    --content-warning-color: #fff;
+    --content-warning-border: 3px solid #ff6b6b;
+    --content-warning-padding: 2rem;
+  }
+&lt;/style&gt;
+
+&lt;content-warning type="horror" class="custom-warning"&gt;
+  &lt;p&gt;Scary content here!&lt;/p&gt;
 &lt;/content-warning&gt;</code></pre>
 						<div class="demo">
-							<content-warning example-attribute="value">
-								<p>Content with attributes</p>
+							<style>
+								.custom-warning {
+									--content-warning-bg: rgba(
+										139,
+										0,
+										0,
+										0.95
+									);
+									--content-warning-color: #fff;
+									--content-warning-border: 3px solid
+										#ff6b6b;
+									--content-warning-padding: 2rem;
+								}
+							</style>
+							<content-warning
+								type="horror"
+								class="custom-warning"
+							>
+								<p>
+									This is scary content with custom styling!
+								</p>
+								<p>
+									The dark red background and red border make
+									it stand out.
+								</p>
 							</content-warning>
+						</div>
+					</div>
+
+					<h3>Using Shadow Parts</h3>
+					<p>Style internal elements with CSS Shadow Parts.</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;style&gt;
+  .styled-parts::part(message) {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 900;
+  }
+&lt;/style&gt;
+
+&lt;content-warning type="mature" class="styled-parts"&gt;
+  &lt;p&gt;Mature content here.&lt;/p&gt;
+&lt;/content-warning&gt;</code></pre>
+						<div class="demo">
+							<style>
+								.styled-parts::part(message) {
+									text-transform: uppercase;
+									letter-spacing: 0.15em;
+									font-weight: 900;
+								}
+							</style>
+							<content-warning
+								type="mature"
+								class="styled-parts"
+							>
+								<p>This content is for mature audiences.</p>
+							</content-warning>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Event Handling -->
+			<section>
+				<h2>Event Handling</h2>
+				<p>Listen for the revealed event to track user interactions.</p>
+
+				<div class="demo-section">
+					<h3>Tracking Reveals</h3>
+					<div class="code-demo-pair">
+						<pre><code>&lt;content-warning type="spoilers" id="tracked"&gt;
+  &lt;p&gt;Secret content!&lt;/p&gt;
+&lt;/content-warning&gt;
+&lt;p id="status"&gt;Status: Hidden&lt;/p&gt;
+
+&lt;script&gt;
+  document.getElementById('tracked')
+    .addEventListener('content-warning:revealed', (e) => {
+      document.getElementById('status').textContent = 
+        `Status: Revealed (${e.detail.type})`;
+    });
+&lt;/script&gt;</code></pre>
+						<div class="demo">
+							<content-warning type="spoilers" id="tracked">
+								<p>
+									This is the secret content that was
+									revealed!
+								</p>
+							</content-warning>
+							<p id="status"><strong>Status:</strong> Hidden</p>
+							<script>
+								document
+									.getElementById('tracked')
+									.addEventListener(
+										'content-warning:revealed',
+										(e) => {
+											document.getElementById(
+												'status',
+											).innerHTML = `<strong>Status:</strong> Revealed (${e.detail.type})`;
+										},
+									);
+							</script>
 						</div>
 					</div>
 				</div>
@@ -69,8 +261,8 @@
 			<section class="api-reference">
 				<h2>API Reference</h2>
 				<p>
-					For complete documentation of attributes, events, and
-					browser support, see the
+					For complete documentation of attributes, events, CSS
+					custom properties, and browser support, see the
 					<a
 						href="https://github.com/aarongustafson/content-warning/blob/main/README.md"
 						>README</a
