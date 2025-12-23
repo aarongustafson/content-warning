@@ -8,11 +8,72 @@
 			"declarations": [
 				{
 					"kind": "class",
-					"description": "A web component for block and inline content warnings.",
+					"description": "A web component for block and inline content warnings.\n\nBased on the original concept: https://codepen.io/aarongustafson/pen/QWZpqPe",
 					"name": "ContentWarningElement",
-					"members": [],
-					"events": [],
-					"attributes": [],
+					"cssParts": [
+						{
+							"description": "The warning button element",
+							"name": "button"
+						}
+					],
+					"slots": [
+						{
+							"description": "Default slot for the content that needs a warning",
+							"name": ""
+						}
+					],
+					"members": [
+						{
+							"kind": "field",
+							"name": "type",
+							"type": {
+								"text": "string | null"
+							},
+							"description": "Space-separated list of warning types (e.g., \"violence spoilers\")",
+							"attribute": "type",
+							"reflects": true
+						},
+						{
+							"kind": "field",
+							"name": "revealed",
+							"type": {
+								"text": "boolean"
+							},
+							"description": "Whether the content has been revealed",
+							"readonly": true
+						}
+					],
+					"events": [
+						{
+							"name": "content-warning:revealed",
+							"type": {
+								"text": "CustomEvent"
+							},
+							"description": "Fired when the content is revealed by the user",
+							"eventDetail": {
+								"type": {
+									"text": "{ type: string }"
+								}
+							}
+						}
+					],
+					"attributes": [
+						{
+							"name": "type",
+							"type": {
+								"text": "string"
+							},
+							"description": "Space-separated list of warning types (e.g., \"violence spoilers\")",
+							"fieldName": "type"
+						},
+						{
+							"name": "inline",
+							"type": {
+								"text": "boolean"
+							},
+							"description": "Display the warning inline instead of as a block overlay"
+						}
+					],
 					"superclass": {
 						"name": "HTMLElement"
 					},
@@ -24,6 +85,14 @@
 				{
 					"kind": "js",
 					"name": "ContentWarningElement",
+					"declaration": {
+						"name": "ContentWarningElement",
+						"module": "content-warning.js"
+					}
+				},
+				{
+					"kind": "custom-element-definition",
+					"name": "content-warning",
 					"declaration": {
 						"name": "ContentWarningElement",
 						"module": "content-warning.js"
