@@ -74,6 +74,12 @@ customElements.define('my-custom-name', ContentWarningElement);
 | `label-suffix` | `string`  | `"Click to reveal"` | The suffix text for the warning label. Set to `"false"` to hide.       |
 | `inline`       | `boolean` | `false`             | Display the warning inline instead of as a block overlay               |
 
+**Default Button Label Format:** `{prefix}: {type} {suffix}`
+
+Example: "Content Warning: violence spoilers Click to reveal"
+
+**Note:** Punctuation and spacing between label parts are controlled via CSS pseudo-elements (`:after` and `:before`), making them easy to customize without affecting the underlying text content.
+
 ## Events
 
 The component fires custom events that you can listen to:
@@ -202,6 +208,35 @@ content-warning::part(label-type) {
 content-warning::part(label-suffix) {
   font-size: 0.875em;
   opacity: 0.9;
+}
+```
+
+### Customizing Punctuation
+
+Punctuation and spacing between label parts are controlled via CSS pseudo-elements:
+
+```css
+/* Default punctuation (already applied) */
+.label-prefix::after {
+  content: ": "; /* Colon and space after prefix */
+}
+
+[part="label-type"]::before {
+  content: " "; /* Space before type */
+}
+
+[part="label-suffix"]::before {
+  content: " "; /* Space before suffix */
+}
+
+/* Customize punctuation */
+content-warning::part(button) .label-prefix::after {
+  content: " — "; /* Em dash instead of colon */
+}
+
+/* Remove punctuation entirely */
+content-warning::part(button) .label-prefix::after {
+  content: " "; /* Just a space */
 }
 ```adding: 0.5rem 0.75rem;
   border-radius: 0.25rem;

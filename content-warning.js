@@ -10,6 +10,12 @@
  * @attr {string} label-suffix - The suffix text for the warning (default: "Click to reveal"). Set to "false" to hide.
  * @attr {boolean} inline - Display the warning inline instead of as a block overlay
  *
+ * @cssproperty [--content-warning-color] - Outline color for focus state
+ *
+ * @description
+ * Button label format: {prefix}: {type} {suffix}
+ * Punctuation is controlled via CSS pseudo-elements for easy customization.
+ *
  * @fires content-warning:revealed - Fired when the content is revealed by the user
  *
  * @slot - Default slot for the content that needs a warning
@@ -213,11 +219,9 @@ export class ContentWarningElement extends HTMLElement {
 		// Add prefix
 		const prefixSpan = document.createElement('span');
 		prefixSpan.setAttribute('part', 'label-prefix');
+		prefixSpan.classList.add('label-prefix');
 		prefixSpan.textContent = prefix;
 		button.appendChild(prefixSpan);
-
-		// Add separator
-		button.appendChild(document.createTextNode(': '));
 
 		// Add type
 		const typeSpan = document.createElement('span');
@@ -227,14 +231,11 @@ export class ContentWarningElement extends HTMLElement {
 
 		// Add suffix if present
 		if (suffix) {
-			button.appendChild(document.createTextNode('. '));
 			const suffixSpan = document.createElement('span');
 			suffixSpan.setAttribute('part', 'label-suffix');
 			suffixSpan.textContent = suffix;
 			button.appendChild(suffixSpan);
 		}
-
-		button.appendChild(document.createTextNode('.'));
 	}
 
 	render() {
@@ -244,15 +245,18 @@ export class ContentWarningElement extends HTMLElement {
 		const showSuffix = suffix !== 'false';
 
 		// Build button label HTML parts
-		const prefixHTML = '<span part="label-prefix">' + prefix + '</span>';
+		const prefixHTML =
+			'<span class="label-prefix" part="label-prefix">' +
+			prefix +
+			'</span>';
 		const typeHTML = '<span part="label-type">' + types + '</span>';
-		let buttonLabel = prefixHTML + ' ' + typeHTML;
+		let buttonLabel = prefixHTML + typeHTML;
 
 		if (showSuffix) {
 			const suffixText = suffix || 'Click to reveal';
 			const suffixHTML =
 				'<span part="label-suffix">' + suffixText + '</span>';
-			buttonLabel += ' ' + suffixHTML;
+			buttonLabel += suffixHTML;
 		}
 
 		// Build the shadow DOM with just the button overlay
@@ -322,6 +326,15 @@ export class ContentWarningElement extends HTMLElement {
 			'		outline: 2px solid var(--content-warning-color, #fff);' +
 			'		outline-offset: -4px;' +
 			'	}' +
+			'   :is(.label-prefix)::after {' +
+			'     content: ": ";' +
+			'   }' +
+			'   [part="label-type"]::before {' +
+			'     content: " ";' +
+			'   }' +
+			'   [part="label-suffix"]::before {' +
+			'     content: " ";' +
+			'   }' +
 			'</style>' +
 			'<div part="overlay" class="overlay">' +
 			'<button part="button">' +
