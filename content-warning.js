@@ -261,87 +261,93 @@ export class ContentWarningElement extends HTMLElement {
 
 		// Build the shadow DOM with just the button overlay
 		// Light DOM content remains visible and defines dimensions
-		this.shadowRoot.innerHTML =
-			'<style>' +
-			'	:host {' +
-			'		display: block;' +
-			'		position: relative;' +
-			'	}' +
-			'	:host([inline]) {' +
-			'		display: inline-block;' +
-			'		vertical-align: baseline;' +
-			'	}' +
-			'	:host([hidden]) {' +
-			'		display: none;' +
-			'	}' +
-			'	:host(:not([revealed])) ::slotted(*) {' +
-			'		filter: blur(10px);' +
-			'		user-select: none;' +
-			'		pointer-events: none;' +
-			'	}' +
-			'	:host([inline]:not([revealed])) ::slotted(*) {' +
-			'		visibility: hidden;' +
-			'	}' +
-			'	:host([inline]:not([revealed])) .content-slot {' +
-			'		display: none;' +
-			'	}' +
-			'	.content-slot {' +
-			'		display: contents;' +
-			'	}' +
-			'	.overlay {' +
-			'		position: absolute;' +
-			'		inset: 0;' +
-			'		display: flex;' +
-			'		flex-direction: column;' +
-			'		align-items: center;' +
-			'		justify-content: center;' +
-			'		background: rgba(0, 0, 0, 0.9);' +
-			'		cursor: pointer;' +
-			'		z-index: 1;' +
-			'	}' +
-			'	:host([inline]) .overlay {' +
-			'		position: static;' +
-			'		display: inline-flex;' +
-			'	}' +
-			'	button {' +
-			'		cursor: pointer;' +
-			'		margin: 0;' +
-			'		background: transparent;' +
-			'		color: #fff;' +
-			'		border: 2px solid currentColor;' +
-			'		padding: 1rem;' +
-			'		font-size: 1rem;' +
-			'		font-family: inherit;' +
-			'		box-sizing: border-box;' +
-			'		text-align: center;' +
-			'	}' +
-			'	:host([inline]) button {' +
-			'		padding: 0.25rem 0.5rem;' +
-			'		font-size: 0.875rem;' +
-			'	}' +
-			'	button:hover {' +
-			'		opacity: 0.95;' +
-			'	}' +
-			'	button:focus-visible {' +
-			'		outline: 2px solid var(--content-warning-color, #fff);' +
-			'		outline-offset: -4px;' +
-			'	}' +
-			'   :is(.label-prefix)::after {' +
-			'     content: ": ";' +
-			'   }' +
-			'   [part="label-type"]::before {' +
-			'     content: " ";' +
-			'   }' +
-			'   [part="label-suffix"]::before {' +
-			'     content: " ";' +
-			'   }' +
-			'</style>' +
-			'<div part="overlay" class="overlay">' +
-			'<button part="button">' +
-			buttonLabel +
-			'</button>' +
-			'</div>' +
-			'<span class="content-slot"><slot></slot></span>'; // Add event listeners to overlay and button
+		this.shadowRoot.innerHTML = `
+		<style>
+			:host {
+				display: block;
+				position: relative;
+			}
+			:host([inline]) {
+				display: inline-block;
+				vertical-align: baseline;
+			}
+			:host([hidden]) {
+				display: none;
+			}
+			:host(:not([revealed])) ::slotted(*) {
+				filter: blur(10px);
+				user-select: none;
+				pointer-events: none;
+			}
+			:host([inline]:not([revealed])) ::slotted(*) {
+				visibility: hidden;
+			}
+			:host([inline]:not([revealed])) .content-slot {
+				display: none;
+			}
+			.content-slot {
+				display: contents;
+			}
+			.overlay {
+				position: absolute;
+				inset: 0;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				background: rgba(0, 0, 0, 0.9);
+				cursor: pointer;
+				z-index: 1;
+			}
+			@supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
+				.overlay {
+					background: rgba(0, 0, 0, 0.5);
+					backdrop-filter: blur(10px);
+					-webkit-backdrop-filter: blur(10px);
+				}
+			}
+			:host([inline]) .overlay {
+				position: static;
+				display: inline-flex;
+			}
+			button {
+				cursor: pointer;
+				margin: 0;
+				background: transparent;
+				color: #fff;
+				border: 2px solid currentColor;
+				padding: 1rem;
+				font-size: 1rem;
+				font-family: inherit;
+				box-sizing: border-box;
+				text-align: center;
+			}
+			:host([inline]) button {
+				padding: 0.25rem 0.5rem;
+				font-size: 0.875rem;
+			}
+			button:hover {
+				opacity: 0.95;
+			}
+			button:focus-visible {
+				outline: 2px solid var(--content-warning-color, #fff);
+				outline-offset: -4px;
+			}
+			:is(.label-prefix)::after {
+				content: ": ";
+			}
+			[part="label-type"]::before {
+				content: " ";
+			}
+			[part="label-suffix"]::before {
+				content: " ";
+			}
+		</style>
+		<div part="overlay" class="overlay">
+			<button part="button">${buttonLabel}</button>
+		</div>
+		<span class="content-slot"><slot></slot></span>
+	`; // Add event listeners to overlay and button
 		const overlay = this.shadowRoot.querySelector('.overlay');
 		const button = this.shadowRoot.querySelector('button');
 		if (overlay) {
