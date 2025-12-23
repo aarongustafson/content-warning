@@ -45,8 +45,7 @@
 								<p>
 									Lorem ipsum dolor sit amet, consectetur
 									adipiscing elit. Sed do eiusmod tempor
-									incididunt ut labore et dolore magna
-									aliqua.
+									incididunt ut labore et dolore magna aliqua.
 								</p>
 							</content-warning>
 						</div>
@@ -81,16 +80,14 @@
 			<!-- Inline Content Warning -->
 			<section>
 				<h2>Inline Content Warning</h2>
-				<p>
-					An inline content warning that works within text flow.
-				</p>
+				<p>An inline content warning that works within text flow.</p>
 
 				<div class="demo-section">
 					<h3>Inline Usage</h3>
 					<p>Click the warning to reveal the hidden text.</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;p&gt;
-  The character dies in 
+  The character dies in
   &lt;content-warning type="spoilers" inline&gt;
     episode 5
   &lt;/content-warning&gt;.
@@ -106,7 +103,9 @@
 					</div>
 
 					<h3>Multiple Inline Warnings</h3>
-					<p>You can have multiple inline warnings in one sentence.</p>
+					<p>
+						You can have multiple inline warnings in one sentence.
+					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;p&gt;
   &lt;content-warning type="spoilers" inline&gt;Jon&lt;/content-warning&gt;
@@ -152,15 +151,9 @@
 						<div class="demo">
 							<style>
 								.custom-warning::part(button) {
-									background: rgba(
-										139,
-										0,
-										0,
-										0.95
-									);
+									background: rgba(139, 0, 0, 0.95);
 									color: #fff;
-									border: 3px solid
-										#ff6b6b;
+									border: 3px solid #ff6b6b;
 									padding: 2rem;
 								}
 							</style>
@@ -177,12 +170,12 @@
 								</p>
 							</content-warning>
 						</div>
-				</div>
+					</div>
 
-				<h3>Styled Button Text</h3>
-				<p>Style the button text and appearance.</p>
-				<div class="code-demo-pair">
-					<pre><code>&lt;style&gt;
+					<h3>Styled Button Text</h3>
+					<p>Style the button text and appearance.</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;style&gt;
   .styled-parts::part(button) {
     text-transform: uppercase;
     letter-spacing: 0.15em;
@@ -195,26 +188,24 @@
 &lt;content-warning type="mature" class="styled-parts"&gt;
   &lt;p&gt;Mature content here.&lt;/p&gt;
 &lt;/content-warning&gt;</code></pre>
-					<div class="demo">
-						<style>
-							.styled-parts::part(button) {
-								text-transform: uppercase;
-								letter-spacing: 0.15em;
-								font-weight: 900;
-								background: #333;
-								border-radius: 0.5rem;
-							}
-						</style>
-						<content-warning
-							type="mature"
-							class="styled-parts"
-						>
-							<p>This content is for mature audiences.</p>
-						</content-warning>
+						<div class="demo">
+							<style>
+								.styled-parts::part(button) {
+									text-transform: uppercase;
+									letter-spacing: 0.15em;
+									font-weight: 900;
+									background: #333;
+									border-radius: 0.5rem;
+								}
+							</style>
+							<content-warning type="mature" class="styled-parts">
+								<p>This content is for mature audiences.</p>
+							</content-warning>
+						</div>
 					</div>
 				</div>
-			</div>
-		</section>			<!-- Event Handling -->
+			</section>
+			<!-- Event Handling -->
 			<section>
 				<h2>Event Handling</h2>
 				<p>Listen for the revealed event to track user interactions.</p>
@@ -230,7 +221,7 @@
 &lt;script&gt;
   document.getElementById('tracked')
     .addEventListener('content-warning:revealed', (e) => {
-      document.getElementById('status').textContent = 
+      document.getElementById('status').textContent =
         `Status: Revealed (${e.detail.type})`;
     });
 &lt;/script&gt;</code></pre>
@@ -250,7 +241,8 @@
 										(e) => {
 											document.getElementById(
 												'status',
-											).innerHTML = `<strong>Status:</strong> Revealed (${e.detail.type})`;
+											).innerHTML =
+												`<strong>Status:</strong> Revealed (${e.detail.type})`;
 										},
 									);
 							</script>
@@ -265,7 +257,8 @@
 				<p>
 					Customize the button label using
 					<code>label-prefix</code> and <code>label-suffix</code>
-					attributes to support different languages. Each label part can be styled individually using CSS Shadow Parts.
+					attributes to support different languages. Each label part
+					can be styled individually using CSS Shadow Parts.
 				</p>
 
 				<div class="demo-section">
@@ -302,7 +295,7 @@
 								<img
 									src="https://picsum.photos/600/400?random=5"
 									alt="Placeholder image"
-									style="display: block; max-width: 100%;"
+									style="display: block; max-width: 100%"
 								/>
 							</content-warning>
 						</div>
@@ -355,7 +348,8 @@
 
 					<h3>No Suffix</h3>
 					<p>
-						Set <code>label-suffix="false"</code> to hide the suffix entirely.
+						Set <code>label-suffix="false"</code> to hide the suffix
+						entirely.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;content-warning
@@ -383,8 +377,8 @@
 			<section class="api-reference">
 				<h2>API Reference</h2>
 				<p>
-					For complete documentation of attributes, events, CSS
-					custom properties, and browser support, see the
+					For complete documentation of attributes, events, CSS custom
+					properties, and browser support, see the
 					<a
 						href="https://github.com/aarongustafson/content-warning/blob/main/README.md"
 						>README</a
