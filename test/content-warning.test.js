@@ -195,10 +195,16 @@ describe('ContentWarningElement', () => {
 		});
 
 		it('should expose label shadow parts', () => {
-			const prefixSpan = element.shadowRoot.querySelector('[part="label-prefix"]');
-			const typeSpan = element.shadowRoot.querySelector('[part="label-type"]');
-			const suffixSpan = element.shadowRoot.querySelector('[part="label-suffix"]');
-			
+			const prefixSpan = element.shadowRoot.querySelector(
+				'[part="label-prefix"]',
+			);
+			const typeSpan = element.shadowRoot.querySelector(
+				'[part="label-type"]',
+			);
+			const suffixSpan = element.shadowRoot.querySelector(
+				'[part="label-suffix"]',
+			);
+
 			expect(prefixSpan).toBeTruthy();
 			expect(typeSpan).toBeTruthy();
 			expect(suffixSpan).toBeTruthy();
@@ -209,20 +215,26 @@ describe('ContentWarningElement', () => {
 		it('should use default labelPrefix when not set', () => {
 			expect(element.labelPrefix).toBeNull();
 			// Default is used in rendering logic
-			const prefixSpan = element.shadowRoot.querySelector('[part="label-prefix"]');
+			const prefixSpan = element.shadowRoot.querySelector(
+				'[part="label-prefix"]',
+			);
 			expect(prefixSpan.textContent).toBe('Content Warning');
 		});
 
 		it('should use default labelSuffix when not set', () => {
 			expect(element.labelSuffix).toBeNull();
 			// Default is used in rendering logic
-			const suffixSpan = element.shadowRoot.querySelector('[part="label-suffix"]');
+			const suffixSpan = element.shadowRoot.querySelector(
+				'[part="label-suffix"]',
+			);
 			expect(suffixSpan.textContent).toBe('Click to reveal');
 		});
 
 		it('should update label-prefix attribute when property changes', () => {
 			element.labelPrefix = 'Advertencia de Contenido';
-			expect(element.getAttribute('label-prefix')).toBe('Advertencia de Contenido');
+			expect(element.getAttribute('label-prefix')).toBe(
+				'Advertencia de Contenido',
+			);
 		});
 
 		it('should update labelPrefix property when attribute changes', () => {
@@ -232,7 +244,9 @@ describe('ContentWarningElement', () => {
 
 		it('should update label-suffix attribute when property changes', () => {
 			element.labelSuffix = 'Haz clic para revelar';
-			expect(element.getAttribute('label-suffix')).toBe('Haz clic para revelar');
+			expect(element.getAttribute('label-suffix')).toBe(
+				'Haz clic para revelar',
+			);
 		});
 
 		it('should update labelSuffix property when attribute changes', () => {
@@ -245,7 +259,9 @@ describe('ContentWarningElement', () => {
 			await new Promise((resolve) =>
 				requestAnimationFrame(() => requestAnimationFrame(resolve)),
 			);
-			const prefixSpan = element.shadowRoot.querySelector('[part="label-prefix"]');
+			const prefixSpan = element.shadowRoot.querySelector(
+				'[part="label-prefix"]',
+			);
 			expect(prefixSpan.textContent).toBe('Warning');
 		});
 
@@ -254,7 +270,9 @@ describe('ContentWarningElement', () => {
 			await new Promise((resolve) =>
 				requestAnimationFrame(() => requestAnimationFrame(resolve)),
 			);
-			const suffixSpan = element.shadowRoot.querySelector('[part="label-suffix"]');
+			const suffixSpan = element.shadowRoot.querySelector(
+				'[part="label-suffix"]',
+			);
 			expect(suffixSpan.textContent).toBe('Click here');
 		});
 
@@ -263,7 +281,9 @@ describe('ContentWarningElement', () => {
 			await new Promise((resolve) =>
 				requestAnimationFrame(() => requestAnimationFrame(resolve)),
 			);
-			const suffixSpan = element.shadowRoot.querySelector('[part="label-suffix"]');
+			const suffixSpan = element.shadowRoot.querySelector(
+				'[part="label-suffix"]',
+			);
 			expect(suffixSpan).toBeNull();
 		});
 
@@ -274,12 +294,12 @@ describe('ContentWarningElement', () => {
 			await new Promise((resolve) =>
 				requestAnimationFrame(() => requestAnimationFrame(resolve)),
 			);
-			
+
 			const button = element.shadowRoot.querySelector('button');
 			const prefixSpan = button.querySelector('[part="label-prefix"]');
 			const typeSpan = button.querySelector('[part="label-type"]');
 			const suffixSpan = button.querySelector('[part="label-suffix"]');
-			
+
 			expect(prefixSpan.textContent).toBe('Aviso');
 			expect(typeSpan.textContent).toBe('violencia');
 			expect(suffixSpan.textContent).toBe('Clic para ver');
