@@ -1,6 +1,6 @@
 {
 	"name": "@aarongustafson/content-warning",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "A web component for block and inline content warnings.",
 	"keywords": [
 		"html",
