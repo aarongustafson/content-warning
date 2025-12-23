@@ -137,11 +137,15 @@
 					<h3>Custom Colors</h3>
 					<div class="code-demo-pair">
 						<pre><code>&lt;style&gt;
-  .custom-warning::part(button) {
+  .custom-warning::part(overlay) {
     background: rgba(139, 0, 0, 0.95);
+  }
+  .custom-warning::part(button) {
     color: #fff;
     border: 3px solid #ff6b6b;
     padding: 2rem;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 0.5rem;
   }
 &lt;/style&gt;
 
@@ -150,11 +154,15 @@
 &lt;/content-warning&gt;</code></pre>
 						<div class="demo">
 							<style>
-								.custom-warning::part(button) {
+								.custom-warning::part(overlay) {
 									background: rgba(139, 0, 0, 0.95);
+								}
+								.custom-warning::part(button) {
 									color: #fff;
 									border: 3px solid #ff6b6b;
 									padding: 2rem;
+									background: rgba(0, 0, 0, 0.5);
+									border-radius: 0.5rem;
 								}
 							</style>
 							<content-warning

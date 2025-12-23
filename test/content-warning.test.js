@@ -152,7 +152,9 @@ describe('ContentWarningElement', () => {
 
 		it('should default to "content" when no type is specified', () => {
 			const button = element.shadowRoot.querySelector('button');
-			expect(button.textContent).toContain('Content Warning: content');
+			expect(button.textContent).toContain('Content Warning');
+			expect(button.textContent).toContain('content');
+			expect(button.textContent).toContain('Click to reveal');
 		});
 
 		it('should restore original content when revealed', async () => {
@@ -189,9 +191,11 @@ describe('ContentWarningElement', () => {
 
 		it('should expose button and overlay shadow parts', () => {
 			const button = element.shadowRoot.querySelector('button');
+			const overlay = element.shadowRoot.querySelector('.overlay');
 			expect(button).toBeTruthy();
-			expect(button.getAttribute('part')).toContain('button');
-			expect(button.getAttribute('part')).toContain('overlay');
+			expect(overlay).toBeTruthy();
+			expect(button.getAttribute('part')).toBe('button');
+			expect(overlay.getAttribute('part')).toBe('overlay');
 		});
 
 		it('should expose label shadow parts', () => {

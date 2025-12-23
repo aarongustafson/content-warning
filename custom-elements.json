@@ -12,12 +12,12 @@
 					"name": "ContentWarningElement",
 					"cssParts": [
 						{
-							"description": "The warning button element",
-							"name": "button"
+							"description": "The full-area overlay div that covers the content",
+							"name": "overlay"
 						},
 						{
-							"description": "The warning overlay (same element as button)",
-							"name": "overlay"
+							"description": "The warning button element inside the overlay",
+							"name": "button"
 						},
 						{
 							"description": "The prefix text span (e.g., \"Content Warning\")",

@@ -11,6 +11,7 @@ Based on the [original concept](https://codepen.io/aarongustafson/pen/QWZpqPe) b
 [Live Demo](https://aarongustafson.github.io/content-warning/demo/) ([Source](./demo/index.html))
 
 Additional demos:
+
 - [ESM CDN Demo](https://aarongustafson.github.io/content-warning/demo/esm.html) ([Source](./demo/esm.html))
 - [Unpkg CDN Demo](https://aarongustafson.github.io/content-warning/demo/unpkg.html) ([Source](./demo/unpkg.html))
 
@@ -33,7 +34,10 @@ import '@aarongustafson/content-warning';
 Or use the define-only script in HTML:
 
 ```html
-<script src="./node_modules/@aarongustafson/content-warning/define.js" type="module"></script>
+<script
+  src="./node_modules/@aarongustafson/content-warning/define.js"
+  type="module"
+></script>
 ```
 
 ### Option 2: Import the class and define manually
@@ -63,19 +67,19 @@ customElements.define('my-custom-name', ContentWarningElement);
 
 ## Attributes
 
-| Attribute | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `type` | `string` | `"content"` | Space-separated list of warning types (e.g., "violence spoilers nsfw") |
-| `label-prefix` | `string` | `"Content Warning"` | The prefix text for the warning label |
-| `label-suffix` | `string` | `"Click to reveal"` | The suffix text for the warning label. Set to `"false"` to hide. |
-| `inline` | `boolean` | `false` | Display the warning inline instead of as a block overlay |
+| Attribute      | Type      | Default             | Description                                                            |
+| -------------- | --------- | ------------------- | ---------------------------------------------------------------------- |
+| `type`         | `string`  | `"content"`         | Space-separated list of warning types (e.g., "violence spoilers nsfw") |
+| `label-prefix` | `string`  | `"Content Warning"` | The prefix text for the warning label                                  |
+| `label-suffix` | `string`  | `"Click to reveal"` | The suffix text for the warning label. Set to `"false"` to hide.       |
+| `inline`       | `boolean` | `false`             | Display the warning inline instead of as a block overlay               |
 
 ## Events
 
 The component fires custom events that you can listen to:
 
-| Event | Description | Detail |
-|-------|-------------|--------|
+| Event                      | Description                                                    | Detail                                           |
+| -------------------------- | -------------------------------------------------------------- | ------------------------------------------------ |
 | `content-warning:revealed` | Fired when the user reveals the content by clicking the button | `{ type: string }` - The type of content warning |
 
 ### Example Event Handling
@@ -91,34 +95,41 @@ element.addEventListener('content-warning:revealed', (event) => {
 
 ## Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `type` | `string` | Get/set the warning type(s) |
-| `labelPrefix` | `string` | Get/set the prefix text for the warning label |
-| `labelSuffix` | `string` | Get/set the suffix text for the warning label |
-| `revealed` | `boolean` (read-only) | Whether the content has been revealed |
+| Property      | Type                  | Description                                   |
+| ------------- | --------------------- | --------------------------------------------- |
+| `type`        | `string`              | Get/set the warning type(s)                   |
+| `labelPrefix` | `string`              | Get/set the prefix text for the warning label |
+| `labelSuffix` | `string`              | Get/set the suffix text for the warning label |
+| `revealed`    | `boolean` (read-only) | Whether the content has been revealed         |
 
 ## Shadow Parts
 
 You can style internal elements using CSS Shadow Parts:
 
-| Part | Description |
-|------|-------------|
-| `button` | The warning button element |
-| `overlay` | The warning overlay (same element as button) |
-| `label-prefix` | The prefix text span (e.g., "Content Warning") |
+| Part           | Description                                       |
+| -------------- | ------------------------------------------------- |
+| `overlay`      | The full-area overlay div that covers the content |
+| `button`       | The warning button element inside the overlay     |
+| `label-prefix` | The prefix text span (e.g., "Content Warning")    |
+
 ### Example Styling
 
 ```css
-/* Style the warning button/overlay */
-content-warning::part(button) {
+/* Style the full-area overlay */
+content-warning::part(overlay) {
   background: rgba(139, 0, 0, 0.95);
+}
+
+/* Style the button inside the overlay */
+content-warning::part(button) {
   color: #fff;
   border: 3px solid #ff6b6b;
   padding: 2rem;
   font-size: 1.25rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0.5rem;
 }
 
 /* Style individual label parts */
@@ -137,8 +148,11 @@ content-warning::part(label-suffix) {
 }
 
 /* Style inline warnings differently */
-content-warning[inline]::part(button) {
+content-warning[inline]::part(overlay) {
   background: #333;
+}
+
+content-warning[inline]::part(button) {
   padding: 0.5rem 0.75rem;
   border-radius: 0.25rem;
 }
@@ -155,7 +169,7 @@ Customize the button label for different languages using `label-prefix` and `lab
   label-prefix="Advertencia de Contenido"
   label-suffix="Haz clic para revelar"
 >
-  <img src="image.jpg" alt="Sensitive image">
+  <img src="image.jpg" alt="Sensitive image" />
 </content-warning>
 
 <!-- French -->
@@ -168,17 +182,14 @@ Customize the button label for different languages using `label-prefix` and `lab
 </content-warning>
 
 <!-- No suffix -->
-<content-warning
-  type="graphic content"
-  label-suffix="false"
->
+<content-warning type="graphic content" label-suffix="false">
   <p>Content without suffix text</p>
 </content-warning>
 ```
 
 Style each label part individually:
 
-```css
+````css
 content-warning::part(label-prefix) {
   font-weight: bold;
 }
@@ -195,7 +206,7 @@ content-warning::part(label-suffix) {
 ```adding: 0.5rem 0.75rem;
   border-radius: 0.25rem;
 }
-```
+````
 
 ## Accessibility
 
@@ -210,6 +221,7 @@ The component follows accessibility best practices:
 ## Browser Support
 
 This component uses modern web standards:
+
 - Custom Elements v1
 - Shadow DOM v1
 - ES Modules
