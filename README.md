@@ -4,6 +4,8 @@
 
 A web component for block and inline content warnings.
 
+Based on the [original concept](https://codepen.io/aarongustafson/pen/QWZpqPe) by Aaron Gustafson.
+
 ## Demo
 
 [Live Demo](https://aarongustafson.github.io/content-warning/demo/) ([Source](./demo/index.html))
@@ -54,7 +56,7 @@ customElements.define('my-custom-name', ContentWarningElement);
 
 <!-- Inline content warning -->
 <p>
-  The character dies in 
+  The character dies in
   <content-warning type="spoilers" inline>episode 5</content-warning>.
 </p>
 ```
@@ -72,7 +74,7 @@ The component fires custom events that you can listen to:
 
 | Event | Description | Detail |
 |-------|-------------|--------|
-| `content-warning:revealed` | Fired when the user reveals the content by clicking or pressing Enter | `{ type: string }` - The type of content warning |
+| `content-warning:revealed` | Fired when the user reveals the content by clicking the button | `{ type: string }` - The type of content warning |
 
 ### Example Event Handling
 
@@ -120,12 +122,10 @@ You can style internal elements using CSS Shadow Parts:
 
 | Part | Description |
 |------|-------------|
-| `overlay` | The warning overlay container |
-| `message` | The warning message text |
-| `instruction` | The instruction text (e.g., "Click to reveal") |
+| `button` | The warning button element |
 
 ```css
-content-warning::part(message) {
+content-warning::part(button) {
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -135,11 +135,11 @@ content-warning::part(message) {
 
 The component follows accessibility best practices:
 
-- Initially displayed with `role="button"` and `tabindex="0"` to be keyboard accessible
-- Provides appropriate `aria-label` based on the warning type
-- Supports keyboard interaction (Enter key to reveal)
-- Removes interactive attributes after content is revealed
-- Content is blurred and non-interactive until revealed
+- Uses a semantic `<button>` element for the warning interaction
+- Button is keyboard accessible by default
+- Content is blurred and non-interactive until revealed (block display mode)
+- Sets `role="alert"` on the host element when content is revealed
+- Focuses the revealed content for screen reader announcement
 
 ## Browser Support
 
