@@ -8,7 +8,9 @@ describe('ContentWarningElement', () => {
 		element = document.createElement('content-warning');
 		document.body.appendChild(element);
 		// Wait for the component to render
-		await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+		await new Promise((resolve) =>
+			requestAnimationFrame(() => requestAnimationFrame(resolve)),
+		);
 	});
 
 	afterEach(() => {
@@ -16,7 +18,9 @@ describe('ContentWarningElement', () => {
 	});
 
 	it('should be defined', () => {
-		expect(customElements.get('content-warning')).toBe(ContentWarningElement);
+		expect(customElements.get('content-warning')).toBe(
+			ContentWarningElement,
+		);
 	});
 
 	it('should create an instance', () => {
@@ -75,7 +79,8 @@ describe('ContentWarningElement', () => {
 
 		it('should handle lazy property upgrade (property set before element upgrade)', () => {
 			// Create an element but don't connect it yet
-			const uninitializedElement = document.createElement('content-warning');
+			const uninitializedElement =
+				document.createElement('content-warning');
 
 			// Set property before connecting (simulates framework setting property before upgrade)
 			uninitializedElement.type = 'early-value';
@@ -85,7 +90,9 @@ describe('ContentWarningElement', () => {
 
 			// Property should be preserved
 			expect(uninitializedElement.type).toBe('early-value');
-			expect(uninitializedElement.getAttribute('type')).toBe('early-value');
+			expect(uninitializedElement.getAttribute('type')).toBe(
+				'early-value',
+			);
 
 			uninitializedElement.remove();
 		});
@@ -101,36 +108,27 @@ describe('ContentWarningElement', () => {
 			expect(element.revealed).toBe(false);
 		});
 
-		it('should have a warning overlay initially', () => {
-			const overlay = element.shadowRoot.querySelector('.content-warning-overlay');
-			expect(overlay).toBeTruthy();
-			expect(overlay.style.display).not.toBe('none');
+		it('should have a warning button initially', () => {
+			const button = element.shadowRoot.querySelector('button');
+			expect(button).toBeTruthy();
+			expect(button.textContent).toContain('Content Warning');
 		});
 
 		it('should display warning message with type', async () => {
 			element.type = 'violence';
-			await new Promise(resolve => requestAnimationFrame(resolve));
-			const message = element.shadowRoot.querySelector('.content-warning-message');
-			expect(message.textContent).toContain('violence');
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+			const button = element.shadowRoot.querySelector('button');
+			expect(button.textContent).toContain('violence');
 		});
 
-		it('should reveal content on click', () => {
-			element.click();
+		it('should reveal content on button click', async () => {
+			const button = element.shadowRoot.querySelector('button');
+			button.click();
+			await new Promise((resolve) => requestAnimationFrame(resolve));
 			expect(element.revealed).toBe(true);
-			const overlay = element.shadowRoot.querySelector('.content-warning-overlay');
-			expect(overlay.style.display).toBe('none');
-		});
-
-		it('should reveal content on Enter key', () => {
-			const event = new KeyboardEvent('keydown', { key: 'Enter' });
-			element.dispatchEvent(event);
-			expect(element.revealed).toBe(true);
-		});
-
-		it('should not reveal on other keys', () => {
-			const event = new KeyboardEvent('keydown', { key: 'Space' });
-			element.dispatchEvent(event);
-			expect(element.revealed).toBe(false);
+			// Shadow DOM should be cleared
+			const buttonAfter = element.shadowRoot.querySelector('button');
+			expect(buttonAfter).toBeFalsy();
 		});
 
 		it('should dispatch revealed event when content is shown', () => {
@@ -140,32 +138,53 @@ describe('ContentWarningElement', () => {
 					expect(e.detail.type).toBe('test-type');
 					resolve();
 				});
-				element.click();
+				const button = element.shadowRoot.querySelector('button');
+				button.click();
 			});
 		});
 
-		it('should remove tabindex when revealed', () => {
-			expect(element.hasAttribute('tabindex')).toBe(true);
-			element.click();
-			expect(element.hasAttribute('tabindex')).toBe(false);
-		});
-
-		it('should remove role when revealed', () => {
-			expect(element.getAttribute('role')).toBe('button');
-			element.click();
-			expect(element.hasAttribute('role')).toBe(false);
-		});
-
-		it('should set appropriate aria-label based on type', async () => {
-			element.type = 'violence spoilers';
-			await new Promise(resolve => requestAnimationFrame(resolve));
-			const ariaLabel = element.getAttribute('aria-label');
-			expect(ariaLabel).toContain('violence spoilers');
+		it('should set role="alert" when revealed', async () => {
+			const button = element.shadowRoot.querySelector('button');
+			button.click();
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+			expect(element.getAttribute('role')).toBe('alert');
 		});
 
 		it('should default to "content" when no type is specified', () => {
-			const message = element.shadowRoot.querySelector('.content-warning-message');
-			expect(message.textContent).toContain('Content Warning: content');
+			const button = element.shadowRoot.querySelector('button');
+			expect(button.textContent).toContain('Content Warning: content');
+		});
+
+		it('should restore original content when revealed', async () => {
+			// Create a new element with content already in place
+			const testElement = document.createElement('content-warning');
+			testElement.innerHTML = '<p>Hidden content</p>';
+			document.body.appendChild(testElement);
+			await new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			);
+
+			const button = testElement.shadowRoot.querySelector('button');
+			button.click();
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+
+			expect(testElement.innerHTML).toContain('Hidden content');
+			testElement.remove();
+		});
+
+		it('should have blurred content in shadow DOM for block display', async () => {
+			const blur = element.shadowRoot.querySelector('.content-blur');
+			expect(blur).toBeTruthy();
+		});
+
+		it('should hide blur for inline display', async () => {
+			element.setAttribute('inline', '');
+			await new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			);
+			const blur = element.shadowRoot.querySelector('.content-blur');
+			const styles = window.getComputedStyle(blur);
+			expect(styles.display).toBe('none');
 		});
 	});
 
