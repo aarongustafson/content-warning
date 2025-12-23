@@ -66,6 +66,8 @@ customElements.define('my-custom-name', ContentWarningElement);
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `type` | `string` | `"content"` | Space-separated list of warning types (e.g., "violence spoilers nsfw") |
+| `label-prefix` | `string` | `"Content Warning"` | The prefix text for the warning label |
+| `label-suffix` | `string` | `"Click to reveal"` | The suffix text for the warning label. Set to `"false"` to hide. |
 | `inline` | `boolean` | `false` | Display the warning inline instead of as a block overlay |
 
 ## Events
@@ -92,29 +94,9 @@ element.addEventListener('content-warning:revealed', (event) => {
 | Property | Type | Description |
 |----------|------|-------------|
 | `type` | `string` | Get/set the warning type(s) |
+| `labelPrefix` | `string` | Get/set the prefix text for the warning label |
+| `labelSuffix` | `string` | Get/set the suffix text for the warning label |
 | `revealed` | `boolean` (read-only) | Whether the content has been revealed |
-
-## CSS Custom Properties
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `--content-warning-bg` | `rgba(0, 0, 0, 0.9)` | Background color of the warning overlay |
-| `--content-warning-color` | `#fff` | Text color of the warning message |
-| `--content-warning-border` | `2px solid currentColor` | Border style for the warning |
-| `--content-warning-padding` | `1rem` | Padding for the warning overlay |
-| `--content-warning-font-size` | `1rem` | Font size for the warning message |
-
-### Example Styling
-
-```css
-content-warning {
-  --content-warning-bg: rgba(255, 0, 0, 0.8);
-  --content-warning-color: #fff;
-  --content-warning-border: 3px solid #fff;
-  --content-warning-padding: 2rem;
-  --content-warning-font-size: 1.25rem;
-}
-```
 
 ## Shadow Parts
 
@@ -123,11 +105,95 @@ You can style internal elements using CSS Shadow Parts:
 | Part | Description |
 |------|-------------|
 | `button` | The warning button element |
+| `overlay` | The warning overlay (same element as button) |
+| `label-prefix` | The prefix text span (e.g., "Content Warning") |
+### Example Styling
 
 ```css
+/* Style the warning button/overlay */
 content-warning::part(button) {
+  background: rgba(139, 0, 0, 0.95);
+  color: #fff;
+  border: 3px solid #ff6b6b;
+  padding: 2rem;
+  font-size: 1.25rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+}
+
+/* Style individual label parts */
+content-warning::part(label-prefix) {
+  font-weight: bold;
+}
+
+content-warning::part(label-type) {
+  font-style: italic;
+  color: #ff6b6b;
+}
+
+content-warning::part(label-suffix) {
+  font-size: 0.875em;
+  opacity: 0.9;
+}
+
+/* Style inline warnings differently */
+content-warning[inline]::part(button) {
+  background: #333;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+}
+```
+
+## Internationalization (i18n)
+
+Customize the button label for different languages using `label-prefix` and `label-suffix` attributes:
+
+```html
+<!-- Spanish -->
+<content-warning
+  type="violencia gore"
+  label-prefix="Advertencia de Contenido"
+  label-suffix="Haz clic para revelar"
+>
+  <img src="image.jpg" alt="Sensitive image">
+</content-warning>
+
+<!-- French -->
+<content-warning
+  type="contenu sensible"
+  label-prefix="Avertissement"
+  label-suffix="Cliquez pour révéler"
+>
+  <p>Contenu en français...</p>
+</content-warning>
+
+<!-- No suffix -->
+<content-warning
+  type="graphic content"
+  label-suffix="false"
+>
+  <p>Content without suffix text</p>
+</content-warning>
+```
+
+Style each label part individually:
+
+```css
+content-warning::part(label-prefix) {
+  font-weight: bold;
+}
+
+content-warning::part(label-type) {
+  font-style: italic;
+  color: #ff6b6b;
+}
+
+content-warning::part(label-suffix) {
+  font-size: 0.875em;
+  opacity: 0.9;
+}
+```adding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
 }
 ```
 

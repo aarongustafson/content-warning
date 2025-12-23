@@ -132,17 +132,17 @@
 			<!-- Custom Styling -->
 			<section>
 				<h2>Custom Styling</h2>
-				<p>Customize the appearance using CSS custom properties.</p>
+				<p>Customize the appearance using CSS Shadow Parts.</p>
 
 				<div class="demo-section">
 					<h3>Custom Colors</h3>
 					<div class="code-demo-pair">
 						<pre><code>&lt;style&gt;
-  .custom-warning {
-    --content-warning-bg: rgba(139, 0, 0, 0.95);
-    --content-warning-color: #fff;
-    --content-warning-border: 3px solid #ff6b6b;
-    --content-warning-padding: 2rem;
+  .custom-warning::part(button) {
+    background: rgba(139, 0, 0, 0.95);
+    color: #fff;
+    border: 3px solid #ff6b6b;
+    padding: 2rem;
   }
 &lt;/style&gt;
 
@@ -151,17 +151,17 @@
 &lt;/content-warning&gt;</code></pre>
 						<div class="demo">
 							<style>
-								.custom-warning {
-									--content-warning-bg: rgba(
+								.custom-warning::part(button) {
+									background: rgba(
 										139,
 										0,
 										0,
 										0.95
 									);
-									--content-warning-color: #fff;
-									--content-warning-border: 3px solid
+									color: #fff;
+									border: 3px solid
 										#ff6b6b;
-									--content-warning-padding: 2rem;
+									padding: 2rem;
 								}
 							</style>
 							<content-warning
@@ -177,42 +177,44 @@
 								</p>
 							</content-warning>
 						</div>
-					</div>
+				</div>
 
-					<h3>Using Shadow Parts</h3>
-					<p>Style internal elements with CSS Shadow Parts.</p>
-					<div class="code-demo-pair">
-						<pre><code>&lt;style&gt;
-  .styled-parts::part(message) {
+				<h3>Styled Button Text</h3>
+				<p>Style the button text and appearance.</p>
+				<div class="code-demo-pair">
+					<pre><code>&lt;style&gt;
+  .styled-parts::part(button) {
     text-transform: uppercase;
     letter-spacing: 0.15em;
     font-weight: 900;
+    background: #333;
+    border-radius: 0.5rem;
   }
 &lt;/style&gt;
 
 &lt;content-warning type="mature" class="styled-parts"&gt;
   &lt;p&gt;Mature content here.&lt;/p&gt;
 &lt;/content-warning&gt;</code></pre>
-						<div class="demo">
-							<style>
-								.styled-parts::part(message) {
-									text-transform: uppercase;
-									letter-spacing: 0.15em;
-									font-weight: 900;
-								}
-							</style>
-							<content-warning
-								type="mature"
-								class="styled-parts"
-							>
-								<p>This content is for mature audiences.</p>
-							</content-warning>
-						</div>
+					<div class="demo">
+						<style>
+							.styled-parts::part(button) {
+								text-transform: uppercase;
+								letter-spacing: 0.15em;
+								font-weight: 900;
+								background: #333;
+								border-radius: 0.5rem;
+							}
+						</style>
+						<content-warning
+							type="mature"
+							class="styled-parts"
+						>
+							<p>This content is for mature audiences.</p>
+						</content-warning>
 					</div>
 				</div>
-			</section>
-
-			<!-- Event Handling -->
+			</div>
+		</section>			<!-- Event Handling -->
 			<section>
 				<h2>Event Handling</h2>
 				<p>Listen for the revealed event to track user interactions.</p>
@@ -252,6 +254,126 @@
 										},
 									);
 							</script>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Internationalization -->
+			<section>
+				<h2>Internationalization (i18n)</h2>
+				<p>
+					Customize the button label using
+					<code>label-prefix</code> and <code>label-suffix</code>
+					attributes to support different languages. Each label part can be styled individually using CSS Shadow Parts.
+				</p>
+
+				<div class="demo-section">
+					<h3>Spanish Translation</h3>
+					<div class="code-demo-pair">
+						<pre><code>&lt;style&gt;
+  .spanish-warning::part(label-type) {
+    font-style: italic;
+    text-transform: capitalize;
+  }
+&lt;/style&gt;
+
+&lt;content-warning
+  type="violencia gore"
+  label-prefix="Advertencia de Contenido"
+  label-suffix="Haz clic para revelar"
+  class="spanish-warning"
+&gt;
+  &lt;img src="..." alt="..."&gt;
+&lt;/content-warning&gt;</code></pre>
+						<div class="demo">
+							<style>
+								.spanish-warning::part(label-type) {
+									font-style: italic;
+									text-transform: capitalize;
+								}
+							</style>
+							<content-warning
+								type="violencia gore"
+								label-prefix="Advertencia de Contenido"
+								label-suffix="Haz clic para revelar"
+								class="spanish-warning"
+							>
+								<img
+									src="https://picsum.photos/600/400?random=5"
+									alt="Placeholder image"
+									style="display: block; max-width: 100%;"
+								/>
+							</content-warning>
+						</div>
+					</div>
+
+					<h3>French Translation</h3>
+					<div class="code-demo-pair">
+						<pre><code>&lt;style&gt;
+  .french-warning::part(label-prefix) {
+    font-weight: bold;
+    color: #ffeb3b;
+  }
+  .french-warning::part(label-suffix) {
+    font-size: 0.875em;
+  }
+&lt;/style&gt;
+
+&lt;content-warning
+  type="contenu sensible"
+  label-prefix="Avertissement"
+  label-suffix="Cliquez pour révéler"
+  class="french-warning"
+&gt;
+  &lt;p&gt;Contenu en français...&lt;/p&gt;
+&lt;/content-warning&gt;</code></pre>
+						<div class="demo">
+							<style>
+								.french-warning::part(label-prefix) {
+									font-weight: bold;
+									color: #ffeb3b;
+								}
+								.french-warning::part(label-suffix) {
+									font-size: 0.875em;
+								}
+							</style>
+							<content-warning
+								type="contenu sensible"
+								label-prefix="Avertissement"
+								label-suffix="Cliquez pour révéler"
+								class="french-warning"
+							>
+								<p>
+									Ce contenu pourrait être considéré comme
+									sensible par certains utilisateurs. Veuillez
+									faire preuve de discrétion.
+								</p>
+							</content-warning>
+						</div>
+					</div>
+
+					<h3>No Suffix</h3>
+					<p>
+						Set <code>label-suffix="false"</code> to hide the suffix entirely.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;content-warning
+  type="graphic content"
+  label-suffix="false"
+&gt;
+  &lt;p&gt;Content here&lt;/p&gt;
+&lt;/content-warning&gt;</code></pre>
+						<div class="demo">
+							<content-warning
+								type="graphic content"
+								label-suffix="false"
+							>
+								<p>
+									This warning has no suffix text - just the
+									prefix and type.
+								</p>
+							</content-warning>
 						</div>
 					</div>
 				</div>
