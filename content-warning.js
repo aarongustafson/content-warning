@@ -246,13 +246,13 @@ export class ContentWarningElement extends HTMLElement {
 		// Build button label HTML parts
 		const prefixHTML = '<span part="label-prefix">' + prefix + '</span>';
 		const typeHTML = '<span part="label-type">' + types + '</span>';
-		let buttonLabel = prefixHTML + typeHTML;
+		let buttonLabel = prefixHTML + ' ' + typeHTML;
 
 		if (showSuffix) {
 			const suffixText = suffix || 'Click to reveal';
 			const suffixHTML =
 				'<span part="label-suffix">' + suffixText + '</span>';
-			buttonLabel += suffixHTML;
+			buttonLabel += ' ' + suffixHTML;
 		}
 
 		// Build the shadow DOM with just the button overlay
