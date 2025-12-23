@@ -27,6 +27,88 @@
  * @csspart label-suffix - The suffix text span (e.g., "Click to reveal")
  */
 export class ContentWarningElement extends HTMLElement {
+	static #cssTemplate = `
+		:host {
+			display: block;
+			position: relative;
+		}
+		:host([inline]) {
+			display: inline-block;
+			vertical-align: baseline;
+		}
+		:host([hidden]) {
+			display: none;
+		}
+		:host(:not([revealed])) ::slotted(*) {
+			filter: blur(10px);
+			user-select: none;
+			pointer-events: none;
+		}
+		:host([inline]:not([revealed])) ::slotted(*) {
+			visibility: hidden;
+		}
+		:host([inline]:not([revealed])) .content-slot {
+			display: none;
+		}
+		.content-slot {
+			display: contents;
+		}
+		.overlay {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			background: rgba(0, 0, 0, 0.9);
+			cursor: pointer;
+			z-index: 1;
+		}
+		@supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
+			.overlay {
+				background: rgba(0, 0, 0, 0.5);
+				backdrop-filter: blur(10px);
+				-webkit-backdrop-filter: blur(10px);
+			}
+		}
+		:host([inline]) .overlay {
+			position: static;
+			display: inline-flex;
+		}
+		button {
+			cursor: pointer;
+			margin: 0;
+			background: transparent;
+			color: #fff;
+			border: 2px solid currentColor;
+			padding: 1rem;
+			font-size: 1rem;
+			font-family: inherit;
+			box-sizing: border-box;
+			text-align: center;
+		}
+		:host([inline]) button {
+			padding: 0.25rem 0.5rem;
+			font-size: 0.875rem;
+		}
+		button:hover {
+			opacity: 0.95;
+		}
+		button:focus-visible {
+			outline: 2px solid var(--content-warning-color, #fff);
+			outline-offset: -4px;
+		}
+		:is(.label-prefix)::after {
+			content: ": ";
+		}
+		[part="label-type"]::before {
+			content: " ";
+		}
+		[part="label-suffix"]::before {
+			content: " ";
+		}
+	`;
+
 	static get observedAttributes() {
 		return ['type', 'label-prefix', 'label-suffix'];
 	}
@@ -59,14 +141,10 @@ export class ContentWarningElement extends HTMLElement {
 	}
 
 	disconnectedCallback() {
-		// Clean up event listeners
+		// Clean up event listener
 		const overlay = this.shadowRoot?.querySelector('.overlay');
-		const button = this.shadowRoot?.querySelector('button');
 		if (overlay) {
 			overlay.removeEventListener('click', this._handleClick);
-		}
-		if (button) {
-			button.removeEventListener('click', this._handleClick);
 		}
 	}
 
@@ -244,117 +322,23 @@ export class ContentWarningElement extends HTMLElement {
 		const suffix = this.labelSuffix;
 		const showSuffix = suffix !== 'false';
 
-		// Build button label HTML parts
-		const prefixHTML =
-			'<span class="label-prefix" part="label-prefix">' +
-			prefix +
-			'</span>';
-		const typeHTML = '<span part="label-type">' + types + '</span>';
-		let buttonLabel = prefixHTML + typeHTML;
-
-		if (showSuffix) {
-			const suffixText = suffix || 'Click to reveal';
-			const suffixHTML =
-				'<span part="label-suffix">' + suffixText + '</span>';
-			buttonLabel += suffixHTML;
-		}
+		// Build button label HTML
+		const suffixText = suffix || 'Click to reveal';
+		const buttonLabel = `<span class="label-prefix" part="label-prefix">${prefix}</span><span part="label-type">${types}</span>${showSuffix ? `<span part="label-suffix">${suffixText}</span>` : ''}`;
 
 		// Build the shadow DOM with just the button overlay
 		// Light DOM content remains visible and defines dimensions
 		this.shadowRoot.innerHTML = `
-		<style>
-			:host {
-				display: block;
-				position: relative;
-			}
-			:host([inline]) {
-				display: inline-block;
-				vertical-align: baseline;
-			}
-			:host([hidden]) {
-				display: none;
-			}
-			:host(:not([revealed])) ::slotted(*) {
-				filter: blur(10px);
-				user-select: none;
-				pointer-events: none;
-			}
-			:host([inline]:not([revealed])) ::slotted(*) {
-				visibility: hidden;
-			}
-			:host([inline]:not([revealed])) .content-slot {
-				display: none;
-			}
-			.content-slot {
-				display: contents;
-			}
-			.overlay {
-				position: absolute;
-				inset: 0;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				background: rgba(0, 0, 0, 0.9);
-				cursor: pointer;
-				z-index: 1;
-			}
-			@supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
-				.overlay {
-					background: rgba(0, 0, 0, 0.5);
-					backdrop-filter: blur(10px);
-					-webkit-backdrop-filter: blur(10px);
-				}
-			}
-			:host([inline]) .overlay {
-				position: static;
-				display: inline-flex;
-			}
-			button {
-				cursor: pointer;
-				margin: 0;
-				background: transparent;
-				color: #fff;
-				border: 2px solid currentColor;
-				padding: 1rem;
-				font-size: 1rem;
-				font-family: inherit;
-				box-sizing: border-box;
-				text-align: center;
-			}
-			:host([inline]) button {
-				padding: 0.25rem 0.5rem;
-				font-size: 0.875rem;
-			}
-			button:hover {
-				opacity: 0.95;
-			}
-			button:focus-visible {
-				outline: 2px solid var(--content-warning-color, #fff);
-				outline-offset: -4px;
-			}
-			:is(.label-prefix)::after {
-				content: ": ";
-			}
-			[part="label-type"]::before {
-				content: " ";
-			}
-			[part="label-suffix"]::before {
-				content: " ";
-			}
-		</style>
+		<style>${ContentWarningElement.#cssTemplate}</style>
 		<div part="overlay" class="overlay">
 			<button part="button">${buttonLabel}</button>
 		</div>
 		<span class="content-slot"><slot></slot></span>
-	`; // Add event listeners to overlay and button
+	`;
+		// Add single event listener to overlay (event delegation)
 		const overlay = this.shadowRoot.querySelector('.overlay');
-		const button = this.shadowRoot.querySelector('button');
 		if (overlay) {
 			overlay.addEventListener('click', this._handleClick);
-		}
-		if (button) {
-			button.addEventListener('click', this._handleClick);
 		}
 
 		this._internals.isRendered = true;
