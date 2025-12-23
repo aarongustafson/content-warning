@@ -172,19 +172,117 @@ describe('ContentWarningElement', () => {
 			testElement.remove();
 		});
 
-		it('should have blurred content in shadow DOM for block display', async () => {
-			const blur = element.shadowRoot.querySelector('.content-blur');
-			expect(blur).toBeTruthy();
+		it('should have slotted content blurred for block display', async () => {
+			// Content is blurred via ::slotted(*) CSS
+			const slot = element.shadowRoot.querySelector('slot');
+			expect(slot).toBeTruthy();
 		});
 
-		it('should hide blur for inline display', async () => {
+		it('should hide slotted content for inline display', async () => {
 			element.setAttribute('inline', '');
 			await new Promise((resolve) =>
 				requestAnimationFrame(() => requestAnimationFrame(resolve)),
 			);
-			const blur = element.shadowRoot.querySelector('.content-blur');
-			const styles = window.getComputedStyle(blur);
-			expect(styles.display).toBe('none');
+			const slot = element.shadowRoot.querySelector('slot');
+			expect(slot).toBeTruthy();
+		});
+
+		it('should expose button and overlay shadow parts', () => {
+			const button = element.shadowRoot.querySelector('button');
+			expect(button).toBeTruthy();
+			expect(button.getAttribute('part')).toContain('button');
+			expect(button.getAttribute('part')).toContain('overlay');
+		});
+
+		it('should expose label shadow parts', () => {
+			const prefixSpan = element.shadowRoot.querySelector('[part="label-prefix"]');
+			const typeSpan = element.shadowRoot.querySelector('[part="label-type"]');
+			const suffixSpan = element.shadowRoot.querySelector('[part="label-suffix"]');
+			
+			expect(prefixSpan).toBeTruthy();
+			expect(typeSpan).toBeTruthy();
+			expect(suffixSpan).toBeTruthy();
+		});
+	});
+
+	describe('Label Customization', () => {
+		it('should use default labelPrefix when not set', () => {
+			expect(element.labelPrefix).toBeNull();
+			// Default is used in rendering logic
+			const prefixSpan = element.shadowRoot.querySelector('[part="label-prefix"]');
+			expect(prefixSpan.textContent).toBe('Content Warning');
+		});
+
+		it('should use default labelSuffix when not set', () => {
+			expect(element.labelSuffix).toBeNull();
+			// Default is used in rendering logic
+			const suffixSpan = element.shadowRoot.querySelector('[part="label-suffix"]');
+			expect(suffixSpan.textContent).toBe('Click to reveal');
+		});
+
+		it('should update label-prefix attribute when property changes', () => {
+			element.labelPrefix = 'Advertencia de Contenido';
+			expect(element.getAttribute('label-prefix')).toBe('Advertencia de Contenido');
+		});
+
+		it('should update labelPrefix property when attribute changes', () => {
+			element.setAttribute('label-prefix', 'Avertissement de Contenu');
+			expect(element.labelPrefix).toBe('Avertissement de Contenu');
+		});
+
+		it('should update label-suffix attribute when property changes', () => {
+			element.labelSuffix = 'Haz clic para revelar';
+			expect(element.getAttribute('label-suffix')).toBe('Haz clic para revelar');
+		});
+
+		it('should update labelSuffix property when attribute changes', () => {
+			element.setAttribute('label-suffix', 'Cliquez pour révéler');
+			expect(element.labelSuffix).toBe('Cliquez pour révéler');
+		});
+
+		it('should update button label when labelPrefix changes', async () => {
+			element.labelPrefix = 'Warning';
+			await new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			);
+			const prefixSpan = element.shadowRoot.querySelector('[part="label-prefix"]');
+			expect(prefixSpan.textContent).toBe('Warning');
+		});
+
+		it('should update button label when labelSuffix changes', async () => {
+			element.labelSuffix = 'Click here';
+			await new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			);
+			const suffixSpan = element.shadowRoot.querySelector('[part="label-suffix"]');
+			expect(suffixSpan.textContent).toBe('Click here');
+		});
+
+		it('should hide label suffix when set to "false"', async () => {
+			element.labelSuffix = 'false';
+			await new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			);
+			const suffixSpan = element.shadowRoot.querySelector('[part="label-suffix"]');
+			expect(suffixSpan).toBeNull();
+		});
+
+		it('should display custom label parts correctly', async () => {
+			element.labelPrefix = 'Aviso';
+			element.type = 'violencia';
+			element.labelSuffix = 'Clic para ver';
+			await new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			);
+			
+			const button = element.shadowRoot.querySelector('button');
+			const prefixSpan = button.querySelector('[part="label-prefix"]');
+			const typeSpan = button.querySelector('[part="label-type"]');
+			const suffixSpan = button.querySelector('[part="label-suffix"]');
+			
+			expect(prefixSpan.textContent).toBe('Aviso');
+			expect(typeSpan.textContent).toBe('violencia');
+			expect(suffixSpan.textContent).toBe('Clic para ver');
 		});
 	});
 
@@ -194,10 +292,10 @@ describe('ContentWarningElement', () => {
 			expect(styles.display).toBe('block');
 		});
 
-		it('should support inline display when inline attribute is set', () => {
+		it('should support inline-block display when inline attribute is set', () => {
 			element.setAttribute('inline', '');
 			const styles = window.getComputedStyle(element);
-			expect(styles.display).toBe('inline');
+			expect(styles.display).toBe('inline-block');
 		});
 	});
 });

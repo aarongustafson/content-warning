@@ -6,20 +6,23 @@
  * @element content-warning
  *
  * @attr {string} type - Space-separated list of warning types (e.g., "violence spoilers")
+ * @attr {string} label-prefix - The prefix text for the warning (default: "Content Warning")
+ * @attr {string} label-suffix - The suffix text for the warning (default: "Click to reveal"). Set to "false" to hide.
+ * @attr {boolean} inline - Display the warning inline instead of as a block overlay
  *
  * @fires content-warning:revealed - Fired when the content is revealed by the user
  *
  * @slot - Default slot for the content that needs a warning
  *
- * @cssprop --content-warning-bg - Background color of the warning overlay (default: rgba(0, 0, 0, 0.9))
- * @cssprop --content-warning-color - Text color of the warning message (default: #fff)
- * @cssprop --content-warning-border - Border style for the warning (default: 2px solid currentColor)
- * @cssprop --content-warning-padding - Padding for the warning overlay (default: 1rem)
- * @cssprop --content-warning-font-size - Font size for the warning message (default: 1rem)
+ * @csspart button - The warning button element
+ * @csspart overlay - The warning overlay (same element as button)
+ * @csspart label-prefix - The prefix text span (e.g., "Content Warning")
+ * @csspart label-type - The warning type text span (e.g., "violence spoilers")
+ * @csspart label-suffix - The suffix text span (e.g., "Click to reveal")
  */
 export class ContentWarningElement extends HTMLElement {
 	static get observedAttributes() {
-		return ['type'];
+		return ['type', 'label-prefix', 'label-suffix'];
 	}
 
 	constructor() {
@@ -28,8 +31,6 @@ export class ContentWarningElement extends HTMLElement {
 		this._internals = {
 			isRendered: false,
 			revealed: false,
-			originalContent: null,
-			computedStyles: null,
 			isInline: false,
 		};
 
@@ -41,12 +42,11 @@ export class ContentWarningElement extends HTMLElement {
 		requestAnimationFrame(() => {
 			// Upgrade properties that may have been set before the element was defined
 			this._upgradeProperty('type');
+			this._upgradeProperty('labelPrefix');
+			this._upgradeProperty('labelSuffix');
 
 			// Determine if inline
 			this._internals.isInline = this.hasAttribute('inline');
-
-			// Capture the original content and its computed styles
-			this._captureOriginalContent();
 
 			this.render();
 		});
@@ -67,27 +67,13 @@ export class ContentWarningElement extends HTMLElement {
 
 		switch (name) {
 			case 'type':
+			case 'label-prefix':
+			case 'label-suffix':
 				// Update the warning message
 				if (this._internals.isRendered && !this._internals.revealed) {
 					this._updateWarningMessage();
 				}
 				break;
-		}
-	}
-
-	/**
-	 * Capture the original content before replacing it with the warning
-	 * @private
-	 */
-	_captureOriginalContent() {
-		// Get all child nodes (including text nodes)
-		this._internals.originalContent = Array.from(this.childNodes);
-
-		// Measure dimensions if we have element children
-		const firstElement = this.querySelector('*');
-		if (firstElement) {
-			this._internals.computedStyles =
-				window.getComputedStyle(firstElement);
 		}
 	}
 
@@ -122,6 +108,38 @@ export class ContentWarningElement extends HTMLElement {
 	}
 
 	/**
+	 * Label prefix property.
+	 * Reflects between property and attribute to keep them in sync.
+	 */
+	get labelPrefix() {
+		return this.getAttribute('label-prefix');
+	}
+
+	set labelPrefix(value) {
+		if (value === null || value === undefined) {
+			this.removeAttribute('label-prefix');
+		} else {
+			this.setAttribute('label-prefix', value);
+		}
+	}
+
+	/**
+	 * Label suffix property.
+	 * Reflects between property and attribute to keep them in sync.
+	 */
+	get labelSuffix() {
+		return this.getAttribute('label-suffix');
+	}
+
+	set labelSuffix(value) {
+		if (value === null || value === undefined) {
+			this.removeAttribute('label-suffix');
+		} else {
+			this.setAttribute('label-suffix', value);
+		}
+	}
+
+	/**
 	 * Check if the content has been revealed
 	 */
 	get revealed() {
@@ -145,14 +163,14 @@ export class ContentWarningElement extends HTMLElement {
 	_reveal() {
 		this._internals.revealed = true;
 
-		// Clear the shadow DOM
-		this.shadowRoot.innerHTML = '';
+		// Remove the button
+		const button = this.shadowRoot.querySelector('button');
+		if (button) {
+			button.remove();
+		}
 
-		// Restore original content to light DOM
-		this.innerHTML = '';
-		this._internals.originalContent.forEach((node) => {
-			this.appendChild(node.cloneNode(true));
-		});
+		// Mark as revealed for CSS
+		this.setAttribute('revealed', '');
 
 		// Set role for accessibility
 		this.setAttribute('role', 'alert');
@@ -176,155 +194,136 @@ export class ContentWarningElement extends HTMLElement {
 	 */
 	_updateWarningMessage() {
 		const button = this.shadowRoot.querySelector('button');
-		if (button) {
-			const types = this.type || 'content';
-			button.textContent = `Content Warning: ${types}. Click to reveal.`;
+		if (!button) return;
+
+		const prefix = this.labelPrefix || 'Content Warning';
+		const types = this.type || 'content';
+		const suffix =
+			this.labelSuffix !== null && this.labelSuffix !== 'false'
+				? this.labelSuffix || 'Click to reveal'
+				: null;
+
+		// Clear existing content
+		button.innerHTML = '';
+
+		// Add prefix
+		const prefixSpan = document.createElement('span');
+		prefixSpan.setAttribute('part', 'label-prefix');
+		prefixSpan.textContent = prefix;
+		button.appendChild(prefixSpan);
+
+		// Add separator
+		button.appendChild(document.createTextNode(': '));
+
+		// Add type
+		const typeSpan = document.createElement('span');
+		typeSpan.setAttribute('part', 'label-type');
+		typeSpan.textContent = types;
+		button.appendChild(typeSpan);
+
+		// Add suffix if present
+		if (suffix) {
+			button.appendChild(document.createTextNode('. '));
+			const suffixSpan = document.createElement('span');
+			suffixSpan.setAttribute('part', 'label-suffix');
+			suffixSpan.textContent = suffix;
+			button.appendChild(suffixSpan);
 		}
-	}
 
-	/**
-	 * Inherit styles from the original content
-	 * @private
-	 */
-	_inheritStyles() {
-		const wrapper = this.shadowRoot.querySelector('.wrapper');
-		const button = this.shadowRoot.querySelector('button');
-
-		if (!wrapper || !button) return;
-
-		const styles = this._internals.computedStyles;
-
-		// For block-level or image elements
-		if (!this._internals.isInline && styles) {
-			const display = styles.display;
-			if (display !== 'inline') {
-				// Inherit dimensions and margins
-				['display', 'width', 'height', 'margin'].forEach((property) => {
-					wrapper.style[property] = styles[property];
-				});
-
-				// Handle margin edge case
-				if (styles.margin === '0px') {
-					const firstChild = this._internals.originalContent.find(
-						(n) => n.nodeType === 1,
-					);
-					if (firstChild) {
-						const childStyles = window.getComputedStyle(firstChild);
-						wrapper.style.marginBlockStart =
-							childStyles.marginBlockStart;
-						wrapper.style.marginBlockEnd =
-							childStyles.marginBlockEnd;
-					}
-				}
-
-				button.classList.add('block');
-			}
-		}
-		// For inline elements, measure the content size
-		else if (this._internals.isInline) {
-			// Create a temporary measurement element
-			const temp = document.createElement('span');
-			temp.style.visibility = 'hidden';
-			temp.style.position = 'absolute';
-			this._internals.originalContent.forEach((node) => {
-				temp.appendChild(node.cloneNode(true));
-			});
-			document.body.appendChild(temp);
-
-			button.style.blockSize = `${temp.offsetHeight}px`;
-			button.style.inlineSize = `${temp.offsetWidth}px`;
-
-			document.body.removeChild(temp);
-		}
+		button.appendChild(document.createTextNode('.'));
 	}
 
 	render() {
+		const prefix = this.labelPrefix || 'Content Warning';
 		const types = this.type || 'content';
+		const suffix = this.labelSuffix;
+		const showSuffix = suffix !== 'false';
 
-		// Build the shadow DOM with wrapper, button, and blurred content
-		this.shadowRoot.innerHTML = `
-			<style>
-				:host {
-					display: block;
-					position: relative;
-				}
+		// Build button label HTML parts
+		const prefixHTML = '<span part="label-prefix">' + prefix + '</span>';
+		const typeHTML = '<span part="label-type">' + types + '</span>';
+		let buttonLabel = prefixHTML + ': ' + typeHTML;
 
-				:host([inline]) {
-					display: inline;
-				}
+		if (showSuffix) {
+			const suffixText = suffix || 'Click to reveal';
+			const suffixHTML =
+				'<span part="label-suffix">' + suffixText + '</span>';
+			buttonLabel += '. ' + suffixHTML;
+		}
+		buttonLabel += '.';
 
-				:host([hidden]) {
-					display: none;
-				}
-
-				.wrapper {
-					background: var(--content-warning-bg, #ebebeb);
-					position: relative;
-				}
-
-				:host([inline]) .wrapper {
-					display: inline-block;
-				}
-
-				button {
-					display: inline;
-					text-align: center;
-					cursor: pointer;
-					align-items: center;
-					justify-content: center;
-					margin: 0;
-					background: var(--content-warning-bg, rgba(0, 0, 0, 0.9));
-					color: var(--content-warning-color, #fff);
-					border: var(--content-warning-border, 2px solid currentColor);
-					padding: var(--content-warning-padding, 0.25rem 0.5rem);
-					font-size: var(--content-warning-font-size, 1rem);
-					font-family: inherit;
-					box-sizing: border-box;
-				}
-
-				button.block {
-					display: flex;
-					flex-direction: column;
-					position: absolute;
-					inset: 0;
-					padding: var(--content-warning-padding, 1rem);
-				}
-
-				button:hover {
-					opacity: 0.95;
-				}
-
-				button:focus-visible {
-					outline: 2px solid var(--content-warning-color, #fff);
-					outline-offset: -4px;
-				}
-
-				.content-blur {
-					filter: blur(10px);
-					user-select: none;
-					pointer-events: none;
-				}
-
-				:host([inline]) .content-blur {
-					display: none;
-				}
-			</style>
-			<span class="wrapper">
-				<button part="button">Content Warning: ${types}. Click to reveal.</button>
-				<div class="content-blur"><slot></slot></div>
-			</span>
-		`;
+		// Build the shadow DOM with just the button overlay
+		// Light DOM content remains visible and defines dimensions
+		this.shadowRoot.innerHTML =
+			'<style>' +
+			'	:host {' +
+			'		display: block;' +
+			'		position: relative;' +
+			'	}' +
+			'	:host([inline]) {' +
+			'		display: inline-block;' +
+			'		vertical-align: baseline;' +
+			'	}' +
+			'	:host([hidden]) {' +
+			'		display: none;' +
+			'	}' +
+			'	:host(:not([revealed])) ::slotted(*) {' +
+			'		filter: blur(10px);' +
+			'		user-select: none;' +
+			'		pointer-events: none;' +
+			'	}' +
+			'	:host([inline]:not([revealed])) ::slotted(*) {' +
+			'		visibility: hidden;' +
+			'	}' +
+			'	:host([inline]:not([revealed])) .content-slot {' +
+			'		display: none;' +
+			'	}' +
+			'	.content-slot {' +
+			'		display: contents;' +
+			'	}' +
+			'	button {' +
+			'		position: absolute;' +
+			'		inset: 0;' +
+			'		display: flex;' +
+			'		flex-direction: column;' +
+			'		align-items: center;' +
+			'		justify-content: center;' +
+			'		text-align: center;' +
+			'		cursor: pointer;' +
+			'		margin: 0;' +
+			'		background: rgba(0, 0, 0, 0.9);' +
+			'		color: #fff;' +
+			'		border: 2px solid currentColor;' +
+			'		padding: 1rem;' +
+			'		font-size: 1rem;' +
+			'		font-family: inherit;' +
+			'		box-sizing: border-box;' +
+			'		z-index: 1;' +
+			'	}' +
+			'	:host([inline]) button {' +
+			'		position: static;' +
+			'		display: inline-flex;' +
+			'		padding: 0.25rem 0.5rem;' +
+			'		font-size: 0.875rem;' +
+			'	}' +
+			'	button:hover {' +
+			'		opacity: 0.95;' +
+			'	}' +
+			'	button:focus-visible {' +
+			'		outline: 2px solid var(--content-warning-color, #fff);' +
+			'		outline-offset: -4px;' +
+			'	}' +
+			'</style>' +
+			'<button part="button overlay">' +
+			buttonLabel +
+			'</button>' +
+			'<span class="content-slot"><slot></slot></span>';
 
 		// Add event listener to button
 		const button = this.shadowRoot.querySelector('button');
 		if (button) {
 			button.addEventListener('click', this._handleClick);
 		}
-
-		// Inherit styles from original content
-		requestAnimationFrame(() => {
-			this._inheritStyles();
-		});
 
 		this._internals.isRendered = true;
 	}
