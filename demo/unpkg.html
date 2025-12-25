@@ -3,10 +3,16 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>COMPONENT-NAME via unpkg</title>
+		<title>content-warning via unpkg</title>
 		<link rel="stylesheet" href="./styles.css" />
 		<style>
 			/* Demo-specific styles */
+			.demo-section {
+				margin: 2rem 0;
+				padding: 1rem;
+				border: 1px solid #ccc;
+				border-radius: 0.5rem;
+			}
 		</style>
 	</head>
 	<body>
@@ -16,12 +22,30 @@
 			<code>unpkg</code> and registers the element when supported.
 		</p>
 
-		<COMPONENT-NAME>
-			<p>Replace this markup once you customize COMPONENT-NAME.</p>
-		</COMPONENT-NAME>
+		<div class="demo-section">
+			<h2>Block Content Warning</h2>
+			<content-warning type="violence spoilers">
+				<p>This content contains graphic violence and spoilers.</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+					do eiusmod tempor incididunt ut labore et dolore magna
+					aliqua.
+				</p>
+			</content-warning>
+		</div>
+
+		<div class="demo-section">
+			<h2>Inline Content Warning</h2>
+			<p>
+				The character dies in
+				<content-warning type="spoilers" inline
+					>episode 5</content-warning
+				>.
+			</p>
+		</div>
 
 		<script type="module">
-			import { defineComponentName } from 'https://unpkg.com/@aarongustafson/COMPONENT-NAME@latest/define.js?module';
+			import { defineComponentName } from 'https://unpkg.com/@aarongustafson/content-warning@latest/define.js?module';
 
 			defineComponentName();
 		</script>
