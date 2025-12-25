@@ -3,10 +3,16 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>COMPONENT-NAME via esm.sh</title>
+		<title>content-warning via esm.sh</title>
 		<link rel="stylesheet" href="./styles.css" />
 		<style>
 			/* Demo-specific styles */
+			.demo-section {
+				margin: 2rem 0;
+				padding: 1rem;
+				border: 1px solid #ccc;
+				border-radius: 0.5rem;
+			}
 		</style>
 	</head>
 	<body>
@@ -16,15 +22,33 @@
 			registers it manually.
 		</p>
 
-		<COMPONENT-NAME>
-			<p>Replace this markup once you customize COMPONENT-NAME.</p>
-		</COMPONENT-NAME>
+		<div class="demo-section">
+			<h2>Block Content Warning</h2>
+			<content-warning type="violence spoilers">
+				<p>This content contains graphic violence and spoilers.</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+					do eiusmod tempor incididunt ut labore et dolore magna
+					aliqua.
+				</p>
+			</content-warning>
+		</div>
+
+		<div class="demo-section">
+			<h2>Inline Content Warning</h2>
+			<p>
+				The character dies in
+				<content-warning type="spoilers" inline
+					>episode 5</content-warning
+				>.
+			</p>
+		</div>
 
 		<script type="module">
-			import { ComponentNameElement } from 'https://esm.sh/@aarongustafson/COMPONENT-NAME@0.0.1/COMPONENT-NAME.js?bundle&target=es2022';
+			import { ContentWarningElement } from 'https://esm.sh/@aarongustafson/content-warning@1.0.0/content-warning.js?bundle&target=es2022';
 
-			if (!customElements.get('COMPONENT-NAME')) {
-				customElements.define('COMPONENT-NAME', ComponentNameElement);
+			if (!customElements.get('content-warning')) {
+				customElements.define('content-warning', ContentWarningElement);
 			}
 		</script>
 	</body>
