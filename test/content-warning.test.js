@@ -38,6 +38,27 @@ describe('ContentWarningElement', () => {
 			expect(newElement.shadowRoot).toBeTruthy();
 		});
 
+		it('should remove hidden attribute on boot for Reader Mode safety', async () => {
+			// Create element with hidden attribute (for Reader Mode)
+			const testElement = document.createElement('content-warning');
+			testElement.setAttribute('hidden', '');
+			testElement.setAttribute('type', 'test');
+			
+			// Verify hidden is present before connecting
+			expect(testElement.hasAttribute('hidden')).toBe(true);
+			
+			// Connect the element
+			document.body.appendChild(testElement);
+			await new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			);
+			
+			// Component should have removed hidden attribute
+			expect(testElement.hasAttribute('hidden')).toBe(false);
+			
+			testElement.remove();
+		});
+
 		it('should support the hidden attribute with proper display style', () => {
 			element.setAttribute('hidden', '');
 			const styles = window.getComputedStyle(element);
