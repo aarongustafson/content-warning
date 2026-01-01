@@ -6,9 +6,7 @@
 		<title>&lt;content-warning&gt; Web Component Demo</title>
 		<link rel="stylesheet" href="./styles.css" />
 		<style>
-			content-warning:not(:defined) {
-				display: none !important;
-			}
+			/* Demo-specific styles */
 		</style>
 	</head>
 	<body>
@@ -42,7 +40,7 @@
   &lt;p&gt;Lorem ipsum dolor sit amet...&lt;/p&gt;
 &lt;/content-warning&gt;</code></pre>
 						<div class="demo">
-							<content-warning type="violence">
+							<content-warning type="violence" hidden>
 								<p>This content contains graphic violence.</p>
 								<p>
 									Lorem ipsum dolor sit amet, consectetur
