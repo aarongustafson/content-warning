@@ -9,12 +9,12 @@
 			Reader Mode Safety: To prevent Reader Mode (Edge Immersive Reader,
 			Safari Reader, etc.) from extracting content before JavaScript runs,
 			add the 'hidden' attribute to content-warning elements:
-			
+
 			<content-warning type="violence" hidden>...</content-warning>
-			
+
 			The component automatically removes the 'hidden' attribute when it
 			initializes, and its Shadow DOM hiding logic takes over.
-			
+
 			Without 'hidden', Reader Mode will extract and display the content.
 		-->
 		<style>
@@ -73,7 +73,10 @@
   &lt;p&gt;Contains violence, spoilers, and mature content.&lt;/p&gt;
 &lt;/content-warning&gt;</code></pre>
 						<div class="demo">
-							<content-warning type="violence spoilers nsfw" hidden>
+							<content-warning
+								type="violence spoilers nsfw"
+								hidden
+							>
 								<p>
 									Contains violence, spoilers, and mature
 									content.
@@ -378,7 +381,11 @@
 									border-radius: 0.5rem;
 								}
 							</style>
-							<content-warning type="mature" class="styled-parts" hidden>
+							<content-warning
+								type="mature"
+								class="styled-parts"
+								hidden
+							>
 								<p>This content is for mature audiences.</p>
 							</content-warning>
 						</div>
@@ -406,7 +413,11 @@
     });
 &lt;/script&gt;</code></pre>
 						<div class="demo">
-						<content-warning type="spoilers" id="tracked" hidden>
+							<content-warning
+								type="spoilers"
+								id="tracked"
+								hidden
+							>
 								<p>
 									This is the secret content that was
 									revealed!
@@ -470,7 +481,9 @@
 								type="violencia gore"
 								label-prefix="Advertencia de Contenido"
 								label-suffix="Haz clic para revelar"
-								class="spanish-warning"							hidden							>
+								class="spanish-warning"
+								hidden
+							>
 								<img
 									src="https://picsum.photos/600/400?random=5"
 									alt="Placeholder image"
