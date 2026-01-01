@@ -65,6 +65,46 @@ customElements.define('my-custom-name', ContentWarningElement);
 </p>
 ```
 
+## Content Hiding Modes
+
+The component offers two modes for hiding content, each with different trade-offs:
+
+### Default Mode (Recommended)
+
+**Reader Mode Safe** - Content is truly hidden from Reader Mode and screen readers until revealed.
+
+```html
+<content-warning type="sensitive content">
+  <p>This content is completely hidden until revealed.</p>
+</content-warning>
+```
+
+- Uses `hidden` and `inert` attributes on the content wrapper
+- Content is **not** extracted by Reader Mode (Edge, Safari, etc.)
+- Content is hidden from screen readers via native attributes
+- Best for sensitive content that should be truly hidden
+
+### Blur Mode
+
+**Visual Only** - Content is visually obscured but still present in the DOM.
+
+```html
+<content-warning type="spoilers" blur>
+  <p>This content is blurred but technically visible in the DOM.</p>
+</content-warning>
+```
+
+- Uses CSS `filter: blur()` to obscure content visually
+- Uses `aria-hidden="true"` to hide from screen readers
+- Content **may be** extracted by Reader Mode (not guaranteed to be hidden)
+- Customizable blur amount via `--content-warning-blur-amount` CSS property
+- Best for aesthetic preference when complete hiding isn't critical
+
+**Trade-off Summary:**
+
+- **Without `blur`**: Maximum safety and hiding (recommended for sensitive content)
+- **With `blur`**: Visual obscuring effect (not fully hidden from all contexts)
+
 ## Attributes
 
 | Attribute      | Type      | Default             | Description                                                            |
@@ -73,6 +113,7 @@ customElements.define('my-custom-name', ContentWarningElement);
 | `label-prefix` | `string`  | `"Content Warning"` | The prefix text for the warning label                                  |
 | `label-suffix` | `string`  | `"Click to reveal"` | The suffix text for the warning label. Set to `"false"` to hide.       |
 | `inline`       | `boolean` | `false`             | Display the warning inline instead of as a block overlay               |
+| `blur`         | `boolean` | `false`             | Use blur visual effect instead of complete hiding (NOT Reader Mode safe) |
 
 **Default Button Label Format:** `{prefix}: {type} {suffix}`
 
@@ -107,6 +148,24 @@ element.addEventListener('content-warning:revealed', (event) => {
 | `labelPrefix` | `string`              | Get/set the prefix text for the warning label |
 | `labelSuffix` | `string`              | Get/set the suffix text for the warning label |
 | `revealed`    | `boolean` (read-only) | Whether the content has been revealed         |
+
+## CSS Custom Properties
+
+Customize the component's appearance with CSS variables:
+
+| Property                          | Default | Description                                   |
+| --------------------------------- | ------- | --------------------------------------------- |
+| `--content-warning-color`         | `#fff`  | Outline color for focus state                 |
+| `--content-warning-blur-amount`   | `10px`  | Amount of blur in blur mode (e.g., `5px`, `20px`) |
+
+### Example
+
+```css
+content-warning {
+  --content-warning-color: #ff6b6b;
+  --content-warning-blur-amount: 15px;
+}
+```
 
 ## Shadow Parts
 
@@ -249,9 +308,13 @@ The component follows accessibility best practices:
 
 - Uses a semantic `<button>` element for the warning interaction
 - Button is keyboard accessible by default
-- Content is blurred and non-interactive until revealed (block display mode)
+- Content is hidden from screen readers until revealed (both modes use `aria-hidden` or `hidden` attribute)
+- **Default mode**: Uses `hidden` + `inert` attributes (Reader Mode safe)
+- **Blur mode**: Uses `aria-hidden="true"` (visual obscuring only)
 - Sets `role="alert"` on the host element when content is revealed
-- Focuses the revealed content for screen reader announcement
+- Clones revealed content into a persistent `role="alert"` region for screen reader announcement
+- Screen readers announce the revealed content automatically
+- Focuses the revealed content for additional context
 
 ## Browser Support
 

@@ -9,8 +9,10 @@
  * @attr {string} label-prefix - The prefix text for the warning (default: "Content Warning")
  * @attr {string} label-suffix - The suffix text for the warning (default: "Click to reveal"). Set to "false" to hide.
  * @attr {boolean} inline - Display the warning inline instead of as a block overlay
+ * @attr {boolean} blur - Use blur visual effect instead of complete hiding (NOT Reader Mode safe)
  *
  * @cssproperty [--content-warning-color] - Outline color for focus state
+ * @cssproperty [--content-warning-blur-amount] - Amount of blur in blur mode (default: 10px)
  *
  * @description
  * Button label format: {prefix}: {type} {suffix}
@@ -39,19 +41,29 @@ export class ContentWarningElement extends HTMLElement {
 		:host([hidden]) {
 			display: none;
 		}
-		:host(:not([revealed])) ::slotted(*) {
-			filter: blur(10px);
+		:host([inline]:not([revealed])) .content-wrapper {
+			display: none;
+		}
+		.content-wrapper {
+			display: contents;
+		}
+		/* Blur mode: visually obscured but present in DOM */
+		:host(:not([revealed])[blur]) .content-wrapper ::slotted(*) {
+			filter: blur(var(--content-warning-blur-amount, 10px));
 			user-select: none;
 			pointer-events: none;
 		}
-		:host([inline]:not([revealed])) ::slotted(*) {
-			visibility: hidden;
-		}
-		:host([inline]:not([revealed])) .content-slot {
-			display: none;
-		}
-		.content-slot {
-			display: contents;
+		/* Screen reader announcement - visually hidden */
+		.sr-announcement {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+			border-width: 0;
 		}
 		.overlay {
 			position: absolute;
@@ -64,12 +76,8 @@ export class ContentWarningElement extends HTMLElement {
 			cursor: pointer;
 			z-index: 1;
 		}
-		@supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
-			.overlay {
-				background: rgba(0, 0, 0, 0.5);
-				backdrop-filter: blur(10px);
-				-webkit-backdrop-filter: blur(10px);
-			}
+		:host(:not([revealed])[blur]) .overlay {
+				background: transparent;
 		}
 		:host([inline]) .overlay {
 			position: static;
@@ -110,7 +118,7 @@ export class ContentWarningElement extends HTMLElement {
 	`;
 
 	static get observedAttributes() {
-		return ['type', 'label-prefix', 'label-suffix'];
+		return ['type', 'label-prefix', 'label-suffix', 'blur'];
 	}
 
 	constructor() {
@@ -120,6 +128,15 @@ export class ContentWarningElement extends HTMLElement {
 			isRendered: false,
 			revealed: false,
 			isInline: false,
+		};
+
+		// Cached DOM references (set after render)
+		this._refs = {
+			overlay: null,
+			button: null,
+			wrapper: null,
+			announcement: null,
+			slot: null,
 		};
 
 		// Bind event handlers
@@ -142,9 +159,8 @@ export class ContentWarningElement extends HTMLElement {
 
 	disconnectedCallback() {
 		// Clean up event listener
-		const overlay = this.shadowRoot?.querySelector('.overlay');
-		if (overlay) {
-			overlay.removeEventListener('click', this._handleClick);
+		if (this._refs.overlay) {
+			this._refs.overlay.removeEventListener('click', this._handleClick);
 		}
 	}
 
@@ -160,6 +176,12 @@ export class ContentWarningElement extends HTMLElement {
 				// Update the warning message
 				if (this._internals.isRendered && !this._internals.revealed) {
 					this._updateWarningMessage();
+				}
+				break;
+			case 'blur':
+				// Update hiding mechanism when blur mode changes
+				if (this._internals.isRendered && !this._internals.revealed) {
+					this._updateContentHiding();
 				}
 				break;
 		}
@@ -251,10 +273,21 @@ export class ContentWarningElement extends HTMLElement {
 	_reveal() {
 		this._internals.revealed = true;
 
+		// Remove hiding attributes from wrapper
+		if (this._refs.wrapper) {
+			this._refs.wrapper.removeAttribute('hidden');
+			this._refs.wrapper.removeAttribute('inert');
+			this._refs.wrapper.removeAttribute('aria-hidden');
+		}
+
+		// Announce content to screen readers
+		this._announceReveal();
+
 		// Remove the overlay (which contains the button)
-		const overlay = this.shadowRoot.querySelector('.overlay');
-		if (overlay) {
-			overlay.remove();
+		if (this._refs.overlay) {
+			this._refs.overlay.remove();
+			this._refs.overlay = null;
+			this._refs.button = null;
 		}
 
 		// Mark as revealed for CSS
@@ -281,8 +314,7 @@ export class ContentWarningElement extends HTMLElement {
 	 * @private
 	 */
 	_updateWarningMessage() {
-		const button = this.shadowRoot.querySelector('button');
-		if (!button) return;
+		if (!this._refs.button) return;
 
 		const prefix = this.labelPrefix || 'Content Warning';
 		const types = this.type || 'content';
@@ -292,28 +324,75 @@ export class ContentWarningElement extends HTMLElement {
 				: null;
 
 		// Clear existing content
-		button.innerHTML = '';
+		this._refs.button.innerHTML = '';
 
 		// Add prefix
 		const prefixSpan = document.createElement('span');
 		prefixSpan.setAttribute('part', 'label-prefix');
 		prefixSpan.classList.add('label-prefix');
 		prefixSpan.textContent = prefix;
-		button.appendChild(prefixSpan);
+		this._refs.button.appendChild(prefixSpan);
 
 		// Add type
 		const typeSpan = document.createElement('span');
 		typeSpan.setAttribute('part', 'label-type');
 		typeSpan.textContent = types;
-		button.appendChild(typeSpan);
+		this._refs.button.appendChild(typeSpan);
 
 		// Add suffix if present
 		if (suffix) {
 			const suffixSpan = document.createElement('span');
 			suffixSpan.setAttribute('part', 'label-suffix');
 			suffixSpan.textContent = suffix;
-			button.appendChild(suffixSpan);
+			this._refs.button.appendChild(suffixSpan);
 		}
+	}
+
+	/**
+	 * Update content hiding based on blur mode
+	 * @private
+	 */
+	_updateContentHiding() {
+		if (!this._refs.wrapper) return;
+
+		const isBlurMode = this.hasAttribute('blur');
+
+		// Remove all hiding attributes first
+		this._refs.wrapper.removeAttribute('hidden');
+		this._refs.wrapper.removeAttribute('inert');
+		this._refs.wrapper.removeAttribute('aria-hidden');
+
+		// Apply appropriate hiding for current mode
+		if (isBlurMode) {
+			this._refs.wrapper.setAttribute('aria-hidden', 'true');
+		} else {
+			this._refs.wrapper.setAttribute('hidden', '');
+			this._refs.wrapper.setAttribute('inert', '');
+		}
+	}
+
+	/**
+	 * Announce revealed content to screen readers
+	 * @private
+	 */
+	_announceReveal() {
+		if (!this._refs.announcement || !this._refs.slot) return;
+
+		// Clone slotted content into announcement region
+		const slottedElements = this._refs.slot.assignedElements({
+			flatten: true,
+		});
+
+		// Clear previous content
+		this._refs.announcement.innerHTML = '';
+
+		// Clone each slotted element
+		slottedElements.forEach((el) => {
+			this._refs.announcement.appendChild(el.cloneNode(true));
+		});
+
+		// Note: No cleanup timer - content remains for screen reader users
+		// who may navigate to it later
 	}
 
 	render() {
@@ -326,20 +405,33 @@ export class ContentWarningElement extends HTMLElement {
 		const suffixText = suffix || 'Click to reveal';
 		const buttonLabel = `<span class="label-prefix" part="label-prefix">${prefix}</span><span part="label-type">${types}</span>${showSuffix ? `<span part="label-suffix">${suffixText}</span>` : ''}`;
 
-		// Build the shadow DOM with just the button overlay
-		// Light DOM content remains visible and defines dimensions
+		// Build the shadow DOM
 		this.shadowRoot.innerHTML = `
 		<style>${ContentWarningElement.#cssTemplate}</style>
 		<div part="overlay" class="overlay">
 			<button part="button">${buttonLabel}</button>
 		</div>
-		<span class="content-slot"><slot></slot></span>
+		<div class="content-wrapper">
+			<slot></slot>
+		</div>
+		<div role="alert" aria-live="assertive" class="sr-announcement"></div>
 	`;
-		// Add single event listener to overlay (event delegation)
-		const overlay = this.shadowRoot.querySelector('.overlay');
-		if (overlay) {
-			overlay.addEventListener('click', this._handleClick);
+
+		// Cache DOM references
+		this._refs.overlay = this.shadowRoot.querySelector('.overlay');
+		this._refs.button = this.shadowRoot.querySelector('button');
+		this._refs.wrapper = this.shadowRoot.querySelector('.content-wrapper');
+		this._refs.announcement =
+			this.shadowRoot.querySelector('.sr-announcement');
+		this._refs.slot = this.shadowRoot.querySelector('slot');
+
+		// Add event listener to overlay
+		if (this._refs.overlay) {
+			this._refs.overlay.addEventListener('click', this._handleClick);
 		}
+
+		// Apply initial content hiding
+		this._updateContentHiding();
 
 		this._internals.isRendered = true;
 	}

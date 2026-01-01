@@ -322,4 +322,254 @@ describe('ContentWarningElement', () => {
 			expect(styles.display).toBe('inline-block');
 		});
 	});
+
+	describe('Content Hiding Modes', () => {
+		let testElement;
+
+		beforeEach(async () => {
+			testElement = document.createElement('content-warning');
+			testElement.innerHTML = '<p>Test content</p>';
+			document.body.appendChild(testElement);
+			await new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			);
+		});
+
+		afterEach(() => {
+			testElement.remove();
+		});
+
+		describe('Default Mode (Reader Mode Safe)', () => {
+			it('should apply hidden attribute to content wrapper', () => {
+				const wrapper =
+					testElement.shadowRoot.querySelector('.content-wrapper');
+				expect(wrapper.hasAttribute('hidden')).toBe(true);
+			});
+
+			it('should apply inert attribute to content wrapper', () => {
+				const wrapper =
+					testElement.shadowRoot.querySelector('.content-wrapper');
+				expect(wrapper.hasAttribute('inert')).toBe(true);
+			});
+
+			it('should not apply aria-hidden in default mode', () => {
+				const wrapper =
+					testElement.shadowRoot.querySelector('.content-wrapper');
+				expect(wrapper.hasAttribute('aria-hidden')).toBe(false);
+			});
+
+			it('should remove hidden and inert when revealed', async () => {
+				const wrapper =
+					testElement.shadowRoot.querySelector('.content-wrapper');
+				const button = testElement.shadowRoot.querySelector('button');
+
+				button.click();
+				await new Promise((resolve) => requestAnimationFrame(resolve));
+
+				expect(wrapper.hasAttribute('hidden')).toBe(false);
+				expect(wrapper.hasAttribute('inert')).toBe(false);
+			});
+		});
+
+		describe('Blur Mode (Visual Only)', () => {
+			beforeEach(async () => {
+				testElement.setAttribute('blur', '');
+				await new Promise((resolve) => requestAnimationFrame(resolve));
+			});
+
+			it('should apply aria-hidden to content wrapper', () => {
+				const wrapper =
+					testElement.shadowRoot.querySelector('.content-wrapper');
+				expect(wrapper.hasAttribute('aria-hidden')).toBe(true);
+			});
+
+			it('should not apply hidden attribute in blur mode', () => {
+				const wrapper =
+					testElement.shadowRoot.querySelector('.content-wrapper');
+				expect(wrapper.hasAttribute('hidden')).toBe(false);
+			});
+
+			it('should not apply inert attribute in blur mode', () => {
+				const wrapper =
+					testElement.shadowRoot.querySelector('.content-wrapper');
+				expect(wrapper.hasAttribute('inert')).toBe(false);
+			});
+
+			it('should remove aria-hidden when revealed', async () => {
+				const wrapper =
+					testElement.shadowRoot.querySelector('.content-wrapper');
+				const button = testElement.shadowRoot.querySelector('button');
+
+				button.click();
+				await new Promise((resolve) => requestAnimationFrame(resolve));
+
+				expect(wrapper.hasAttribute('aria-hidden')).toBe(false);
+			});
+
+			it('should switch from blur to default mode dynamically', async () => {
+				const wrapper =
+					testElement.shadowRoot.querySelector('.content-wrapper');
+
+				// Start in blur mode
+				expect(wrapper.hasAttribute('aria-hidden')).toBe(true);
+				expect(wrapper.hasAttribute('hidden')).toBe(false);
+
+				// Switch to default mode
+				testElement.removeAttribute('blur');
+				await new Promise((resolve) => requestAnimationFrame(resolve));
+
+				expect(wrapper.hasAttribute('aria-hidden')).toBe(false);
+				expect(wrapper.hasAttribute('hidden')).toBe(true);
+				expect(wrapper.hasAttribute('inert')).toBe(true);
+			});
+
+			it('should switch from default to blur mode dynamically', async () => {
+				// Remove blur attribute first to start in default mode
+				testElement.removeAttribute('blur');
+				await new Promise((resolve) => requestAnimationFrame(resolve));
+
+				const wrapper =
+					testElement.shadowRoot.querySelector('.content-wrapper');
+
+				expect(wrapper.hasAttribute('hidden')).toBe(true);
+				expect(wrapper.hasAttribute('inert')).toBe(true);
+
+				// Switch to blur mode
+				testElement.setAttribute('blur', '');
+				await new Promise((resolve) => requestAnimationFrame(resolve));
+
+				expect(wrapper.hasAttribute('aria-hidden')).toBe(true);
+				expect(wrapper.hasAttribute('hidden')).toBe(false);
+				expect(wrapper.hasAttribute('inert')).toBe(false);
+			});
+		});
+	});
+
+	describe('Screen Reader Announcements', () => {
+		let testElement;
+
+		beforeEach(async () => {
+			testElement = document.createElement('content-warning');
+			testElement.type = 'test-warning';
+			testElement.innerHTML =
+				'<p>Revealed content here</p><span>More content</span>';
+			document.body.appendChild(testElement);
+			await new Promise((resolve) =>
+				requestAnimationFrame(() => requestAnimationFrame(resolve)),
+			);
+		});
+
+		afterEach(() => {
+			testElement.remove();
+		});
+
+		it('should have announcement region in shadow DOM', () => {
+			const announcement =
+				testElement.shadowRoot.querySelector('.sr-announcement');
+			expect(announcement).toBeTruthy();
+		});
+
+		it('should have role="alert" on announcement region', () => {
+			const announcement =
+				testElement.shadowRoot.querySelector('.sr-announcement');
+			expect(announcement.getAttribute('role')).toBe('alert');
+		});
+
+		it('should have aria-live="assertive" on announcement region', () => {
+			const announcement =
+				testElement.shadowRoot.querySelector('.sr-announcement');
+			expect(announcement.getAttribute('aria-live')).toBe('assertive');
+		});
+
+		it('should be empty initially', () => {
+			const announcement =
+				testElement.shadowRoot.querySelector('.sr-announcement');
+			expect(announcement.innerHTML).toBe('');
+		});
+
+		it('should clone content into announcement when revealed', async () => {
+			const button = testElement.shadowRoot.querySelector('button');
+			button.click();
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+
+			const announcement =
+				testElement.shadowRoot.querySelector('.sr-announcement');
+			expect(announcement.innerHTML).toContain('Revealed content here');
+			expect(announcement.innerHTML).toContain('More content');
+		});
+
+		it('should clone all slotted elements', async () => {
+			const button = testElement.shadowRoot.querySelector('button');
+			button.click();
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+
+			const announcement =
+				testElement.shadowRoot.querySelector('.sr-announcement');
+			const clonedP = announcement.querySelector('p');
+			const clonedSpan = announcement.querySelector('span');
+
+			expect(clonedP).toBeTruthy();
+			expect(clonedSpan).toBeTruthy();
+			expect(clonedP.textContent).toBe('Revealed content here');
+			expect(clonedSpan.textContent).toBe('More content');
+		});
+
+		it('should preserve content structure in announcement', async () => {
+			testElement.innerHTML =
+				'<div><strong>Bold</strong> and <em>italic</em></div>';
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+
+			const button = testElement.shadowRoot.querySelector('button');
+			button.click();
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+
+			const announcement =
+				testElement.shadowRoot.querySelector('.sr-announcement');
+			expect(announcement.querySelector('strong')).toBeTruthy();
+			expect(announcement.querySelector('em')).toBeTruthy();
+		});
+
+		it('should keep announcement content after reveal (no cleanup)', async () => {
+			const button = testElement.shadowRoot.querySelector('button');
+			button.click();
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+
+			const announcement =
+				testElement.shadowRoot.querySelector('.sr-announcement');
+			const initialContent = announcement.innerHTML;
+
+			// Wait longer than any potential cleanup timer
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+
+			expect(announcement.innerHTML).toBe(initialContent);
+		});
+	});
+
+	describe('DOM Reference Caching', () => {
+		it('should cache DOM references after render', async () => {
+			expect(element._refs.overlay).toBeTruthy();
+			expect(element._refs.button).toBeTruthy();
+			expect(element._refs.wrapper).toBeTruthy();
+			expect(element._refs.announcement).toBeTruthy();
+			expect(element._refs.slot).toBeTruthy();
+		});
+
+		it('should clear overlay and button refs after reveal', async () => {
+			const button = element.shadowRoot.querySelector('button');
+			button.click();
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+
+			expect(element._refs.overlay).toBeNull();
+			expect(element._refs.button).toBeNull();
+		});
+
+		it('should maintain wrapper and announcement refs after reveal', async () => {
+			const button = element.shadowRoot.querySelector('button');
+			button.click();
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+
+			expect(element._refs.wrapper).toBeTruthy();
+			expect(element._refs.announcement).toBeTruthy();
+		});
+	});
 });

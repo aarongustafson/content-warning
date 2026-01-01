@@ -128,6 +128,164 @@
 				</div>
 			</section>
 
+			<!-- Content Hiding Modes -->
+			<section>
+				<h2>Content Hiding Modes</h2>
+				<p>
+					The component offers two modes for hiding content, each with
+					different trade-offs.
+				</p>
+
+				<div class="demo-section">
+					<h3>Default Mode (Reader Mode Safe)</h3>
+					<p>
+						Content is truly hidden using <code>hidden</code> and
+						<code>inert</code> attributes. This mode ensures content
+						is not extracted by Reader Mode and is completely hidden
+						from screen readers until revealed.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;content-warning type="sensitive content"&gt;
+  &lt;p&gt;This content is completely hidden.&lt;/p&gt;
+  &lt;p&gt;Reader Mode won't extract it.&lt;/p&gt;
+&lt;/content-warning&gt;</code></pre>
+						<div class="demo">
+							<content-warning type="sensitive content">
+								<p>
+									This content is completely hidden until
+									revealed.
+								</p>
+								<p>
+									It won't be extracted by Reader Mode in
+									browsers like Edge or Safari.
+								</p>
+								<p>
+									Best for content that should be truly hidden
+									for accessibility and privacy.
+								</p>
+							</content-warning>
+						</div>
+					</div>
+
+					<h3>Blur Mode (Visual Only)</h3>
+					<p>
+						Content is visually obscured with CSS blur but remains
+						in the DOM. Uses <code>aria-hidden="true"</code> to hide
+						from screen readers.
+						<strong
+							>Not guaranteed to be hidden from Reader
+							Mode.</strong
+						>
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;content-warning type="spoilers" blur&gt;
+  &lt;p&gt;This content is blurred visually.&lt;/p&gt;
+  &lt;p&gt;May be visible in Reader Mode.&lt;/p&gt;
+&lt;/content-warning&gt;</code></pre>
+						<div class="demo">
+							<content-warning type="spoilers" blur>
+								<p>
+									This content is blurred for visual
+									obscuring.
+								</p>
+								<p>
+									The blur effect provides an aesthetic
+									warning without completely removing content
+									from the DOM.
+								</p>
+								<p>
+									Best when visual obscuring is the priority
+									over complete hiding.
+								</p>
+							</content-warning>
+						</div>
+					</div>
+
+					<h3>Custom Blur Amount</h3>
+					<p>
+						Adjust the blur intensity using the
+						<code>--content-warning-blur-amount</code> CSS custom
+						property.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;style&gt;
+  .light-blur {
+    --content-warning-blur-amount: 5px;
+  }
+  .heavy-blur {
+    --content-warning-blur-amount: 20px;
+  }
+&lt;/style&gt;
+
+&lt;content-warning type="spoilers" blur class="light-blur"&gt;
+  &lt;p&gt;Lightly blurred (5px)&lt;/p&gt;
+&lt;/content-warning&gt;
+
+&lt;content-warning type="spoilers" blur class="heavy-blur"&gt;
+  &lt;p&gt;Heavily blurred (20px)&lt;/p&gt;
+&lt;/content-warning&gt;</code></pre>
+						<div class="demo">
+							<style>
+								.light-blur {
+									--content-warning-blur-amount: 5px;
+								}
+								.heavy-blur {
+									--content-warning-blur-amount: 20px;
+								}
+							</style>
+							<content-warning
+								type="spoilers"
+								blur
+								class="light-blur"
+							>
+								<p>Lightly blurred content (5px blur)</p>
+								<p>Text is more readable through the blur.</p>
+							</content-warning>
+							<br /><br />
+							<content-warning
+								type="spoilers"
+								blur
+								class="heavy-blur"
+							>
+								<p>Heavily blurred content (20px blur)</p>
+								<p>
+									Text is much harder to read through the
+									blur.
+								</p>
+							</content-warning>
+						</div>
+					</div>
+
+					<h3>Comparison</h3>
+					<p>Side-by-side comparison of both modes:</p>
+					<div class="code-demo-pair">
+						<div
+							class="demo"
+							style="
+								display: grid;
+								grid-template-columns: 1fr 1fr;
+								gap: 1rem;
+							"
+						>
+							<div>
+								<h4 style="margin-top: 0">Default (Hidden)</h4>
+								<content-warning type="test">
+									<p>Completely hidden content.</p>
+									<p>Reader Mode safe.</p>
+								</content-warning>
+							</div>
+							<div>
+								<h4 style="margin-top: 0">Blur Mode</h4>
+								<content-warning type="test" blur>
+									<p>Visually blurred content.</p>
+									<p>Still in DOM.</p>
+								</content-warning>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
 			<!-- Custom Styling -->
 			<section>
 				<h2>Custom Styling</h2>
