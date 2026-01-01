@@ -53,6 +53,17 @@ export class ContentWarningElement extends HTMLElement {
 		this._injectPreDefinitionStyles();
 	}
 
+	// Cache the style element to avoid recreating it
+	static #styleElement = null;
+
+	static #getStyleElement() {
+		if (!this.#styleElement) {
+			this.#styleElement = document.createElement('style');
+			this.#styleElement.textContent = this.#cssTemplate;
+		}
+		return this.#styleElement.cloneNode(true);
+	}
+
 	static #cssTemplate = `
 		:host {
 			display: block;
@@ -168,17 +179,16 @@ export class ContentWarningElement extends HTMLElement {
 	}
 
 	connectedCallback() {
-		requestAnimationFrame(() => {
-			// Upgrade properties that may have been set before the element was defined
-			this._upgradeProperty('type');
-			this._upgradeProperty('labelPrefix');
-			this._upgradeProperty('labelSuffix');
+		// Upgrade properties that may have been set before the element was defined
+		this._upgradeProperty('type');
+		this._upgradeProperty('labelPrefix');
+		this._upgradeProperty('labelSuffix');
 
-			// Determine if inline
-			this._internals.isInline = this.hasAttribute('inline');
+		// Cache inline state
+		this._internals.isInline = this.hasAttribute('inline');
 
-			this.render();
-		});
+		// Defer render to avoid blocking main thread
+		requestAnimationFrame(() => this.render());
 	}
 
 	disconnectedCallback() {
@@ -340,6 +350,7 @@ export class ContentWarningElement extends HTMLElement {
 	_updateWarningMessage() {
 		if (!this._refs.button) return;
 
+		// Calculate values once
 		const prefix = this.labelPrefix || 'Content Warning';
 		const types = this.type || 'content';
 		const suffix =
@@ -347,29 +358,33 @@ export class ContentWarningElement extends HTMLElement {
 				? this.labelSuffix || 'Click to reveal'
 				: null;
 
-		// Clear existing content
-		this._refs.button.innerHTML = '';
+		// Use DocumentFragment to batch DOM operations
+		const fragment = document.createDocumentFragment();
 
 		// Add prefix
 		const prefixSpan = document.createElement('span');
 		prefixSpan.setAttribute('part', 'label-prefix');
-		prefixSpan.classList.add('label-prefix');
+		prefixSpan.className = 'label-prefix';
 		prefixSpan.textContent = prefix;
-		this._refs.button.appendChild(prefixSpan);
+		fragment.appendChild(prefixSpan);
 
 		// Add type
 		const typeSpan = document.createElement('span');
 		typeSpan.setAttribute('part', 'label-type');
 		typeSpan.textContent = types;
-		this._refs.button.appendChild(typeSpan);
+		fragment.appendChild(typeSpan);
 
 		// Add suffix if present
 		if (suffix) {
 			const suffixSpan = document.createElement('span');
 			suffixSpan.setAttribute('part', 'label-suffix');
 			suffixSpan.textContent = suffix;
-			this._refs.button.appendChild(suffixSpan);
+			fragment.appendChild(suffixSpan);
 		}
+
+		// Single DOM update
+		this._refs.button.textContent = '';
+		this._refs.button.appendChild(fragment);
 	}
 
 	/**
@@ -379,19 +394,18 @@ export class ContentWarningElement extends HTMLElement {
 	_updateContentHiding() {
 		if (!this._refs.wrapper) return;
 
+		const wrapper = this._refs.wrapper;
 		const isBlurMode = this.hasAttribute('blur');
 
-		// Remove all hiding attributes first
-		this._refs.wrapper.removeAttribute('hidden');
-		this._refs.wrapper.removeAttribute('inert');
-		this._refs.wrapper.removeAttribute('aria-hidden');
-
-		// Apply appropriate hiding for current mode
+		// Batch attribute operations
 		if (isBlurMode) {
-			this._refs.wrapper.setAttribute('aria-hidden', 'true');
+			wrapper.removeAttribute('hidden');
+			wrapper.removeAttribute('inert');
+			wrapper.setAttribute('aria-hidden', 'true');
 		} else {
-			this._refs.wrapper.setAttribute('hidden', '');
-			this._refs.wrapper.setAttribute('inert', '');
+			wrapper.removeAttribute('aria-hidden');
+			wrapper.setAttribute('hidden', '');
+			wrapper.setAttribute('inert', '');
 		}
 	}
 
@@ -407,31 +421,39 @@ export class ContentWarningElement extends HTMLElement {
 			flatten: true,
 		});
 
-		// Clear previous content
-		this._refs.announcement.innerHTML = '';
+		if (slottedElements.length === 0) return;
 
-		// Clone each slotted element
-		slottedElements.forEach((el) => {
-			this._refs.announcement.appendChild(el.cloneNode(true));
-		});
+		// Use DocumentFragment for efficient batch cloning
+		const fragment = document.createDocumentFragment();
+		for (let i = 0; i < slottedElements.length; i++) {
+			fragment.appendChild(slottedElements[i].cloneNode(true));
+		}
+
+		// Single DOM update
+		this._refs.announcement.textContent = '';
+		this._refs.announcement.appendChild(fragment);
 
 		// Note: No cleanup timer - content remains for screen reader users
 		// who may navigate to it later
 	}
 
 	render() {
+		// Cache attribute values
 		const prefix = this.labelPrefix || 'Content Warning';
 		const types = this.type || 'content';
 		const suffix = this.labelSuffix;
 		const showSuffix = suffix !== 'false';
-
-		// Build button label HTML
 		const suffixText = suffix || 'Click to reveal';
+
+		// Use cached style element
+		const styleEl = ContentWarningElement.#getStyleElement();
+
+		// Build button label HTML in one go
 		const buttonLabel = `<span class="label-prefix" part="label-prefix">${prefix}</span><span part="label-type">${types}</span>${showSuffix ? `<span part="label-suffix">${suffixText}</span>` : ''}`;
 
-		// Build the shadow DOM
-		this.shadowRoot.innerHTML = `
-		<style>${ContentWarningElement.#cssTemplate}</style>
+		// Build shadow DOM structure
+		const shadowRoot = this.shadowRoot;
+		shadowRoot.innerHTML = `
 		<div part="overlay" class="overlay">
 			<button part="button">${buttonLabel}</button>
 		</div>
@@ -441,15 +463,17 @@ export class ContentWarningElement extends HTMLElement {
 		<div role="alert" aria-live="assertive" class="sr-announcement"></div>
 	`;
 
-		// Cache DOM references
-		this._refs.overlay = this.shadowRoot.querySelector('.overlay');
-		this._refs.button = this.shadowRoot.querySelector('button');
-		this._refs.wrapper = this.shadowRoot.querySelector('.content-wrapper');
-		this._refs.announcement =
-			this.shadowRoot.querySelector('.sr-announcement');
-		this._refs.slot = this.shadowRoot.querySelector('slot');
+		// Prepend style element
+		shadowRoot.prepend(styleEl);
 
-		// Add event listener to overlay
+		// Cache DOM references in one pass
+		this._refs.overlay = shadowRoot.querySelector('.overlay');
+		this._refs.button = shadowRoot.querySelector('button');
+		this._refs.wrapper = shadowRoot.querySelector('.content-wrapper');
+		this._refs.announcement = shadowRoot.querySelector('.sr-announcement');
+		this._refs.slot = shadowRoot.querySelector('slot');
+
+		// Add event listener
 		if (this._refs.overlay) {
 			this._refs.overlay.addEventListener('click', this._handleClick);
 		}
