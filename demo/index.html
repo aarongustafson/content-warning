@@ -5,6 +5,16 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>&lt;content-warning&gt; Web Component Demo</title>
 		<link rel="stylesheet" href="./styles.css" />
+		<!--
+			Reader Mode Safety: The component automatically injects CSS to hide
+			content-warning elements before they're defined, preventing Reader Mode
+			from extracting content before JavaScript runs. The style injected is:
+			
+			content-warning:not(:defined) { display: none !important; }
+			
+			This ensures content is hidden from Reader Mode parsers (Edge Immersive
+			Reader, Safari Reader, etc.) which run before JS executes.
+		-->
 		<style>
 			/* Demo-specific styles */
 		</style>

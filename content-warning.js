@@ -29,6 +29,30 @@
  * @csspart label-suffix - The suffix text span (e.g., "Click to reveal")
  */
 export class ContentWarningElement extends HTMLElement {
+	/**
+	 * Inject CSS to hide content-warning elements before they're defined.
+	 * This prevents Reader Mode from extracting content before JS runs.
+	 * @private
+	 */
+	static _injectPreDefinitionStyles() {
+		const styleId = 'content-warning-pre-definition';
+		if (!document.getElementById(styleId)) {
+			const style = document.createElement('style');
+			style.id = styleId;
+			style.textContent = `
+				content-warning:not(:defined) {
+					display: none !important;
+				}
+			`;
+			document.head.appendChild(style);
+		}
+	}
+
+	// Static initialization block - runs when class is defined
+	static {
+		this._injectPreDefinitionStyles();
+	}
+
 	static #cssTemplate = `
 		:host {
 			display: block;

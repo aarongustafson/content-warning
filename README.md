@@ -65,6 +65,31 @@ customElements.define('my-custom-name', ContentWarningElement);
 </p>
 ```
 
+## Reader Mode Safety
+
+**Important:** Reader Mode parsers (Edge Immersive Reader, Safari Reader, etc.) extract content **before JavaScript runs**. To ensure content is hidden from Reader Mode, the component automatically injects CSS to hide `<content-warning>` elements before they're defined:
+
+```css
+content-warning:not(:defined) {
+  display: none !important;
+}
+```
+
+This style is automatically injected when you import the component. If you're manually defining the element or need to add this style yourself, include it in your page's `<head>`:
+
+```html
+<style>
+  content-warning:not(:defined) {
+    display: none !important;
+  }
+</style>
+```
+
+**How it works:**
+1. Before JS runs: Elements are hidden (Reader Mode can't extract them)
+2. After custom element definition: Elements become `:defined` and display normally
+3. Component takes over with Shadow DOM hiding logic
+
 ## Content Hiding Modes
 
 The component offers two modes for hiding content, each with different trade-offs:
