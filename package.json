@@ -21,8 +21,10 @@
 	"main": "index.js",
 	"module": "content-warning.js",
 	"customElements": "custom-elements.json",
+	"types": "content-warning.d.ts",
 	"exports": {
 		".": {
+			"types": "./content-warning.d.ts",
 			"import": "./index.js"
 		},
 		"./content-warning.js": {
@@ -44,10 +46,9 @@
 		"LICENSE"
 	],
 	"engines": {
-		"node": ">=14.0.0"
+		"node": ">=22.0.0"
 	},
 	"scripts": {
-		"setup": "node scripts/setup.js",
 		"test": "vitest",
 		"test:ui": "vitest --ui",
 		"test:run": "vitest run",
