@@ -5,44 +5,66 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>content-warning via esm.sh</title>
 		<link rel="stylesheet" href="./styles.css" />
-		<style>
-			/* Demo-specific styles */
-			.demo-section {
-				margin: 2rem 0;
-				padding: 1rem;
-				border: 1px solid #ccc;
-				border-radius: 0.5rem;
-			}
-		</style>
 	</head>
 	<body>
-		<h1>esm.sh CDN sanity check</h1>
-		<p>
-			This page loads the component class from <code>esm.sh</code> and
-			registers it manually.
-		</p>
-
-		<div class="demo-section">
-			<h2>Block Content Warning</h2>
-			<content-warning type="violence spoilers" hidden>
-				<p>This content contains graphic violence and spoilers.</p>
-				<p>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-					do eiusmod tempor incididunt ut labore et dolore magna
-					aliqua.
-				</p>
-			</content-warning>
-		</div>
-
-		<div class="demo-section">
-			<h2>Inline Content Warning</h2>
+		<header>
+			<h1>&lt;content-warning&gt; via esm.sh</h1>
 			<p>
-				The character dies in
-				<content-warning type="spoilers" inline hidden
-					>episode 5</content-warning
+				This page loads the component class from <code>esm.sh</code> and
+				registers it manually. See the
+				<a href="../README.md">README</a>.
+			</p>
+		</header>
+		<main>
+			<section class="demo-section">
+				<h2>Block Content Warning</h2>
+				<div class="code-demo-pair">
+					<pre><code>&lt;content-warning type="violence spoilers" hidden&gt;
+  &lt;p&gt;This content contains graphic violence and spoilers.&lt;/p&gt;
+&lt;/content-warning&gt;</code></pre>
+					<div class="demo">
+						<content-warning type="violence spoilers" hidden>
+							<p>
+								This content contains graphic violence and
+								spoilers.
+							</p>
+							<p>
+								Lorem ipsum dolor sit amet, consectetur
+								adipiscing elit. Sed do eiusmod tempor
+								incididunt ut labore et dolore magna aliqua.
+							</p>
+						</content-warning>
+					</div>
+				</div>
+			</section>
+
+			<section class="demo-section">
+				<h2>Inline Content Warning</h2>
+				<div class="code-demo-pair">
+					<pre><code>&lt;p&gt;The character dies in
+  &lt;content-warning type="spoilers" inline hidden&gt;episode 5&lt;/content-warning&gt;.
+&lt;/p&gt;</code></pre>
+					<div class="demo">
+						<p>
+							The character dies in
+							<content-warning type="spoilers" inline hidden
+								>episode 5</content-warning
+							>.
+						</p>
+					</div>
+				</div>
+			</section>
+		</main>
+		<footer>
+			<p>
+				Made by
+				<a href="https://github.com/aarongustafson">Aaron Gustafson</a>.
+				View the source on
+				<a href="https://github.com/aarongustafson/content-warning"
+					>GitHub</a
 				>.
 			</p>
-		</div>
+		</footer>
 
 		<script type="module">
 			import { ContentWarningElement } from 'https://esm.sh/@aarongustafson/content-warning@1.1.1/content-warning.js?bundle&target=es2022';

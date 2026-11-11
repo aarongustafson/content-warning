@@ -10,6 +10,18 @@
 					"kind": "class",
 					"description": "A web component for block and inline content warnings.\n\nBased on the original concept: https://codepen.io/aarongustafson/pen/QWZpqPe",
 					"name": "ContentWarningElement",
+					"cssProperties": [
+						{
+							"name": "--content-warning-color",
+							"default": "currentColor",
+							"description": "Focus outline color, drawn inside the opaque warning button."
+						},
+						{
+							"name": "--content-warning-blur-amount",
+							"default": "10px",
+							"description": "Amount of blur in blur mode."
+						}
+					],
 					"cssParts": [
 						{
 							"description": "The full-area overlay div that covers the content",
@@ -124,6 +136,13 @@
 								"text": "boolean"
 							},
 							"description": "Display the warning inline instead of as a block overlay"
+						},
+						{
+							"name": "blur",
+							"type": {
+								"text": "boolean"
+							},
+							"description": "Visually blur content behind the opaque warning button; not Reader Mode safe."
 						}
 					],
 					"superclass": {
@@ -141,10 +160,53 @@
 						"name": "ContentWarningElement",
 						"module": "content-warning.js"
 					}
+				}
+			]
+		},
+		{
+			"kind": "javascript-module",
+			"path": "define.js",
+			"declarations": [
+				{
+					"kind": "function",
+					"name": "defineComponentName",
+					"description": "Register the element when a browser registry exists; return false without one. Existing registrations are preserved.",
+					"parameters": [
+						{
+							"name": "tagName",
+							"type": { "text": "string" },
+							"default": "'content-warning'"
+						}
+					],
+					"return": { "type": { "text": "boolean" } }
+				}
+			],
+			"exports": [
+				{
+					"kind": "js",
+					"name": "defineComponentName",
+					"declaration": {
+						"name": "defineComponentName",
+						"module": "define.js"
+					}
 				},
 				{
 					"kind": "custom-element-definition",
 					"name": "content-warning",
+					"declaration": {
+						"name": "ContentWarningElement",
+						"module": "content-warning.js"
+					}
+				}
+			]
+		},
+		{
+			"kind": "javascript-module",
+			"path": "index.js",
+			"exports": [
+				{
+					"kind": "js",
+					"name": "ContentWarningElement",
 					"declaration": {
 						"name": "ContentWarningElement",
 						"module": "content-warning.js"

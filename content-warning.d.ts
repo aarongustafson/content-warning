@@ -10,11 +10,8 @@
  *
  * @slot - Default slot for the content that needs a warning
  *
- * @cssprop --content-warning-bg - Background color of the warning overlay (default: rgba(0, 0, 0, 0.9))
- * @cssprop --content-warning-color - Text color of the warning message (default: #fff)
- * @cssprop --content-warning-border - Border style for the warning (default: 2px solid currentColor)
- * @cssprop --content-warning-padding - Padding for the warning overlay (default: 1rem)
- * @cssprop --content-warning-font-size - Font size for the warning message (default: 1rem)
+ * @cssprop --content-warning-color - Focus outline color (default: currentColor).
+ * @cssprop --content-warning-blur-amount - Blur amount in blur mode (default: 10px).
  */
 export class ContentWarningElement extends HTMLElement {
 	/**

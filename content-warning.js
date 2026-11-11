@@ -11,7 +11,7 @@
  * @attr {boolean} inline - Display the warning inline instead of as a block overlay
  * @attr {boolean} blur - Use blur visual effect instead of complete hiding (NOT Reader Mode safe)
  *
- * @cssproperty [--content-warning-color] - Outline color for focus state
+ * @cssproperty [--content-warning-color=currentColor] - Outline color for focus state
  * @cssproperty [--content-warning-blur-amount] - Amount of blur in blur mode (default: 10px)
  *
  * @description
@@ -97,8 +97,8 @@ export class ContentWarningElement extends HTMLElement {
 		button {
 			cursor: pointer;
 			margin: 0;
-			background: transparent;
-			color: #fff;
+			background: Canvas;
+			color: CanvasText;
 			border: 2px solid currentColor;
 			padding: 1rem;
 			font-size: 1rem;
@@ -111,10 +111,10 @@ export class ContentWarningElement extends HTMLElement {
 			font-size: 0.875rem;
 		}
 		button:hover {
-			opacity: 0.95;
+			text-decoration: underline;
 		}
 		button:focus-visible {
-			outline: 2px solid var(--content-warning-color, #fff);
+			outline: 2px solid var(--content-warning-color, currentColor);
 			outline-offset: -4px;
 		}
 		:is(.label-prefix)::after {
