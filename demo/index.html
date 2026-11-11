@@ -276,14 +276,14 @@
 					<h3>Comparison</h3>
 					<p>Side-by-side comparison of both modes:</p>
 					<div class="code-demo-pair">
-						<div
-							class="demo"
-							style="
-								display: grid;
-								grid-template-columns: 1fr 1fr;
-								gap: 1rem;
-							"
-						>
+						<pre><code>&lt;content-warning type="test" hidden&gt;
+  &lt;p&gt;Completely hidden content.&lt;/p&gt;
+&lt;/content-warning&gt;
+
+&lt;content-warning type="test" blur hidden&gt;
+  &lt;p&gt;Visually blurred content.&lt;/p&gt;
+&lt;/content-warning&gt;</code></pre>
+						<div class="demo demo-comparison">
 							<div>
 								<h4 style="margin-top: 0">Default (Hidden)</h4>
 								<content-warning type="test" hidden>
@@ -319,7 +319,7 @@
     color: #fff;
     border: 3px solid #ff6b6b;
     padding: 2rem;
-    background: rgba(0, 0, 0, 0.5);
+    background: #260000;
     border-radius: 0.5rem;
   }
 &lt;/style&gt;
@@ -336,7 +336,7 @@
 									color: #fff;
 									border: 3px solid #ff6b6b;
 									padding: 2rem;
-									background: rgba(0, 0, 0, 0.5);
+									background: #260000;
 									border-radius: 0.5rem;
 								}
 							</style>
@@ -364,6 +364,7 @@
     letter-spacing: 0.15em;
     font-weight: 900;
     background: #333;
+    color: #fff;
     border-radius: 0.5rem;
   }
 &lt;/style&gt;
@@ -378,6 +379,7 @@
 									letter-spacing: 0.15em;
 									font-weight: 900;
 									background: #333;
+									color: #fff;
 									border-radius: 0.5rem;
 								}
 							</style>
@@ -496,6 +498,10 @@
 					<h3>French Translation</h3>
 					<div class="code-demo-pair">
 						<pre><code>&lt;style&gt;
+  .french-warning::part(button) {
+    background: #111;
+    color: #fff;
+  }
   .french-warning::part(label-prefix) {
     font-weight: bold;
     color: #ffeb3b;
@@ -515,6 +521,10 @@
 &lt;/content-warning&gt;</code></pre>
 						<div class="demo">
 							<style>
+								.french-warning::part(button) {
+									background: #111;
+									color: #fff;
+								}
 								.french-warning::part(label-prefix) {
 									font-weight: bold;
 									color: #ffeb3b;

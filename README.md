@@ -25,10 +25,10 @@ npm install @aarongustafson/content-warning
 
 ### Option 1: Auto-define the custom element (easiest)
 
-Import the package to automatically define the `<content-warning>` custom element:
+Import the registration entry point to define the `<content-warning>` custom element:
 
 ```javascript
-import '@aarongustafson/content-warning';
+import '@aarongustafson/content-warning/define.js';
 ```
 
 Or use the define-only script in HTML:
@@ -41,6 +41,8 @@ Or use the define-only script in HTML:
 ```
 
 ### Option 2: Import the class and define manually
+
+The package root and class file are class-only imports; neither registers an element.
 
 Import the class and define the custom element with your preferred tag name:
 
@@ -76,6 +78,7 @@ customElements.define('my-custom-name', ContentWarningElement);
 ```
 
 **How it works:**
+
 1. **Before JS runs**: The `hidden` attribute hides the element → Reader Mode skips it entirely
 2. **When component initializes**: The component automatically removes the `hidden` attribute
 3. **After initialization**: The component's Shadow DOM hiding logic takes over
@@ -126,12 +129,12 @@ The component offers two modes for hiding content, each with different trade-off
 
 ## Attributes
 
-| Attribute      | Type      | Default             | Description                                                            |
-| -------------- | --------- | ------------------- | ---------------------------------------------------------------------- |
-| `type`         | `string`  | `"content"`         | Space-separated list of warning types (e.g., "violence spoilers nsfw") |
-| `label-prefix` | `string`  | `"Content Warning"` | The prefix text for the warning label                                  |
-| `label-suffix` | `string`  | `"Click to reveal"` | The suffix text for the warning label. Set to `"false"` to hide.       |
-| `inline`       | `boolean` | `false`             | Display the warning inline instead of as a block overlay               |
+| Attribute      | Type      | Default             | Description                                                              |
+| -------------- | --------- | ------------------- | ------------------------------------------------------------------------ |
+| `type`         | `string`  | `"content"`         | Space-separated list of warning types (e.g., "violence spoilers nsfw")   |
+| `label-prefix` | `string`  | `"Content Warning"` | The prefix text for the warning label                                    |
+| `label-suffix` | `string`  | `"Click to reveal"` | The suffix text for the warning label. Set to `"false"` to hide.         |
+| `inline`       | `boolean` | `false`             | Display the warning inline instead of as a block overlay                 |
 | `blur`         | `boolean` | `false`             | Use blur visual effect instead of complete hiding (NOT Reader Mode safe) |
 
 **Default Button Label Format:** `{prefix}: {type} {suffix}`
@@ -172,16 +175,15 @@ element.addEventListener('content-warning:revealed', (event) => {
 
 Customize the component's appearance with CSS variables:
 
-| Property                          | Default | Description                                   |
-| --------------------------------- | ------- | --------------------------------------------- |
-| `--content-warning-color`         | `#fff`  | Outline color for focus state                 |
-| `--content-warning-blur-amount`   | `10px`  | Amount of blur in blur mode (e.g., `5px`, `20px`) |
+| Property                        | Default        | Description                                       |
+| ------------------------------- | -------------- | ------------------------------------------------- |
+| `--content-warning-color`       | `currentColor` | Outline color for focus state                     |
+| `--content-warning-blur-amount` | `10px`         | Amount of blur in blur mode (e.g., `5px`, `20px`) |
 
 ### Example
 
 ```css
 content-warning {
-  --content-warning-color: #ff6b6b;
   --content-warning-blur-amount: 15px;
 }
 ```
@@ -189,6 +191,18 @@ content-warning {
 ## Shadow Parts
 
 You can style internal elements using CSS Shadow Parts:
+
+The warning button uses an opaque `Canvas` background with `CanvasText`, including
+in blur mode. The surrounding blur overlay remains transparent, so the visual
+effect still shows around the button. Focus uses the button’s foreground by
+default and stays inside its backplate.
+
+When updating an existing theme, set both foreground and an opaque background
+on `::part(button)`. Styling only `::part(overlay)` no longer determines the
+button’s surface. Check all label parts against that background, and keep a
+visible focus outline. `--content-warning-color` still overrides the outline
+when a theme needs a different focus color. Automatic forced-color adjustment
+remains enabled.
 
 | Part           | Description                                       |
 | -------------- | ------------------------------------------------- |
@@ -207,6 +221,7 @@ content-warning::part(overlay) {
 /* Style the button inside the overlay */
 content-warning::part(button) {
   color: #fff;
+  background: #260000;
   border: 3px solid #ff6b6b;
   padding: 2rem;
   font-size: 1.25rem;
@@ -228,7 +243,6 @@ content-warning::part(label-type) {
 
 content-warning::part(label-suffix) {
   font-size: 0.875em;
-  opacity: 0.9;
 }
 
 /* Style inline warnings differently */
@@ -237,6 +251,8 @@ content-warning[inline]::part(overlay) {
 }
 
 content-warning[inline]::part(button) {
+  background: #333;
+  color: #fff;
   padding: 0.5rem 0.75rem;
   border-radius: 0.25rem;
 }
@@ -273,19 +289,17 @@ Customize the button label for different languages using `label-prefix` and `lab
 
 Style each label part individually:
 
-````css
+```css
 content-warning::part(label-prefix) {
   font-weight: bold;
 }
 
 content-warning::part(label-type) {
   font-style: italic;
-  color: #ff6b6b;
 }
 
 content-warning::part(label-suffix) {
   font-size: 0.875em;
-  opacity: 0.9;
 }
 ```
 
@@ -296,30 +310,27 @@ Punctuation and spacing between label parts are controlled via CSS pseudo-elemen
 ```css
 /* Default punctuation (already applied) */
 .label-prefix::after {
-  content: ": "; /* Colon and space after prefix */
+  content: ': '; /* Colon and space after prefix */
 }
 
-[part="label-type"]::before {
-  content: " "; /* Space before type */
+[part='label-type']::before {
+  content: ' '; /* Space before type */
 }
 
-[part="label-suffix"]::before {
-  content: " "; /* Space before suffix */
+[part='label-suffix']::before {
+  content: ' '; /* Space before suffix */
 }
 
 /* Customize punctuation */
-content-warning::part(button) .label-prefix::after {
-  content: " — "; /* Em dash instead of colon */
+content-warning::part(label-prefix)::after {
+  content: ' — '; /* Em dash instead of colon */
 }
 
 /* Remove punctuation entirely */
-content-warning::part(button) .label-prefix::after {
-  content: " "; /* Just a space */
+content-warning::part(label-prefix)::after {
+  content: ' '; /* Just a space */
 }
-```adding: 0.5rem 0.75rem;
-  border-radius: 0.25rem;
-}
-````
+```
 
 ## Accessibility
 
@@ -356,6 +367,10 @@ npm test
 
 # Run tests with coverage
 npm run test:coverage
+
+# Install browser engines and check rendering and keyboard behavior
+npx playwright install chromium firefox webkit
+npm run test:browser
 
 # Lint code
 npm run lint
