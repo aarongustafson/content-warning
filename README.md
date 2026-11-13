@@ -1,6 +1,10 @@
 # content-warning Web Component
 
-[![npm version](https://img.shields.io/npm/v/@aarongustafson/content-warning.svg)](https://www.npmjs.com/package/@aarongustafson/content-warning) [![Build Status](https://img.shields.io/github/actions/workflow/status/aarongustafson/content-warning/ci.yml?branch=main)](https://github.com/aarongustafson/content-warning/actions)
+[![npm version](https://img.shields.io/npm/v/@aarongustafson/content-warning.svg)](https://www.npmjs.com/package/@aarongustafson/content-warning)
+[![CI status](https://img.shields.io/github/actions/workflow/status/aarongustafson/content-warning/ci.yml?branch=main&label=CI)](https://github.com/aarongustafson/content-warning/actions/workflows/ci.yml)
+[![Minified + gzipped size](https://img.shields.io/bundlejs/size/@aarongustafson/content-warning?format=minzip&label=min%2Bgzip)](https://bundlejs.com/?q=@aarongustafson/content-warning)
+[![License](https://img.shields.io/npm/l/@aarongustafson/content-warning)](https://github.com/aarongustafson/content-warning/blob/main/LICENSE)
+[![Type definitions](https://img.shields.io/npm/types/@aarongustafson/content-warning)](https://github.com/aarongustafson/content-warning/blob/main/content-warning.d.ts)
 
 A web component for block and inline content warnings.
 
