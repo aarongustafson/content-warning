@@ -47,10 +47,10 @@
 					<h3>Single Warning Type</h3>
 					<p>Click or press Enter to reveal the content.</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;content-warning type="violence" hidden&gt;
+						<pre><code><mark>&lt;content-warning type="violence" hidden&gt;</mark>
   &lt;p&gt;This content contains graphic violence.&lt;/p&gt;
   &lt;p&gt;Lorem ipsum dolor sit amet...&lt;/p&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo">
 							<content-warning type="violence" hidden>
 								<p>This content contains graphic violence.</p>
@@ -69,9 +69,9 @@
 						categories.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;content-warning type="violence spoilers nsfw" hidden&gt;
+						<pre><code><mark>&lt;content-warning type="violence spoilers nsfw" hidden&gt;</mark>
   &lt;p&gt;Contains violence, spoilers, and mature content.&lt;/p&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo">
 							<content-warning
 								type="violence spoilers nsfw"
@@ -103,9 +103,9 @@
 					<div class="code-demo-pair">
 						<pre><code>&lt;p&gt;
   The character dies in
-  &lt;content-warning type="spoilers" inline&gt;
+  <mark>&lt;content-warning type="spoilers" inline&gt;</mark>
     episode 5
-  &lt;/content-warning&gt;.
+  <mark>&lt;/content-warning&gt;</mark>.
 &lt;/p&gt;</code></pre>
 						<div class="demo">
 							<p>
@@ -123,8 +123,8 @@
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;p&gt;
-  &lt;content-warning type="spoilers" inline&gt;Jon&lt;/content-warning&gt;
-  meets &lt;content-warning type="spoilers" inline&gt;Daenerys&lt;/content-warning&gt;
+  <mark>&lt;content-warning type="spoilers" inline&gt;</mark>Jon<mark>&lt;/content-warning&gt;</mark>
+  meets <mark>&lt;content-warning type="spoilers" inline&gt;</mark>Daenerys<mark>&lt;/content-warning&gt;</mark>
   in season 7.
 &lt;/p&gt;</code></pre>
 						<div class="demo">
@@ -160,10 +160,10 @@
 						from screen readers until revealed.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;content-warning type="sensitive content" hidden&gt;
+						<pre><code><mark>&lt;content-warning type="sensitive content" hidden&gt;</mark>
   &lt;p&gt;This content is completely hidden.&lt;/p&gt;
   &lt;p&gt;Reader Mode won't extract it.&lt;/p&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo">
 							<content-warning type="sensitive content" hidden>
 								<p>
@@ -193,10 +193,10 @@
 						>
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;content-warning type="spoilers" blur hidden&gt;
+						<pre><code><mark>&lt;content-warning type="spoilers" blur hidden&gt;</mark>
   &lt;p&gt;This content is blurred visually.&lt;/p&gt;
   &lt;p&gt;May be visible in Reader Mode.&lt;/p&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo">
 							<content-warning type="spoilers" blur hidden>
 								<p>
@@ -232,13 +232,13 @@
   }
 &lt;/style&gt;
 
-&lt;content-warning type="spoilers" blur class="light-blur"&gt;
+<mark>&lt;content-warning type="spoilers" blur class="light-blur"&gt;</mark>
   &lt;p&gt;Lightly blurred (5px)&lt;/p&gt;
-&lt;/content-warning&gt;
+<mark>&lt;/content-warning&gt;</mark>
 
-&lt;content-warning type="spoilers" blur class="heavy-blur"&gt;
+<mark>&lt;content-warning type="spoilers" blur class="heavy-blur"&gt;</mark>
   &lt;p&gt;Heavily blurred (20px)&lt;/p&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo">
 							<style>
 								.light-blur {
@@ -276,13 +276,13 @@
 					<h3>Comparison</h3>
 					<p>Side-by-side comparison of both modes:</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;content-warning type="test" hidden&gt;
+						<pre><code><mark>&lt;content-warning type="test" hidden&gt;</mark>
   &lt;p&gt;Completely hidden content.&lt;/p&gt;
-&lt;/content-warning&gt;
+<mark>&lt;/content-warning&gt;</mark>
 
-&lt;content-warning type="test" blur hidden&gt;
+<mark>&lt;content-warning type="test" blur hidden&gt;</mark>
   &lt;p&gt;Visually blurred content.&lt;/p&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo demo-comparison">
 							<div>
 								<h4 style="margin-top: 0">Default (Hidden)</h4>
@@ -324,9 +324,9 @@
   }
 &lt;/style&gt;
 
-&lt;content-warning type="horror" class="custom-warning"&gt;
+<mark>&lt;content-warning type="horror" class="custom-warning"&gt;</mark>
   &lt;p&gt;Scary content here!&lt;/p&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo">
 							<style>
 								.custom-warning::part(overlay) {
@@ -369,9 +369,9 @@
   }
 &lt;/style&gt;
 
-&lt;content-warning type="mature" class="styled-parts"&gt;
+<mark>&lt;content-warning type="mature" class="styled-parts"&gt;</mark>
   &lt;p&gt;Mature content here.&lt;/p&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo">
 							<style>
 								.styled-parts::part(button) {
@@ -402,9 +402,9 @@
 				<div class="demo-section">
 					<h3>Tracking Reveals</h3>
 					<div class="code-demo-pair">
-						<pre><code>&lt;content-warning type="spoilers" id="tracked"&gt;
+						<pre><code><mark>&lt;content-warning type="spoilers" id="tracked"&gt;</mark>
   &lt;p&gt;Secret content!&lt;/p&gt;
-&lt;/content-warning&gt;
+<mark>&lt;/content-warning&gt;</mark>
 &lt;p id="status"&gt;Status: Hidden&lt;/p&gt;
 
 &lt;script&gt;
@@ -464,14 +464,14 @@
   }
 &lt;/style&gt;
 
-&lt;content-warning
+<mark>&lt;content-warning
   type="violencia gore"
   label-prefix="Advertencia de Contenido"
   label-suffix="Haz clic para revelar"
   class="spanish-warning"
-&gt;
+&gt;</mark>
   &lt;img src="..." alt="..."&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo">
 							<style>
 								.spanish-warning::part(label-type) {
@@ -511,14 +511,14 @@
   }
 &lt;/style&gt;
 
-&lt;content-warning
+<mark>&lt;content-warning
   type="contenu sensible"
   label-prefix="Avertissement"
   label-suffix="Cliquez pour révéler"
   class="french-warning"
-&gt;
+&gt;</mark>
   &lt;p&gt;Contenu en français...&lt;/p&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo">
 							<style>
 								.french-warning::part(button) {
@@ -554,12 +554,12 @@
 						entirely.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;content-warning
+						<pre><code><mark>&lt;content-warning
   type="graphic content"
   label-suffix="false"
-&gt;
+&gt;</mark>
   &lt;p&gt;Content here&lt;/p&gt;
-&lt;/content-warning&gt;</code></pre>
+<mark>&lt;/content-warning&gt;</mark></code></pre>
 						<div class="demo">
 							<content-warning
 								type="graphic content"
