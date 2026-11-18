@@ -4,7 +4,12 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>&lt;content-warning&gt; Web Component Demo</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/microlighter@2.2.0/dist/themes/github.css"
+		/>
 		<link rel="stylesheet" href="./styles.css" />
+		<link rel="stylesheet" href="./demo-shell.css" />
 		<!--
 			Reader Mode Safety: To prevent Reader Mode (Edge Immersive Reader,
 			Safari Reader, etc.) from extracting content before JavaScript runs,
@@ -21,10 +26,12 @@
 			/* Demo-specific styles */
 		</style>
 	</head>
-	<body>
+	<body data-syntax-theme="github">
+		<a class="skip-link" href="#main">Skip to examples</a>
 		<header>
+			<p class="eyebrow">Web component / Examples</p>
 			<h1>&lt;content-warning&gt;</h1>
-			<p>
+			<p class="lede">
 				A web component for block and inline content warnings. See the
 				<a
 					href="https://github.com/aarongustafson/content-warning/blob/main/README.md"
@@ -32,9 +39,27 @@
 				>
 				for installation and API documentation.
 			</p>
+			<nav aria-label="Component resources">
+				<a
+					href="https://github.com/aarongustafson/content-warning/blob/main/README.md"
+					>Read the README</a
+				>
+				<a href="https://github.com/aarongustafson/content-warning"
+					>View on GitHub</a
+				>
+				<a href="./esm.html">esm.sh example</a>
+				<a href="./unpkg.html">unpkg example</a>
+			</nav>
 		</header>
 
-		<main>
+		<main id="main" tabindex="-1">
+			<p
+				id="microlighter-status"
+				class="enhancement-status"
+				role="status"
+				hidden
+			></p>
+
 			<!-- Basic Block Example -->
 			<section>
 				<h2>Block Content Warning</h2>
@@ -47,10 +72,20 @@
 					<h3>Single Warning Type</h3>
 					<p>Click or press Enter to reveal the content.</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;content-warning type="violence" hidden&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Single Warning Type code 1"
+								tabindex="0"
+							><code><mark>&lt;content-warning type="violence" hidden&gt;</mark>
   &lt;p&gt;This content contains graphic violence.&lt;/p&gt;
   &lt;p&gt;Lorem ipsum dolor sit amet...&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<content-warning type="violence" hidden>
 								<p>This content contains graphic violence.</p>
@@ -69,9 +104,19 @@
 						categories.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;content-warning type="violence spoilers nsfw" hidden&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Single Warning Type code 2"
+								tabindex="0"
+							><code><mark>&lt;content-warning type="violence spoilers nsfw" hidden&gt;</mark>
   &lt;p&gt;Contains violence, spoilers, and mature content.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<content-warning
 								type="violence spoilers nsfw"
@@ -101,12 +146,22 @@
 					<h3>Inline Usage</h3>
 					<p>Click the warning to reveal the hidden text.</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;p&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Inline Usage code 3"
+								tabindex="0"
+							><code>&lt;p&gt;
   The character dies in
   <mark>&lt;content-warning type="spoilers" inline&gt;</mark>
     episode 5
   <mark>&lt;/content-warning&gt;</mark>.
 &lt;/p&gt;</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<p>
 								The character dies in
@@ -122,11 +177,21 @@
 						You can have multiple inline warnings in one sentence.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;p&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Inline Usage code 4"
+								tabindex="0"
+							><code>&lt;p&gt;
   <mark>&lt;content-warning type="spoilers" inline&gt;</mark>Jon<mark>&lt;/content-warning&gt;</mark>
   meets <mark>&lt;content-warning type="spoilers" inline&gt;</mark>Daenerys<mark>&lt;/content-warning&gt;</mark>
   in season 7.
 &lt;/p&gt;</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<p>
 								<content-warning type="spoilers" inline
@@ -160,10 +225,20 @@
 						from screen readers until revealed.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;content-warning type="sensitive content" hidden&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Default Mode (Reader Mode Safe) code 5"
+								tabindex="0"
+							><code><mark>&lt;content-warning type="sensitive content" hidden&gt;</mark>
   &lt;p&gt;This content is completely hidden.&lt;/p&gt;
   &lt;p&gt;Reader Mode won't extract it.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<content-warning type="sensitive content" hidden>
 								<p>
@@ -193,10 +268,20 @@
 						>
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;content-warning type="spoilers" blur hidden&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Default Mode (Reader Mode Safe) code 6"
+								tabindex="0"
+							><code><mark>&lt;content-warning type="spoilers" blur hidden&gt;</mark>
   &lt;p&gt;This content is blurred visually.&lt;/p&gt;
   &lt;p&gt;May be visible in Reader Mode.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<content-warning type="spoilers" blur hidden>
 								<p>
@@ -223,7 +308,16 @@
 						property.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;style&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Default Mode (Reader Mode Safe) code 7"
+								tabindex="0"
+							><code>&lt;style&gt;
   .light-blur {
     --content-warning-blur-amount: 5px;
   }
@@ -239,6 +333,7 @@
 <mark>&lt;content-warning type="spoilers" blur class="heavy-blur"&gt;</mark>
   &lt;p&gt;Heavily blurred (20px)&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<style>
 								.light-blur {
@@ -276,13 +371,23 @@
 					<h3>Comparison</h3>
 					<p>Side-by-side comparison of both modes:</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;content-warning type="test" hidden&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Default Mode (Reader Mode Safe) code 8"
+								tabindex="0"
+							><code><mark>&lt;content-warning type="test" hidden&gt;</mark>
   &lt;p&gt;Completely hidden content.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark>
 
 <mark>&lt;content-warning type="test" blur hidden&gt;</mark>
   &lt;p&gt;Visually blurred content.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo demo-comparison">
 							<div>
 								<h4 style="margin-top: 0">Default (Hidden)</h4>
@@ -311,7 +416,16 @@
 				<div class="demo-section">
 					<h3>Custom Colors</h3>
 					<div class="code-demo-pair">
-						<pre><code>&lt;style&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Custom Colors code 9"
+								tabindex="0"
+							><code>&lt;style&gt;
   .custom-warning::part(overlay) {
     background: rgba(139, 0, 0, 0.95);
   }
@@ -327,6 +441,7 @@
 <mark>&lt;content-warning type="horror" class="custom-warning"&gt;</mark>
   &lt;p&gt;Scary content here!&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<style>
 								.custom-warning::part(overlay) {
@@ -358,7 +473,16 @@
 					<h3>Styled Button Text</h3>
 					<p>Style the button text and appearance.</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;style&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Custom Colors code 10"
+								tabindex="0"
+							><code>&lt;style&gt;
   .styled-parts::part(button) {
     text-transform: uppercase;
     letter-spacing: 0.15em;
@@ -372,6 +496,7 @@
 <mark>&lt;content-warning type="mature" class="styled-parts"&gt;</mark>
   &lt;p&gt;Mature content here.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<style>
 								.styled-parts::part(button) {
@@ -402,7 +527,16 @@
 				<div class="demo-section">
 					<h3>Tracking Reveals</h3>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;content-warning type="spoilers" id="tracked"&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Tracking Reveals code 11"
+								tabindex="0"
+							><code><mark>&lt;content-warning type="spoilers" id="tracked"&gt;</mark>
   &lt;p&gt;Secret content!&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark>
 &lt;p id="status"&gt;Status: Hidden&lt;/p&gt;
@@ -414,6 +548,7 @@
         `Status: Revealed (${e.detail.type})`;
     });
 &lt;/script&gt;</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<content-warning
 								type="spoilers"
@@ -457,7 +592,16 @@
 				<div class="demo-section">
 					<h3>Spanish Translation</h3>
 					<div class="code-demo-pair">
-						<pre><code>&lt;style&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Spanish Translation code 12"
+								tabindex="0"
+							><code>&lt;style&gt;
   .spanish-warning::part(label-type) {
     font-style: italic;
     text-transform: capitalize;
@@ -472,6 +616,7 @@
 &gt;</mark>
   &lt;img src="..." alt="..."&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<style>
 								.spanish-warning::part(label-type) {
@@ -497,7 +642,16 @@
 
 					<h3>French Translation</h3>
 					<div class="code-demo-pair">
-						<pre><code>&lt;style&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Spanish Translation code 13"
+								tabindex="0"
+							><code>&lt;style&gt;
   .french-warning::part(button) {
     background: #111;
     color: #fff;
@@ -519,6 +673,7 @@
 &gt;</mark>
   &lt;p&gt;Contenu en français...&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<style>
 								.french-warning::part(button) {
@@ -554,12 +709,22 @@
 						entirely.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;content-warning
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Spanish Translation code 14"
+								tabindex="0"
+							><code><mark>&lt;content-warning
   type="graphic content"
   label-suffix="false"
 &gt;</mark>
   &lt;p&gt;Content here&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<content-warning
 								type="graphic content"
@@ -601,5 +766,6 @@
 		</footer>
 
 		<script src="../define.js" type="module"></script>
+		<script type="module" src="./code-examples.js"></script>
 	</body>
 </html>

@@ -1,10 +1,18 @@
 import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+	await page.route(
+		'https://cdn.jsdelivr.net/npm/microlighter@2.2.0/dist/**',
+		(route) => route.abort(),
+	);
+});
+
 const paths = [
 	'content-warning.js',
 	'define.js',
 	'demo/styles.css',
+	'demo/demo-shell.css',
 	'demo/index.html',
 	'demo/esm.html',
 	'demo/unpkg.html',
@@ -237,9 +245,13 @@ for (const demo of ['index', 'esm', 'unpkg']) {
 		for (const width of [1280, 320]) {
 			await page.setViewportSize({ width, height: 900 });
 			for (const pair of await pairs.all()) {
-				await expect(pair.locator(':scope > pre')).toHaveCount(1);
+				await expect(
+					pair.locator(':scope > micro-lighter'),
+				).toHaveCount(1);
 				await expect(pair.locator(':scope > .demo')).toHaveCount(1);
-				const code = await pair.locator(':scope > pre').boundingBox();
+				const code = await pair
+					.locator(':scope > micro-lighter')
+					.boundingBox();
 				const live = await pair.locator(':scope > .demo').boundingBox();
 				if (width >= 768) expect(live.x).toBeGreaterThan(code.x);
 				else
