@@ -60,6 +60,34 @@ it('keeps code readable while progressively enhancing every full demo page', asy
 	expect(pages).toBeGreaterThan(0);
 });
 
+it('labels snippets with their example and Reader Mode safety', async () => {
+	const template = document.createElement('template');
+	template.innerHTML = await readFile('demo/index.html', 'utf8');
+	const root = template.content;
+	const labels = [
+		['Multiple Warning Types', 'Multiple Warning Types code 2'],
+		[
+			'Blur Mode (Visual Only)',
+			'Blur Mode (Visual Only; Not Guaranteed Hidden from Reader Mode) code 6',
+		],
+		['Custom Blur Amount', 'Custom Blur Amount code 7'],
+		['Comparison', 'Comparison code 8'],
+		['French Translation', 'French Translation code 13'],
+		['No Suffix', 'No Suffix code 14'],
+	];
+	for (const [headingText, label] of labels) {
+		const heading = [...root.querySelectorAll('h3')].find(
+			(element) => element.textContent.trim() === headingText,
+		);
+		let example = heading?.nextElementSibling;
+		while (example && !example.matches('.code-demo-pair'))
+			example = example.nextElementSibling;
+		expect(example?.querySelector('pre')?.getAttribute('aria-label')).toBe(
+			label,
+		);
+	}
+});
+
 afterEach(() => {
 	document.body.replaceChildren();
 	vi.restoreAllMocks();

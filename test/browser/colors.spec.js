@@ -16,6 +16,7 @@ const paths = [
 	'demo/index.html',
 	'demo/esm.html',
 	'demo/unpkg.html',
+	'demo/code-examples.js',
 ];
 const files = new Map(
 	await Promise.all(
@@ -240,6 +241,9 @@ for (const demo of ['index', 'esm', 'unpkg']) {
 		await expect(
 			page.locator('content-warning button').first(),
 		).toBeVisible();
+		await expect(page.locator('#microlighter-status')).toContainText(
+			'MicroLighter could not load',
+		);
 		const pairs = page.locator('.code-demo-pair');
 		expect(await pairs.count()).toBeGreaterThan(0);
 		for (const width of [1280, 320]) {
