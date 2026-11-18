@@ -15,6 +15,24 @@ it('trims block-edge margins inside demo sections', async () => {
 	);
 });
 
+it('names the multiple-warning and styled-button snippets after their own examples', async () => {
+	const template = document.createElement('template');
+	template.innerHTML = await readFile('demo/index.html', 'utf8');
+	for (const name of ['Multiple Inline Warnings', 'Styled Button Text']) {
+		const heading = [...template.content.querySelectorAll('h3')].find(
+			(heading) => heading.textContent === name,
+		);
+		const pre = [...template.content.querySelectorAll('pre')].find(
+			(pre) =>
+				heading.compareDocumentPosition(pre) &
+				Node.DOCUMENT_POSITION_FOLLOWING,
+		);
+		expect(pre.getAttribute('aria-label')).toMatch(
+			new RegExp(`^${name} code \\d+$`),
+		);
+	}
+});
+
 it('keeps code readable while progressively enhancing every full demo page', async () => {
 	let pages = 0;
 	for (const file of await readdir('demo', { recursive: true })) {
