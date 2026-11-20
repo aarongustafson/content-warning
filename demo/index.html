@@ -4,8 +4,8 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>&lt;content-warning&gt; Web Component Demo</title>
-		<link rel="stylesheet" href="./styles.css" />
 		<link rel="stylesheet" href="./demo-shell.css" />
+		<link rel="stylesheet" href="./styles.css" />
 		<!--
 			Reader Mode Safety: To prevent Reader Mode (Edge Immersive Reader,
 			Safari Reader, etc.) from extracting content before JavaScript runs,
@@ -18,11 +18,8 @@
 
 			Without 'hidden', Reader Mode will extract and display the content.
 		-->
-		<style>
-			/* Demo-specific styles */
-		</style>
 	</head>
-	<body data-syntax-theme="github">
+	<body data-demo-page="full" data-syntax-theme="github">
 		<a class="skip-link" href="#main">Skip to examples</a>
 		<header>
 			<p class="eyebrow">Web component / Examples</p>
@@ -52,6 +49,9 @@
 			<p
 				id="microlighter-status"
 				class="enhancement-status"
+				data-loading-message="Loading optional code highlighting and Copy controls."
+				data-failure-message="MicroLighter could not load. Code remains readable and selectable; the component loads independently."
+				data-theme-failure-message="Code highlighting and Copy controls are available, but the syntax theme could not load. The component loads independently."
 				role="status"
 				hidden
 			></p>
@@ -82,7 +82,7 @@
   &lt;p&gt;Lorem ipsum dolor sit amet...&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<content-warning type="violence" hidden>
 								<p>This content contains graphic violence.</p>
 								<p>
@@ -113,7 +113,7 @@
   &lt;p&gt;Contains violence, spoilers, and mature content.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<content-warning
 								type="violence spoilers nsfw"
 								hidden
@@ -158,7 +158,7 @@
   <mark>&lt;/content-warning&gt;</mark>.
 &lt;/p&gt;</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<p>
 								The character dies in
 								<content-warning type="spoilers" inline
@@ -188,7 +188,7 @@
   in season 7.
 &lt;/p&gt;</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<p>
 								<content-warning type="spoilers" inline
 									>Jon</content-warning
@@ -235,7 +235,7 @@
   &lt;p&gt;Reader Mode won't extract it.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<content-warning type="sensitive content" hidden>
 								<p>
 									This content is completely hidden until
@@ -278,7 +278,7 @@
   &lt;p&gt;May be visible in Reader Mode.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<content-warning type="spoilers" blur hidden>
 								<p>
 									This content is blurred for visual
@@ -330,7 +330,7 @@
   &lt;p&gt;Heavily blurred (20px)&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<style>
 								.light-blur {
 									--content-warning-blur-amount: 5px;
@@ -384,7 +384,10 @@
   &lt;p&gt;Visually blurred content.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo demo-comparison">
+						<div
+							class="demo demo-comparison"
+							data-demo-label="Live example"
+						>
 							<div>
 								<h4 style="margin-top: 0">Default (Hidden)</h4>
 								<content-warning type="test" hidden>
@@ -438,7 +441,7 @@
   &lt;p&gt;Scary content here!&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<style>
 								.custom-warning::part(overlay) {
 									background: rgba(139, 0, 0, 0.95);
@@ -493,7 +496,7 @@
   &lt;p&gt;Mature content here.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<style>
 								.styled-parts::part(button) {
 									text-transform: uppercase;
@@ -545,7 +548,7 @@
     });
 &lt;/script&gt;</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<content-warning
 								type="spoilers"
 								id="tracked"
@@ -613,7 +616,7 @@
   &lt;img src="..." alt="..."&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<style>
 								.spanish-warning::part(label-type) {
 									font-style: italic;
@@ -670,7 +673,7 @@
   &lt;p&gt;Contenu en français...&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<style>
 								.french-warning::part(button) {
 									background: #111;
@@ -721,7 +724,7 @@
   &lt;p&gt;Content here&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<content-warning
 								type="graphic content"
 								label-suffix="false"
