@@ -1,5 +1,11 @@
 import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
+import { expectNativeFocus } from './demo-fixture.js';
+
+test('demo navigation retains browser-native focus', async ({ page }) => {
+	await page.goto('http://demo.test/demo/index.html');
+	await expectNativeFocus(page.locator('header nav a').first());
+});
 
 test.beforeEach(async ({ page }) => {
 	await page.route(

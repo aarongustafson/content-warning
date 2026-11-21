@@ -52,6 +52,9 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 ## Development Setup
 
+For demo changes, read [the demo editing guide](demo/README.md) first.
+It explains which files belong to the starter and which to edit locally.
+
 1. Clone the repository
 2. Install dependencies: `npm install`
 3. Make your changes
@@ -68,6 +71,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 ## Coding Style
 
 This project uses:
+
 - ESLint for code quality
 - Prettier for code formatting
 - Vitest for testing
