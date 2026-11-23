@@ -6,7 +6,9 @@
 [![License](https://img.shields.io/npm/l/@aarongustafson/content-warning)](https://github.com/aarongustafson/content-warning/blob/main/LICENSE)
 [![Type definitions](https://img.shields.io/npm/types/@aarongustafson/content-warning)](https://github.com/aarongustafson/content-warning/blob/main/content-warning.d.ts)
 
-A web component for block and inline content warnings.
+`<content-warning>` adds a reveal button to block or inline content. Without
+JavaScript, its contents remain visible unless you author `hidden` on the
+element. Hidden content stays hidden if the component can’t load.
 
 Based on the [original concept](https://codepen.io/aarongustafson/pen/QWZpqPe) by Aaron Gustafson.
 
@@ -27,7 +29,7 @@ npm install @aarongustafson/content-warning
 
 ## Usage
 
-### Option 1: Auto-define the custom element (easiest)
+### Option 1: Auto-define the custom element
 
 Import the registration entry point to define the `<content-warning>` custom element:
 
@@ -60,90 +62,109 @@ customElements.define('my-custom-name', ContentWarningElement);
 
 ```html
 <!-- Block content warning -->
-<content-warning type="violence spoilers">
+<content-warning type="violence spoilers" hidden>
   <p>This content contains violence and spoilers for the series finale.</p>
 </content-warning>
 
 <!-- Inline content warning -->
 <p>
   The character dies in
-  <content-warning type="spoilers" inline>episode 5</content-warning>.
+  <content-warning type="spoilers" inline hidden>episode 5</content-warning>.
 </p>
 ```
 
-## Reader Mode Safety
+## Before JavaScript and in Reader Mode
 
-**Important:** Reader Mode parsers (Edge Immersive Reader, Safari Reader, etc.) extract content **before JavaScript runs**. To prevent Reader Mode from extracting content inside `<content-warning>` elements, add the `hidden` attribute:
+Add the native [`hidden` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/hidden)
+when content must not appear before the component loads or if JavaScript fails:
 
 ```html
 <content-warning type="violence" hidden>
-  <p>This content will be hidden from Reader Mode.</p>
+  <p>This content stays hidden without JavaScript.</p>
 </content-warning>
 ```
 
-**How it works:**
+Before upgrade, the browser hides the authored element. When the component
+connects, it removes the host’s `hidden` attribute, then renders its warning on
+the next animation frame. The enhanced hiding mode below takes over after render;
+this isn’t a guarantee of uninterrupted hiding during initialization.
 
-1. **Before JS runs**: The `hidden` attribute hides the element → Reader Mode skips it entirely
-2. **When component initializes**: The component automatically removes the `hidden` attribute
-3. **After initialization**: The component's Shadow DOM hiding logic takes over
+Reader Mode tools may extract the page before or after JavaScript runs and may
+handle hidden or shadow content differently. Authored `hidden` helps tools that
+honor native hidden content, but neither mode guarantees exclusion from every
+Reader Mode. Test the browsers and reading tools your audience uses.
 
-**Without the `hidden` attribute**, Reader Mode will extract and display the content even though it appears hidden in the normal page view.
-
-**Note:** The `hidden` attribute is automatically removed when the component boots, so you don't need to manage it yourself.
+Without authored `hidden`, the contents are ordinary visible HTML before upgrade
+and when JavaScript fails. A warning is not an access-control or privacy boundary:
+the content remains in the document and can be inspected or extracted.
 
 ## Content Hiding Modes
 
 The component offers two modes for hiding content, each with different trade-offs:
 
-### Default Mode (Recommended)
+### Default Mode
 
-**Reader Mode Safe** - Content is truly hidden from Reader Mode and screen readers until revealed.
+After render, the component applies `hidden` and `inert` to its shadow content
+wrapper. `inert` prevents interaction and excludes the contents from the
+accessibility tree until reveal.
+
+The current stylesheet sets the wrapper to `display: contents`, overriding
+the native `hidden` display rule for block warnings. Their content keeps its
+layout beneath a dark, translucent overlay; don’t rely on enhanced `hidden` alone to
+remove it from rendering or extraction. Inline warnings use `display: none`
+on the unrevealed wrapper. Authored `hidden` on the host still hides the whole
+element before upgrade and without JavaScript.
 
 ```html
-<content-warning type="sensitive content">
-  <p>This content is completely hidden until revealed.</p>
+<content-warning type="sensitive content" hidden>
+  <p>This content is hidden until revealed.</p>
 </content-warning>
 ```
 
-- Uses `hidden` and `inert` attributes on the content wrapper
-- Content is **not** extracted by Reader Mode (Edge, Safari, etc.)
-- Content is hidden from screen readers via native attributes
-- Best for sensitive content that should be truly hidden
-
 ### Blur Mode
 
-**Visual Only** - Content is visually obscured but still present in the DOM.
+Blur changes the enhanced presentation, not the pre-upgrade fallback.
 
 ```html
-<content-warning type="spoilers" blur>
+<content-warning type="spoilers" blur hidden>
   <p>This content is blurred but technically visible in the DOM.</p>
 </content-warning>
 ```
 
-- Uses CSS `filter: blur()` to obscure content visually
-- Uses `aria-hidden="true"` to hide from screen readers
-- Content **may be** extracted by Reader Mode (not guaranteed to be hidden)
+- Uses CSS `filter: blur()` on slotted elements; bare text nodes aren’t blurred
+- Uses `aria-hidden="true"` on the wrapper to exclude it from the accessibility tree
+- Doesn’t use `inert`; CSS blocks pointer interaction with slotted elements, but
+  authors must avoid focusable descendants that could remain in the keyboard order
+- Inline warnings hide their wrapper with CSS, even with `blur`
+- Reader Mode may extract the content
 - Customizable blur amount via `--content-warning-blur-amount` CSS property
 - Best for aesthetic preference when complete hiding isn't critical
 
 **Trade-off Summary:**
 
-- **Without `blur`**: Maximum safety and hiding (recommended for sensitive content)
-- **With `blur`**: Visual obscuring effect (not fully hidden from all contexts)
+- **Without `blur`**: A dark overlay and `inert` after render
+- **With `blur`**: Visual obscuring, not a security boundary
 
 ## Attributes
 
-| Attribute      | Type      | Default             | Description                                                              |
-| -------------- | --------- | ------------------- | ------------------------------------------------------------------------ |
-| `type`         | `string`  | `"content"`         | Space-separated list of warning types (e.g., "violence spoilers nsfw")   |
-| `label-prefix` | `string`  | `"Content Warning"` | The prefix text for the warning label                                    |
-| `label-suffix` | `string`  | `"Click to reveal"` | The suffix text for the warning label. Set to `"false"` to hide.         |
-| `inline`       | `boolean` | `false`             | Display the warning inline instead of as a block overlay                 |
-| `blur`         | `boolean` | `false`             | Use blur visual effect instead of complete hiding (NOT Reader Mode safe) |
+| Attribute      | Type      | Default             | Description                                                            |
+| -------------- | --------- | ------------------- | ---------------------------------------------------------------------- |
+| `type`         | `string`  | `"content"`         | Space-separated list of warning types (e.g., "violence spoilers nsfw") |
+| `label-prefix` | `string`  | `"Content Warning"` | The prefix text for the warning label                                  |
+| `label-suffix` | `string`  | `"Click to reveal"` | The suffix text for the warning label. Set to `"false"` to hide.       |
+| `inline`       | `boolean` | `false`             | Display the warning inline instead of as a block overlay               |
+| `blur`         | `boolean` | `false`             | Blur slotted elements instead of using native hiding after render      |
+| `hidden`       | `boolean` | `false`             | Native pre-upgrade hiding; removed when the component connects         |
 
 **Default Button Label Format:** `{prefix}: {type} {suffix}`
 
 Example: "Content Warning: violence spoilers Click to reveal"
+
+Initial rendering uses “Click to reveal” when `label-suffix` is absent or empty.
+After a label update, an absent suffix is omitted; an empty suffix uses the
+default text. Use `label-suffix="false"` to omit it consistently.
+Supply trusted plain text for labels and warning types: initial rendering
+interpolates these attributes into HTML, so they must not contain untrusted input.
 
 **Note:** Punctuation and spacing between label parts are controlled via CSS pseudo-elements (`:after` and `:before`), making them easy to customize without affecting the underlying text content.
 
@@ -151,9 +172,12 @@ Example: "Content Warning: violence spoilers Click to reveal"
 
 The component fires custom events that you can listen to:
 
-| Event                      | Description                                                    | Detail                                           |
-| -------------------------- | -------------------------------------------------------------- | ------------------------------------------------ |
-| `content-warning:revealed` | Fired when the user reveals the content by clicking the button | `{ type: string }` - The type of content warning |
+| Event                      | Description                                    | Detail                                                 |
+| -------------------------- | ---------------------------------------------- | ------------------------------------------------------ |
+| `content-warning:revealed` | Fired once when the user activates the warning | `{ type: string \| null }` - The authored warning type |
+
+The event bubbles and crosses shadow boundaries. A missing `type` attribute
+produces `null` in the event detail even though the button displays “content.”
 
 ### Example Event Handling
 
@@ -174,6 +198,11 @@ element.addEventListener('content-warning:revealed', (event) => {
 | `labelPrefix` | `string`              | Get/set the prefix text for the warning label |
 | `labelSuffix` | `string`              | Get/set the suffix text for the warning label |
 | `revealed`    | `boolean` (read-only) | Whether the content has been revealed         |
+
+`type`, `labelPrefix`, and `labelSuffix` reflect their attributes and return
+`null` when absent; assigning `null` or `undefined` removes the attribute.
+Labels and `blur` update while unrevealed. The component reads `inline` when it
+connects. There’s no public reset or conceal method.
 
 ## CSS Custom Properties
 
@@ -213,6 +242,8 @@ remains enabled.
 | `overlay`      | The full-area overlay div that covers the content |
 | `button`       | The warning button element inside the overlay     |
 | `label-prefix` | The prefix text span (e.g., "Content Warning")    |
+| `label-type`   | The warning type text span                        |
+| `label-suffix` | The optional suffix text span                     |
 
 ### Example Styling
 
@@ -231,7 +262,6 @@ content-warning::part(button) {
   font-size: 1.25rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  background: rgba(0, 0, 0, 0.5);
   border-radius: 0.5rem;
 }
 
@@ -264,7 +294,9 @@ content-warning[inline]::part(button) {
 
 ## Internationalization (i18n)
 
-Customize the button label for different languages using `label-prefix` and `label-suffix` attributes:
+Use `label-prefix`, `type`, and `label-suffix` for your application’s vocabulary
+or a translation. Set `lang` for translated content and provide image alternatives
+in that language. The component doesn’t supply a shared localization object.
 
 ```html
 <!-- Spanish -->
@@ -272,8 +304,10 @@ Customize the button label for different languages using `label-prefix` and `lab
   type="violencia gore"
   label-prefix="Advertencia de Contenido"
   label-suffix="Haz clic para revelar"
+  lang="es"
+  hidden
 >
-  <img src="image.jpg" alt="Sensitive image" />
+  <img src="image.jpg" alt="Descripción de la imagen" />
 </content-warning>
 
 <!-- French -->
@@ -281,12 +315,14 @@ Customize the button label for different languages using `label-prefix` and `lab
   type="contenu sensible"
   label-prefix="Avertissement"
   label-suffix="Cliquez pour révéler"
+  lang="fr"
+  hidden
 >
   <p>Contenu en français...</p>
 </content-warning>
 
 <!-- No suffix -->
-<content-warning type="graphic content" label-suffix="false">
+<content-warning type="graphic content" label-suffix="false" hidden>
   <p>Content without suffix text</p>
 </content-warning>
 ```
@@ -338,17 +374,28 @@ content-warning::part(label-prefix)::after {
 
 ## Accessibility
 
-The component follows accessibility best practices:
+- A native `<button>` supports keyboard activation with Enter or Space. Its label
+  combines the authored prefix, warning types, and optional suffix.
+- Reveal removes the wrapper’s hiding attributes, the overlay, and the button.
+  The component sets `revealed` and `role="alert"` on the host.
+- It clones slotted **elements** into a persistent assertive alert region. Bare
+  text nodes, such as the inline example’s text, aren’t cloned there.
+- It calls `focus()` on the host but doesn’t add `tabindex`. Focus movement
+  depends on whether the host is focusable; authors who need a focus target can
+  set `tabindex="-1"` and test the resulting reading and keyboard order.
+- Alert announcements and focus handling vary by browser and assistive
+  technology. The alert mechanisms can produce repeated reading; they don’t
+  guarantee that every screen reader announces the content once.
 
-- Uses a semantic `<button>` element for the warning interaction
-- Button is keyboard accessible by default
-- Content is hidden from screen readers until revealed (both modes use `aria-hidden` or `hidden` attribute)
-- **Default mode**: Uses `hidden` + `inert` attributes (Reader Mode safe)
-- **Blur mode**: Uses `aria-hidden="true"` (visual obscuring only)
-- Sets `role="alert"` on the host element when content is revealed
-- Clones revealed content into a persistent `role="alert"` region for screen reader announcement
-- Screen readers announce the revealed content automatically
-- Focuses the revealed content for additional context
+Keep warning labels clear, provide image alternatives, and test long content
+and interactive descendants with the assistive technology your audience uses.
+Keep the label’s background opaque, its text readable, and its focus indicator
+visible when styling parts.
+
+On disconnect, the component removes its overlay click listener. It doesn’t
+restore authored `hidden`, cancel a pending render, or reset reveal state.
+Reconnection renders another warning; don’t rely on moving an element to
+restore its original state.
 
 ## Browser Support
 
@@ -358,7 +405,10 @@ This component uses modern web standards:
 - Shadow DOM v1
 - ES Modules
 
-For older browsers, you may need polyfills.
+It also uses `requestAnimationFrame`, `inert`, and CSS Shadow Parts. The browser
+suite exercises Chromium, Firefox, and WebKit; this isn’t an exhaustive
+browser or assistive-technology support guarantee. If registration fails,
+authored `hidden` remains in effect, and elements without it retain native content.
 
 ## Development
 
@@ -382,8 +432,8 @@ npm run lint
 # Format code
 npm run format
 
-# View demo
-open demo/index.html
+# Serve the repository and open /demo/ over HTTP
+# ES module imports do not reliably load from file:// URLs.
 ```
 
 ## License

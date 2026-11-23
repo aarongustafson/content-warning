@@ -91,3 +91,84 @@ it('names the multiple-warning and styled-button snippets after their own exampl
 		);
 	}
 });
+
+describe('authored demo examples', () => {
+	for (const page of ['index.html', 'esm.html', 'unpkg.html']) {
+		it(`${page} gives every code/live example its own unique destination`, async () => {
+			const template = document.createElement('template');
+			template.innerHTML = await readFile(`demo/${page}`, 'utf8');
+			const root = template.content;
+			const ids = [...root.querySelectorAll('[id]')].map(
+				(node) => node.id,
+			);
+			expect(new Set(ids).size).toBe(ids.length);
+			const destinations = [];
+			for (const pair of root.querySelectorAll('.code-demo-pair')) {
+				const block = pair.parentElement;
+				expect(block.id).toMatch(/^[a-z][a-z0-9-]+$/);
+				expect(
+					block.querySelector(':scope > h2, :scope > h3'),
+				).not.toBeNull();
+				expect(block.querySelector(':scope > p')).not.toBeNull();
+				destinations.push(block.id);
+			}
+			expect(new Set(destinations).size).toBe(destinations.length);
+		});
+
+		it(`${page} displays the authored warning, language, and image configuration`, async () => {
+			const template = document.createElement('template');
+			template.innerHTML = await readFile(`demo/${page}`, 'utf8');
+			for (const pair of template.content.querySelectorAll(
+				'.code-demo-pair',
+			)) {
+				const code = pair.querySelector('pre code').textContent;
+				const live = pair.querySelector('.demo');
+				for (const tag of ['content-warning', 'img']) {
+					// Compare plain attribute tokens; never interpret displayed code as HTML.
+					const displayed = [
+						...code.matchAll(new RegExp(`<${tag}\\b([^>]*)>`, 'g')),
+					].map((match) =>
+						[...match[1].matchAll(/([\w-]+)(?:="([^"]*)")?/g)]
+							.map((attribute) => [
+								attribute[1],
+								attribute[2] ?? '',
+							])
+							.sort(([a], [b]) => a.localeCompare(b)),
+					);
+					const authored = [...live.querySelectorAll(tag)].map(
+						(node) =>
+							[...node.attributes]
+								.map((attribute) => [
+									attribute.name,
+									attribute.value,
+								])
+								.sort(([a], [b]) => a.localeCompare(b)),
+					);
+					expect(displayed, `${page}: ${tag} configuration`).toEqual(
+						authored,
+					);
+				}
+			}
+		});
+	}
+
+	for (const page of ['esm.html', 'unpkg.html']) {
+		it(`${page} displays the module code it executes`, async () => {
+			const template = document.createElement('template');
+			template.innerHTML = await readFile(`demo/${page}`, 'utf8');
+			const module = [
+				...template.content.querySelectorAll(
+					'script[type="module"]:not([src])',
+				),
+			].find((script) => script.textContent.includes('https://'));
+			const displayed = [
+				...template.content.querySelectorAll('pre code'),
+			].find((code) => code.textContent.includes('https://'));
+			expect(displayed).toBeDefined();
+			const normalize = (text) => text.replace(/\s+/g, ' ').trim();
+			expect(normalize(displayed.textContent)).toBe(
+				normalize(module.textContent),
+			);
+		});
+	}
+});

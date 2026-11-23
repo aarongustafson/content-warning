@@ -17,6 +17,26 @@
 				registers it manually. See the
 				<a href="../README.md">README</a>.
 			</p>
+			<p>
+				The examples author <code>hidden</code>: their warning content
+				stays hidden if JavaScript or the CDN fails. After loading, use
+				the reveal button with Enter, Space, or a pointer.
+			</p>
+			<micro-lighter
+				class="code-panel"
+				language="javascript"
+				controls="copy"
+				data-label="JavaScript"
+			>
+				<pre
+					aria-label="esm.sh registration code"
+					tabindex="0"
+				><code><mark>import { ContentWarningElement } from 'https://esm.sh/@aarongustafson/content-warning@1.1.3/content-warning.js?bundle&amp;target=es2022';
+
+if (!customElements.get('content-warning')) {
+  customElements.define('content-warning', ContentWarningElement);
+}</mark></code></pre>
+			</micro-lighter>
 			<nav aria-label="Component resources">
 				<a
 					href="https://github.com/aarongustafson/content-warning/blob/main/README.md"
@@ -40,8 +60,12 @@
 				hidden
 			></p>
 
-			<section class="demo-section">
+			<section class="demo-section" id="block-warning">
 				<h2>Block Content Warning</h2>
+				<p>
+					Set <code>type</code> to describe the content before someone
+					reveals it.
+				</p>
 				<div class="code-demo-pair">
 					<micro-lighter
 						class="code-panel"
@@ -54,6 +78,7 @@
 							tabindex="0"
 						><code><mark>&lt;content-warning type="violence spoilers" hidden&gt;</mark>
   &lt;p&gt;This content contains graphic violence and spoilers.&lt;/p&gt;
+  &lt;p&gt;The scene describes a battle and its aftermath.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 					</micro-lighter>
 					<div class="demo" data-demo-label="Live example">
@@ -63,17 +88,19 @@
 								spoilers.
 							</p>
 							<p>
-								Lorem ipsum dolor sit amet, consectetur
-								adipiscing elit. Sed do eiusmod tempor
-								incididunt ut labore et dolore magna aliqua.
+								The scene describes a battle and its aftermath.
 							</p>
 						</content-warning>
 					</div>
 				</div>
 			</section>
 
-			<section class="demo-section">
+			<section class="demo-section" id="inline-warning">
 				<h2>Inline Content Warning</h2>
+				<p>
+					Add <code>inline</code> to place a warning within a
+					sentence.
+				</p>
 				<div class="code-demo-pair">
 					<micro-lighter
 						class="code-panel"
