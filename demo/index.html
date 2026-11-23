@@ -7,16 +7,14 @@
 		<link rel="stylesheet" href="./demo-shell.css" />
 		<link rel="stylesheet" href="./styles.css" />
 		<!--
-			Reader Mode Safety: To prevent Reader Mode (Edge Immersive Reader,
-			Safari Reader, etc.) from extracting content before JavaScript runs,
-			add the 'hidden' attribute to content-warning elements:
+			Add native 'hidden' to keep content hidden before upgrade and
+			when JavaScript fails:
 
 			<content-warning type="violence" hidden>...</content-warning>
 
 			The component automatically removes the 'hidden' attribute when it
-			initializes, and its Shadow DOM hiding logic takes over.
-
-			Without 'hidden', Reader Mode will extract and display the content.
+			connects, then renders its Shadow DOM warning on the next frame.
+			Reader Mode behavior varies; neither mode guarantees exclusion.
 		-->
 	</head>
 	<body data-demo-page="full" data-syntax-theme="github">
@@ -31,6 +29,13 @@
 					>README</a
 				>
 				for installation and API documentation.
+			</p>
+			<p>
+				Most examples author <code>hidden</code> so warning content
+				stays hidden before upgrade and without JavaScript. The inline
+				examples retain visible native text instead. Once loaded, the
+				component adds a native reveal button. Reader Mode tools may
+				still extract content; this isn’t an access-control mechanism.
 			</p>
 			<nav aria-label="Component resources">
 				<a
@@ -57,16 +62,21 @@
 			></p>
 
 			<!-- Basic Block Example -->
-			<section>
+			<section id="block-warnings">
 				<h2>Block Content Warning</h2>
 				<p>
 					A block-level content warning that overlays the entire
 					content area.
 				</p>
 
-				<div class="demo-section">
+				<div class="demo-section" id="single-warning-type">
 					<h3>Single Warning Type</h3>
-					<p>Click or press Enter to reveal the content.</p>
+					<p>
+						Wrap the content and set <code>type</code> to name the
+						warning. Tab to its button, then press Enter or Space to
+						reveal it. Without JavaScript, authored
+						<code>hidden</code> keeps this content hidden.
+					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
 							class="code-panel"
@@ -79,21 +89,21 @@
 								tabindex="0"
 							><code><mark>&lt;content-warning type="violence" hidden&gt;</mark>
   &lt;p&gt;This content contains graphic violence.&lt;/p&gt;
-  &lt;p&gt;Lorem ipsum dolor sit amet...&lt;/p&gt;
+  &lt;p&gt;The scene describes a battle and its aftermath.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
 							<content-warning type="violence" hidden>
 								<p>This content contains graphic violence.</p>
 								<p>
-									Lorem ipsum dolor sit amet, consectetur
-									adipiscing elit. Sed do eiusmod tempor
-									incididunt ut labore et dolore magna aliqua.
+									The scene describes a battle and its
+									aftermath.
 								</p>
 							</content-warning>
 						</div>
 					</div>
-
+				</div>
+				<div class="demo-section" id="multiple-warning-types">
 					<h3>Multiple Warning Types</h3>
 					<p>
 						Use space-separated types for multiple warning
@@ -111,6 +121,7 @@
 								tabindex="0"
 							><code><mark>&lt;content-warning type="violence spoilers nsfw" hidden&gt;</mark>
   &lt;p&gt;Contains violence, spoilers, and mature content.&lt;/p&gt;
+  &lt;p&gt;The protagonist dies in the final battle, sacrificing themselves to save their friends.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
@@ -134,13 +145,19 @@
 			</section>
 
 			<!-- Inline Content Warning -->
-			<section>
+			<section id="inline-warnings">
 				<h2>Inline Content Warning</h2>
 				<p>An inline content warning that works within text flow.</p>
 
-				<div class="demo-section">
+				<div class="demo-section" id="inline-usage">
 					<h3>Inline Usage</h3>
-					<p>Click the warning to reveal the hidden text.</p>
+					<p>
+						Add <code>inline</code> to place the button within a
+						sentence. This example omits <code>hidden</code>, so
+						“episode 5” remains visible without JavaScript. Add
+						<code>hidden</code> if that fallback would expose
+						content you need to conceal.
+					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
 							class="code-panel"
@@ -167,7 +184,8 @@
 							</p>
 						</div>
 					</div>
-
+				</div>
+				<div class="demo-section" id="multiple-inline-warnings">
 					<h3>Multiple Inline Warnings</h3>
 					<p>
 						You can have multiple inline warnings in one sentence.
@@ -205,20 +223,25 @@
 			</section>
 
 			<!-- Content Hiding Modes -->
-			<section>
+			<section id="hiding-modes">
 				<h2>Content Hiding Modes</h2>
 				<p>
 					The component offers two modes for hiding content, each with
 					different trade-offs.
 				</p>
 
-				<div class="demo-section">
-					<h3>Default Mode (Reader Mode Safe)</h3>
+				<div class="demo-section" id="default-hiding">
+					<h3>Default Mode (Dark Overlay)</h3>
 					<p>
-						Content is truly hidden using <code>hidden</code> and
-						<code>inert</code> attributes. This mode ensures content
-						is not extracted by Reader Mode and is completely hidden
-						from screen readers until revealed.
+						After render, the component applies
+						<code>hidden</code> and <code>inert</code> to its
+						content wrapper. <code>inert</code> prevents interaction
+						and excludes the content from the accessibility tree.
+						Block content keeps its layout beneath a dark,
+						translucent overlay because the wrapper’s CSS overrides
+						native hidden display. Authored
+						<code>hidden</code> hides the whole element before
+						upgrade; Reader Mode behavior still varies across tools.
 					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
@@ -228,36 +251,32 @@
 							data-label="HTML"
 						>
 							<pre
-								aria-label="Default Mode (Reader Mode Safe) code 5"
+								aria-label="Default Mode (Dark Overlay) code 5"
 								tabindex="0"
 							><code><mark>&lt;content-warning type="sensitive content" hidden&gt;</mark>
-  &lt;p&gt;This content is completely hidden.&lt;/p&gt;
-  &lt;p&gt;Reader Mode won't extract it.&lt;/p&gt;
+  &lt;p&gt;The overlay covers this content until you reveal it.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
 							<content-warning type="sensitive content" hidden>
 								<p>
-									This content is completely hidden until
-									revealed.
-								</p>
-								<p>
-									It won't be extracted by Reader Mode in
-									browsers like Edge or Safari.
-								</p>
-								<p>
-									Best for content that should be truly hidden
-									for accessibility and privacy.
+									The overlay covers this content until you
+									reveal it.
 								</p>
 							</content-warning>
 						</div>
 					</div>
-
+				</div>
+				<div class="demo-section" id="blur-mode">
 					<h3>Blur Mode (Visual Only)</h3>
 					<p>
 						Content is visually obscured with CSS blur but remains
-						in the DOM. Uses <code>aria-hidden="true"</code> to hide
-						from screen readers.
+						in the DOM. The wrapper uses
+						<code>aria-hidden="true"</code> to exclude it from the
+						accessibility tree, not <code>inert</code>. Avoid
+						focusable descendants in blur examples. Bare text nodes
+						aren’t blurred; inline warnings hide their wrapper
+						instead.
 						<strong
 							>Not guaranteed to be hidden from Reader
 							Mode.</strong
@@ -274,29 +293,20 @@
 								aria-label="Blur Mode (Visual Only; Not Guaranteed Hidden from Reader Mode) code 6"
 								tabindex="0"
 							><code><mark>&lt;content-warning type="spoilers" blur hidden&gt;</mark>
-  &lt;p&gt;This content is blurred visually.&lt;/p&gt;
-  &lt;p&gt;May be visible in Reader Mode.&lt;/p&gt;
+  &lt;p&gt;This content is blurred visually and may be extracted by Reader Mode.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
 							<content-warning type="spoilers" blur hidden>
 								<p>
-									This content is blurred for visual
-									obscuring.
-								</p>
-								<p>
-									The blur effect provides an aesthetic
-									warning without completely removing content
-									from the DOM.
-								</p>
-								<p>
-									Best when visual obscuring is the priority
-									over complete hiding.
+									This content is blurred visually and may be
+									extracted by Reader Mode.
 								</p>
 							</content-warning>
 						</div>
 					</div>
-
+				</div>
+				<div class="demo-section" id="custom-blur-amount">
 					<h3>Custom Blur Amount</h3>
 					<p>
 						Adjust the blur intensity using the
@@ -322,12 +332,15 @@
   }
 &lt;/style&gt;
 
-<mark>&lt;content-warning type="spoilers" blur class="light-blur"&gt;</mark>
-  &lt;p&gt;Lightly blurred (5px)&lt;/p&gt;
+<mark>&lt;content-warning type="spoilers" blur class="light-blur" hidden&gt;</mark>
+  &lt;p&gt;Lightly blurred content (5px blur)&lt;/p&gt;
+  &lt;p&gt;Text is more readable through the blur.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark>
 
-<mark>&lt;content-warning type="spoilers" blur class="heavy-blur"&gt;</mark>
-  &lt;p&gt;Heavily blurred (20px)&lt;/p&gt;
+&lt;br&gt;&lt;br&gt;
+<mark>&lt;content-warning type="spoilers" blur class="heavy-blur" hidden&gt;</mark>
+  &lt;p&gt;Heavily blurred content (20px blur)&lt;/p&gt;
+  &lt;p&gt;Text is much harder to read through the blur.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
@@ -363,9 +376,14 @@
 							</content-warning>
 						</div>
 					</div>
-
+				</div>
+				<div class="demo-section" id="hiding-comparison">
 					<h3>Comparison</h3>
-					<p>Side-by-side comparison of both modes:</p>
+					<p>
+						Compare the dark overlay with visual blur. Both block
+						warnings keep the paragraphs’ layout before reveal; blur
+						lets their shapes show around the button.
+					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
 							class="code-panel"
@@ -377,7 +395,7 @@
 								aria-label="Comparison code 8"
 								tabindex="0"
 							><code><mark>&lt;content-warning type="test" hidden&gt;</mark>
-  &lt;p&gt;Completely hidden content.&lt;/p&gt;
+  &lt;p&gt;Content covered by the overlay.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark>
 
 <mark>&lt;content-warning type="test" blur hidden&gt;</mark>
@@ -389,17 +407,15 @@
 							data-demo-label="Live example"
 						>
 							<div>
-								<h4 style="margin-top: 0">Default (Hidden)</h4>
+								<h4 style="margin-top: 0">Default (Overlay)</h4>
 								<content-warning type="test" hidden>
-									<p>Completely hidden content.</p>
-									<p>Reader Mode safe.</p>
+									<p>Content covered by the overlay.</p>
 								</content-warning>
 							</div>
 							<div>
 								<h4 style="margin-top: 0">Blur Mode</h4>
 								<content-warning type="test" blur hidden>
 									<p>Visually blurred content.</p>
-									<p>Still in DOM.</p>
 								</content-warning>
 							</div>
 						</div>
@@ -408,12 +424,17 @@
 			</section>
 
 			<!-- Custom Styling -->
-			<section>
+			<section id="custom-styling">
 				<h2>Custom Styling</h2>
 				<p>Customize the appearance using CSS Shadow Parts.</p>
 
-				<div class="demo-section">
+				<div class="demo-section" id="custom-colors">
 					<h3>Custom Colors</h3>
+					<p>
+						Set both button colors to keep the label on an opaque
+						backplate. The overlay can have a separate background;
+						keep the focus outline visible.
+					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
 							class="code-panel"
@@ -437,8 +458,9 @@
   }
 &lt;/style&gt;
 
-<mark>&lt;content-warning type="horror" class="custom-warning"&gt;</mark>
-  &lt;p&gt;Scary content here!&lt;/p&gt;
+<mark>&lt;content-warning type="horror" class="custom-warning" hidden&gt;</mark>
+  &lt;p&gt;This is scary content with custom styling!&lt;/p&gt;
+  &lt;p&gt;The dark red background and red border make it stand out.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
@@ -457,6 +479,7 @@
 							<content-warning
 								type="horror"
 								class="custom-warning"
+								hidden
 							>
 								<p>
 									This is scary content with custom styling!
@@ -468,7 +491,8 @@
 							</content-warning>
 						</div>
 					</div>
-
+				</div>
+				<div class="demo-section" id="styled-button-text">
 					<h3>Styled Button Text</h3>
 					<p>Style the button text and appearance.</p>
 					<div class="code-demo-pair">
@@ -492,8 +516,8 @@
   }
 &lt;/style&gt;
 
-<mark>&lt;content-warning type="mature" class="styled-parts"&gt;</mark>
-  &lt;p&gt;Mature content here.&lt;/p&gt;
+<mark>&lt;content-warning type="mature" class="styled-parts" hidden&gt;</mark>
+  &lt;p&gt;This content is for mature audiences.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
@@ -519,12 +543,17 @@
 				</div>
 			</section>
 			<!-- Event Handling -->
-			<section>
+			<section id="event-handling">
 				<h2>Event Handling</h2>
 				<p>Listen for the revealed event to track user interactions.</p>
 
-				<div class="demo-section">
+				<div class="demo-section" id="tracking-reveals">
 					<h3>Tracking Reveals</h3>
+					<p>
+						Activate the warning to update the status below it. The
+						event fires once per reveal and supplies the authored
+						<code>type</code>.
+					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
 							class="code-panel"
@@ -535,8 +564,8 @@
 							<pre
 								aria-label="Tracking Reveals code 11"
 								tabindex="0"
-							><code><mark>&lt;content-warning type="spoilers" id="tracked"&gt;</mark>
-  &lt;p&gt;Secret content!&lt;/p&gt;
+							><code><mark>&lt;content-warning type="spoilers" id="tracked" hidden&gt;</mark>
+  &lt;p&gt;This is the secret content that was revealed!&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark>
 &lt;p id="status"&gt;Status: Hidden&lt;/p&gt;
 
@@ -559,7 +588,7 @@
 									revealed!
 								</p>
 							</content-warning>
-							<p id="status"><strong>Status:</strong> Hidden</p>
+							<p id="status">Status: Hidden</p>
 							<script>
 								document
 									.getElementById('tracked')
@@ -568,8 +597,8 @@
 										(e) => {
 											document.getElementById(
 												'status',
-											).innerHTML =
-												`<strong>Status:</strong> Revealed (${e.detail.type})`;
+											).textContent =
+												`Status: Revealed (${e.detail.type})`;
 										},
 									);
 							</script>
@@ -579,17 +608,67 @@
 			</section>
 
 			<!-- Internationalization -->
-			<section>
-				<h2>Internationalization (i18n)</h2>
+			<section id="labels-and-translations">
+				<h2>Labels and Translations</h2>
 				<p>
 					Customize the button label using
-					<code>label-prefix</code> and <code>label-suffix</code>
-					attributes to support different languages. Each label part
-					can be styled individually using CSS Shadow Parts.
+					<code>label-prefix</code> and
+					<code>label-suffix</code> attributes for your application’s
+					vocabulary or a different language. Translate
+					<code>type</code> too, and set <code>lang</code> on
+					translated content. See the
+					<a
+						href="https://github.com/aarongustafson/content-warning/blob/main/README.md#internationalization-i18n"
+						>label reference</a
+					>
+					for punctuation and defaults.
 				</p>
 
-				<div class="demo-section">
+				<div class="demo-section" id="custom-vocabulary">
+					<h3>Use Your Application’s Vocabulary</h3>
+					<p>
+						Change the prefix and suffix to fit a review workflow.
+						These attributes change the label, not the reveal
+						behavior.
+					</p>
+					<div class="code-demo-pair">
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Custom vocabulary code"
+								tabindex="0"
+							><code><mark>&lt;content-warning
+  type="plot details"
+  label-prefix="Review note"
+  label-suffix="Show details"
+  hidden&gt;</mark>
+  &lt;p&gt;The review discusses the ending.&lt;/p&gt;
+<mark>&lt;/content-warning&gt;</mark></code></pre>
+						</micro-lighter>
+						<div class="demo" data-demo-label="Live example">
+							<content-warning
+								type="plot details"
+								label-prefix="Review note"
+								label-suffix="Show details"
+								hidden
+							>
+								<p>The review discusses the ending.</p>
+							</content-warning>
+						</div>
+					</div>
+				</div>
+
+				<div class="demo-section" id="spanish-translation">
 					<h3>Spanish Translation</h3>
+					<p>
+						Translate the warning and image alternative, and use
+						<code>lang="es"</code> to identify Spanish content. This
+						photo is a placeholder, not a graphic image.
+					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
 							class="code-panel"
@@ -612,8 +691,11 @@
   label-prefix="Advertencia de Contenido"
   label-suffix="Haz clic para revelar"
   class="spanish-warning"
+  lang="es"
+  hidden
 &gt;</mark>
-  &lt;img src="..." alt="..."&gt;
+  &lt;img src="https://picsum.photos/600/400?random=5"
+    alt="Fotografía de ejemplo" style="display: block; max-width: 100%"&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
@@ -628,18 +710,25 @@
 								label-prefix="Advertencia de Contenido"
 								label-suffix="Haz clic para revelar"
 								class="spanish-warning"
+								lang="es"
 								hidden
 							>
 								<img
 									src="https://picsum.photos/600/400?random=5"
-									alt="Placeholder image"
+									alt="Fotografía de ejemplo"
 									style="display: block; max-width: 100%"
 								/>
 							</content-warning>
 						</div>
 					</div>
-
+				</div>
+				<div class="demo-section" id="french-translation">
 					<h3>French Translation</h3>
+					<p>
+						Use <code>lang="fr"</code> for French. Each label part
+						can also be styled, while the button keeps an opaque
+						background.
+					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
 							class="code-panel"
@@ -669,8 +758,10 @@
   label-prefix="Avertissement"
   label-suffix="Cliquez pour révéler"
   class="french-warning"
+  lang="fr"
+  hidden
 &gt;</mark>
-  &lt;p&gt;Contenu en français...&lt;/p&gt;
+  &lt;p&gt;Ce contenu pourrait être considéré comme sensible par certains utilisateurs. Veuillez faire preuve de discrétion.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
@@ -692,6 +783,8 @@
 								label-prefix="Avertissement"
 								label-suffix="Cliquez pour révéler"
 								class="french-warning"
+								lang="fr"
+								hidden
 							>
 								<p>
 									Ce contenu pourrait être considéré comme
@@ -701,7 +794,8 @@
 							</content-warning>
 						</div>
 					</div>
-
+				</div>
+				<div class="demo-section" id="no-suffix">
 					<h3>No Suffix</h3>
 					<p>
 						Set <code>label-suffix="false"</code> to hide the suffix
@@ -720,17 +814,19 @@
 							><code><mark>&lt;content-warning
   type="graphic content"
   label-suffix="false"
+  hidden
 &gt;</mark>
-  &lt;p&gt;Content here&lt;/p&gt;
+  &lt;p&gt;This warning has no suffix text—just the prefix and type.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
 							<content-warning
 								type="graphic content"
 								label-suffix="false"
+								hidden
 							>
 								<p>
-									This warning has no suffix text - just the
+									This warning has no suffix text—just the
 									prefix and type.
 								</p>
 							</content-warning>
