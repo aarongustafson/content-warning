@@ -476,6 +476,9 @@ npm test
 # Run tests with coverage
 npm run test:coverage
 
+# Check TypeScript declarations and event listener types
+npm run test:types
+
 # Install browser engines and check rendering and keyboard behavior
 npx playwright install chromium firefox webkit
 npm run test:browser

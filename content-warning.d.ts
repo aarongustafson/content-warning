@@ -131,6 +131,19 @@ export class ContentWarningElement extends HTMLElement {
 		listener: EventListenerOrEventListenerObject | null,
 		options?: boolean | AddEventListenerOptions,
 	): void;
+	removeEventListener<K extends keyof ContentWarningEventMap>(
+		type: K,
+		listener: (
+			this: ContentWarningElement,
+			event: ContentWarningEventMap[K],
+		) => void,
+		options?: boolean | EventListenerOptions,
+	): void;
+	removeEventListener(
+		type: string,
+		listener: EventListenerOrEventListenerObject | null,
+		options?: boolean | EventListenerOptions,
+	): void;
 }
 
 /** Partial, page-level authored defaults; no built-in locale catalog or named scopes. */
