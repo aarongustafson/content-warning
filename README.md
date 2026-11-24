@@ -147,26 +147,26 @@ Blur changes the enhanced presentation, not the pre-upgrade fallback.
 
 ## Attributes
 
-| Attribute      | Type      | Default             | Description                                                            |
-| -------------- | --------- | ------------------- | ---------------------------------------------------------------------- |
-| `type`         | `string`  | `"content"`         | Space-separated list of warning types (e.g., "violence spoilers nsfw") |
-| `label-prefix` | `string`  | `"Content Warning"` | The prefix text for the warning label                                  |
-| `label-suffix` | `string`  | `"Click to reveal"` | The suffix text for the warning label. Set to `"false"` to hide.       |
-| `inline`       | `boolean` | `false`             | Display the warning inline instead of as a block overlay               |
-| `blur`         | `boolean` | `false`             | Blur slotted elements instead of using native hiding after render      |
-| `hidden`       | `boolean` | `false`             | Native pre-upgrade hiding; removed when the component connects         |
+| Attribute      | Type      | Default              | Description                                                                |
+| -------------- | --------- | -------------------- | -------------------------------------------------------------------------- |
+| `type`         | `string`  | `"content"`          | Space-separated list of warning types (e.g., "violence spoilers nsfw")     |
+| `reveal-label` | `string`  | absent               | Complete visible button label, also its accessible name; supports `{type}` |
+| `type-label`   | `string`  | `"content"` fallback | Text to use when `type` is missing or empty                                |
+| `inline`       | `boolean` | `false`              | Display the warning inline instead of as a block overlay                   |
+| `blur`         | `boolean` | `false`              | Blur slotted elements instead of using native hiding after render          |
+| `hidden`       | `boolean` | `false`              | Native pre-upgrade hiding; removed when the component connects             |
 
-**Default Button Label Format:** `{prefix}: {type} {suffix}`
+Without a template, the existing “Content Warning: {type} Click to reveal”
+presentation remains unchanged. See [deprecated label fragments](#deprecated-label-fragments)
+for compatibility behavior.
 
-Example: "Content Warning: violence spoilers Click to reveal"
-
-Initial rendering uses “Click to reveal” when `label-suffix` is absent or empty.
-After a label update, an absent suffix is omitted; an empty suffix uses the
-default text. Use `label-suffix="false"` to omit it consistently.
-Supply trusted plain text for labels and warning types: initial rendering
-interpolates these attributes into HTML, so they must not contain untrusted input.
-
-**Note:** Punctuation and spacing between label parts are controlled via CSS pseudo-elements (`:after` and `:before`), making them easy to customize without affecting the underlying text content.
+Template values must be nonempty plain text. `{type}` is the only supported
+token and may appear more than once or be omitted for a fixed label. Other
+tokens and unmatched braces are invalid. Values substituted into `{type}` are
+literal text: markup, dollar signs, and braces in a warning type aren’t evaluated.
+The resolved label must also contain nonwhitespace text.
+`type-label` is plain text, not another template. Each new attribute has a
+matching camelCase property; see [localization](#internationalization-i18n).
 
 ## Events
 
@@ -176,8 +176,10 @@ The component fires custom events that you can listen to:
 | -------------------------- | ---------------------------------------------- | ------------------------------------------------------ |
 | `content-warning:revealed` | Fired once when the user activates the warning | `{ type: string \| null }` - The authored warning type |
 
-The event bubbles and crosses shadow boundaries. A missing `type` attribute
-produces `null` in the event detail even though the button displays “content.”
+The event bubbles and crosses shadow boundaries. It isn’t cancelable and fires
+after the reveal state and DOM update, before the focus attempt. A missing `type`
+attribute produces `null` in the event detail even though the button uses the
+configured fallback wording (English “content” by default).
 
 ### Example Event Handling
 
@@ -192,17 +194,38 @@ element.addEventListener('content-warning:revealed', (event) => {
 
 ## Properties
 
-| Property      | Type                  | Description                                   |
-| ------------- | --------------------- | --------------------------------------------- |
-| `type`        | `string`              | Get/set the warning type(s)                   |
-| `labelPrefix` | `string`              | Get/set the prefix text for the warning label |
-| `labelSuffix` | `string`              | Get/set the suffix text for the warning label |
-| `revealed`    | `boolean` (read-only) | Whether the content has been revealed         |
+| Property      | Type                  | Description                             |
+| ------------- | --------------------- | --------------------------------------- |
+| `type`        | `string \| null`      | Get/set the warning type(s)             |
+| `revealLabel` | `string \| null`      | Authored complete-label override        |
+| `typeLabel`   | `string \| null`      | Authored missing-type fallback override |
+| `revealed`    | `boolean` (read-only) | Whether the content has been revealed   |
 
-`type`, `labelPrefix`, and `labelSuffix` reflect their attributes and return
+`type`, `revealLabel`, and `typeLabel` reflect their attributes and return
 `null` when absent; assigning `null` or `undefined` removes the attribute.
-Labels and `blur` update while unrevealed. The component reads `inline` when it
+They return authored values, not resolved page defaults. Pre-definition property
+assignments are replayed on connection. Labels and `blur` update while
+unrevealed; updating label text keeps the button, focus, and content intact and
+doesn’t emit `content-warning:revealed`. The component reads `inline` when it
 connects. There’s no public reset or conceal method.
+
+## Methods
+
+| Method      | Result    | Behavior                                                                                             |
+| ----------- | --------- | ---------------------------------------------------------------------------------------------------- |
+| `refresh()` | `boolean` | Reread shared and instance labels in place; call on each affected instance after editing shared JSON |
+| `render()`  | `void`    | Initialize shadow content once; later calls refresh labels rather than rebuild content               |
+
+Wait for initial rendering before calling `refresh()`; connection schedules it
+on the next animation frame. A disconnected/uninitialized call returns `false`
+and logs an `InvalidStateError`. Invalid configuration also returns `false`,
+logs the error, and preserves the previous button text. Invalid initial
+configuration logs an error and uses the existing legacy label presentation so
+the reveal control remains usable. Correct the configuration and call
+`refresh()` to recover.
+
+After reveal, `refresh()` returns `true` without reading configuration or changing
+content; `render()` is also a no-op. Neither method conceals content again.
 
 ## CSS Custom Properties
 
@@ -237,13 +260,18 @@ visible focus outline. `--content-warning-color` still overrides the outline
 when a theme needs a different focus color. Automatic forced-color adjustment
 remains enabled.
 
-| Part           | Description                                       |
-| -------------- | ------------------------------------------------- |
-| `overlay`      | The full-area overlay div that covers the content |
-| `button`       | The warning button element inside the overlay     |
-| `label-prefix` | The prefix text span (e.g., "Content Warning")    |
-| `label-type`   | The warning type text span                        |
-| `label-suffix` | The optional suffix text span                     |
+| Part           | Description                                                        |
+| -------------- | ------------------------------------------------------------------ |
+| `overlay`      | The full-area overlay div that covers the content                  |
+| `button`       | The warning button element inside the overlay                      |
+| `label`        | Complete template label, with punctuation supplied by the template |
+| `label-prefix` | Deprecated legacy prefix span                                      |
+| `label-type`   | Deprecated legacy type span                                        |
+| `label-suffix` | Deprecated legacy suffix span                                      |
+
+The three legacy label parts remain available when no template is selected.
+Template labels use a single `label` span instead; moving to a template also
+means moving any fragment-specific styling to `::part(label)` or `::part(button)`.
 
 ### Example Styling
 
@@ -265,18 +293,9 @@ content-warning::part(button) {
   border-radius: 0.5rem;
 }
 
-/* Style individual label parts */
-content-warning::part(label-prefix) {
+/* Style the complete template label */
+content-warning::part(label) {
   font-weight: bold;
-}
-
-content-warning::part(label-type) {
-  font-style: italic;
-  color: #ff6b6b;
-}
-
-content-warning::part(label-suffix) {
-  font-size: 0.875em;
 }
 
 /* Style inline warnings differently */
@@ -294,88 +313,123 @@ content-warning[inline]::part(button) {
 
 ## Internationalization (i18n)
 
-Use `label-prefix`, `type`, and `label-suffix` for your application’s vocabulary
-or a translation. Set `lang` for translated content and provide image alternatives
-in that language. The component doesn’t supply a shared localization object.
+Use a complete `reveal-label` template for your application’s vocabulary or a
+translation. Authors control word order, punctuation, and the warning type.
+The visible button text also supplies its accessible name; there isn’t a
+separate hidden translation to maintain.
 
 ```html
-<!-- Spanish -->
 <content-warning
   type="violencia gore"
-  label-prefix="Advertencia de Contenido"
-  label-suffix="Haz clic para revelar"
+  reveal-label="Advertencia: {type}. Mostrar contenido"
   lang="es"
   hidden
 >
   <img src="image.jpg" alt="Descripción de la imagen" />
 </content-warning>
+```
 
-<!-- French -->
+Set `lang` for translated content and provide image alternatives in that
+language. `lang` doesn’t select translations: this component ships no
+multilingual catalog. When `type` is missing or empty, `type-label` supplies the
+context, falling back to `"content"`. Translate that fallback too, supply an
+explicit localized `type`, or use a template without `{type}`.
+
+### Shared labels
+
+Place one inline JSON script in the document to share defaults across instances:
+
+```html
+<script type="application/json" data-content-warning-config>
+  {
+    "reveal-label": "Aviso: {type}. Mostrar contenido",
+    "type-label": "contenido"
+  }
+</script>
+
+<content-warning type="spoilers" lang="es" hidden>
+  <p>El personaje regresa al final.</p>
+</content-warning>
+
+<content-warning reveal-label="Mostrar detalles" lang="es" hidden>
+  <p>Más detalles sobre la historia.</p>
+</content-warning>
+```
+
+The first warning uses the shared template; the second supplies an instance
+override. The script accepts a flat, partial object with `reveal-label` and/or
+`type-label` string keys. Missing keys retain their defaults. There are no
+language dictionaries or named scopes: translate the values yourself, and
+leave the marker empty. The marker is always `data-content-warning-config`,
+even when registering a different tag name.
+
+Label precedence is:
+
+1. Instance `reveal-label`.
+2. Explicit legacy prefix/suffix attributes, if either is present.
+3. Shared `reveal-label`.
+4. Existing legacy default presentation.
+
+For missing-type context, instance `type-label` overrides shared `type-label`,
+then `"content"`; a nonempty `type` always wins. Removing an override exposes
+the next layer. An empty new label is invalid, not a way to remove an override.
+
+Malformed JSON, unknown keys, nonstring/empty values, duplicate scripts,
+external scripts, non-JSON script types, and nonempty scope markers are reported
+as configuration errors, even if an instance overrides the affected value.
+Read the [method recovery contract](#methods).
+
+Place the script before the warnings when possible. Shared script edits or
+replacement aren’t observed automatically; call `refresh()` on each affected,
+initialized instance. Parsed JSON is cached until its text changes. A page
+language change alone doesn’t alter the supplied strings.
+
+### Deprecated label fragments
+
+The fragment attributes, properties, and three label-fragment parts are
+deprecated and planned for removal in the next major release. They still work
+in this additive update; no runtime deprecation warnings are emitted.
+
+| Attribute / property           | Legacy behavior                                              |
+| ------------------------------ | ------------------------------------------------------------ |
+| `label-prefix` / `labelPrefix` | Prefix text, default `"Content Warning"`                     |
+| `label-suffix` / `labelSuffix` | Suffix text, default `"Click to reveal"`; `"false"` omits it |
+
+These properties return raw `string | null` values and remove attributes when
+assigned `null` or `undefined`. Existing CSS punctuation on `label-prefix`,
+`label-type`, and `label-suffix` is preserved on the legacy path. Initial
+rendering includes the default suffix; later legacy updates omit an absent
+suffix but use the default for an empty suffix, as before. Use `"false"` for
+consistent legacy suppression.
+
+Migrate the whole phrase, including punctuation, and remove fragment attributes
+and fragment-specific styles:
+
+```html
+<!-- Before -->
 <content-warning
-  type="contenu sensible"
-  label-prefix="Avertissement"
-  label-suffix="Cliquez pour révéler"
-  lang="fr"
+  type="spoilers"
+  label-prefix="Warning"
+  label-suffix="Show details"
   hidden
 >
-  <p>Contenu en français...</p>
+  <p>The character returns.</p>
 </content-warning>
 
-<!-- No suffix -->
-<content-warning type="graphic content" label-suffix="false" hidden>
-  <p>Content without suffix text</p>
+<!-- After -->
+<content-warning
+  type="spoilers"
+  reveal-label="Warning: {type}. Show details"
+  hidden
+>
+  <p>The character returns.</p>
 </content-warning>
-```
-
-Style each label part individually:
-
-```css
-content-warning::part(label-prefix) {
-  font-weight: bold;
-}
-
-content-warning::part(label-type) {
-  font-style: italic;
-}
-
-content-warning::part(label-suffix) {
-  font-size: 0.875em;
-}
-```
-
-### Customizing Punctuation
-
-Punctuation and spacing between label parts are controlled via CSS pseudo-elements:
-
-```css
-/* Default punctuation (already applied) */
-.label-prefix::after {
-  content: ': '; /* Colon and space after prefix */
-}
-
-[part='label-type']::before {
-  content: ' '; /* Space before type */
-}
-
-[part='label-suffix']::before {
-  content: ' '; /* Space before suffix */
-}
-
-/* Customize punctuation */
-content-warning::part(label-prefix)::after {
-  content: ' — '; /* Em dash instead of colon */
-}
-
-/* Remove punctuation entirely */
-content-warning::part(label-prefix)::after {
-  content: ' '; /* Just a space */
-}
 ```
 
 ## Accessibility
 
 - A native `<button>` supports keyboard activation with Enter or Space. Its label
-  combines the authored prefix, warning types, and optional suffix.
+  uses the selected whole-phrase template or the legacy fragment presentation.
 - Reveal removes the wrapper’s hiding attributes, the overlay, and the button.
   The component sets `revealed` and `role="alert"` on the host.
 - It clones slotted **elements** into a persistent assertive alert region. Bare
@@ -392,10 +446,10 @@ and interactive descendants with the assistive technology your audience uses.
 Keep the label’s background opaque, its text readable, and its focus indicator
 visible when styling parts.
 
-On disconnect, the component removes its overlay click listener. It doesn’t
-restore authored `hidden`, cancel a pending render, or reset reveal state.
-Reconnection renders another warning; don’t rely on moving an element to
-restore its original state.
+On disconnect, the component removes its overlay click listener and cancels a
+pending initialization frame. It doesn’t restore authored `hidden` or reset
+reveal state. Reconnection reuses the existing UI and listener without concealing
+revealed content or repeating the reveal event.
 
 ## Browser Support
 
@@ -421,6 +475,9 @@ npm test
 
 # Run tests with coverage
 npm run test:coverage
+
+# Check TypeScript declarations and event listener types
+npm run test:types
 
 # Install browser engines and check rendering and keyboard behavior
 npx playwright install chromium firefox webkit

@@ -58,6 +58,38 @@ describe('published styling contracts', () => {
 			).name,
 		).toBe('content-warning');
 	});
+
+	it('describes template accessors, refresh, deprecation, and nullable reveal detail', () => {
+		for (const [name, attribute] of [
+			['revealLabel', 'reveal-label'],
+			['typeLabel', 'type-label'],
+		]) {
+			expect(
+				declaration.members.find((member) => member.name === name),
+			).toMatchObject({
+				attribute,
+				reflects: true,
+				type: { text: 'string | null' },
+			});
+			expect(types).toContain(
+				`set ${name}(value: string | null | undefined)`,
+			);
+		}
+		for (const name of ['labelPrefix', 'labelSuffix']) {
+			expect(
+				declaration.members.find((member) => member.name === name)
+					.deprecated,
+			).toContain('revealLabel');
+			expect(types).toMatch(new RegExp(`@deprecated[^]*?get ${name}\\(`));
+		}
+		expect(
+			declaration.members.find((member) => member.name === 'refresh')
+				.return.type.text,
+		).toBe('boolean');
+		expect(declaration.events[0].eventDetail.type.text).toBe(
+			'{ type: string | null }',
+		);
+	});
 });
 
 it('identifies the component in the generated site-root page title', async () => {
@@ -93,6 +125,39 @@ it('names the multiple-warning and styled-button snippets after their own exampl
 });
 
 describe('authored demo examples', () => {
+	it('keeps page-wide tabs controls below the header links with their feedback', async () => {
+		const template = document.createElement('template');
+		template.innerHTML = await readFile('demo/index.html', 'utf8');
+		expect(
+			template.content.querySelector('header nav + #demo-tabs-controls'),
+		).not.toBeNull();
+		expect(
+			template.content.querySelector(
+				'header #demo-tabs-controls + #demo-tabs-status',
+			),
+		).not.toBeNull();
+	});
+
+	it('puts translation languages on wrappers without repeating them in snippets', async () => {
+		const template = document.createElement('template');
+		template.innerHTML = await readFile('demo/index.html', 'utf8');
+		for (const [id, language] of [
+			['spanish-translation', 'es'],
+			['french-translation', 'fr'],
+		]) {
+			const example = template.content.querySelector(`#${id}`);
+			const pre = example.querySelector('pre');
+			const live = example.querySelector('.demo');
+			expect(pre.lang).toBe(language);
+			expect(pre.dataset.language).toBe('html');
+			expect(live.lang).toBe(language);
+			expect(pre.textContent).not.toMatch(/\blang\s*=/);
+			expect(
+				live.querySelector('content-warning').closest('[lang]'),
+			).toBe(live);
+		}
+	});
+
 	for (const page of ['index.html', 'esm.html', 'unpkg.html']) {
 		it(`${page} gives every code/live example its own unique destination`, async () => {
 			const template = document.createElement('template');
