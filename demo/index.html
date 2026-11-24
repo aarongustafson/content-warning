@@ -48,6 +48,32 @@
 				<a href="./esm.html">esm.sh example</a>
 				<a href="./unpkg.html">unpkg example</a>
 			</nav>
+			<div
+				id="demo-tabs-controls"
+				class="demo-tabs-controls"
+				data-code-label="Code"
+				data-live-label="Live example"
+				data-on-label="On"
+				data-off-label="Off"
+				hidden
+			>
+				<button type="button" aria-pressed="false">
+					Use tabs for examples
+					<span data-tabs-state aria-hidden="true"></span>
+				</button>
+				<p>
+					Your choice is saved in this browser across demos on this
+					site that support tabs.
+				</p>
+			</div>
+			<p
+				id="demo-tabs-status"
+				class="enhancement-status"
+				data-load-failure-message="Demo tabs could not load. Code and live examples remain available together."
+				data-preference-failure-message="Your browser could not save or read the tabs preference. Your choice still applies on this page."
+				role="status"
+				hidden
+			></p>
 		</header>
 
 		<main id="main" tabindex="-1">
@@ -66,7 +92,9 @@
 				<h2>Block Content Warning</h2>
 				<p>
 					A block-level content warning that overlays the entire
-					content area.
+					content area. This page uses shared default wording; see
+					<a href="#shared-labels">Shared Labels</a> to reuse a
+					template across warnings.
 				</p>
 
 				<div class="demo-section" id="single-warning-type">
@@ -611,25 +639,25 @@
 			<section id="labels-and-translations">
 				<h2>Labels and Translations</h2>
 				<p>
-					Customize the button label using
-					<code>label-prefix</code> and
-					<code>label-suffix</code> attributes for your application’s
-					vocabulary or a different language. Translate
+					Write a complete button label with
+					<code>reveal-label</code>. Its <code>{type}</code> token
+					inserts the warning type wherever your sentence needs it.
+					The visible text also names the button. Translate
 					<code>type</code> too, and set <code>lang</code> on
 					translated content. See the
 					<a
 						href="https://github.com/aarongustafson/content-warning/blob/main/README.md#internationalization-i18n"
 						>label reference</a
 					>
-					for punctuation and defaults.
+					for shared defaults, precedence, and recovery.
 				</p>
 
 				<div class="demo-section" id="custom-vocabulary">
 					<h3>Use Your Application’s Vocabulary</h3>
 					<p>
-						Change the prefix and suffix to fit a review workflow.
-						These attributes change the label, not the reveal
-						behavior.
+						Write the whole phrase to fit a review workflow,
+						including its punctuation. This changes the label, not
+						the reveal behavior.
 					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
@@ -643,8 +671,7 @@
 								tabindex="0"
 							><code><mark>&lt;content-warning
   type="plot details"
-  label-prefix="Review note"
-  label-suffix="Show details"
+  reveal-label="Review note: {type}. Show details"
   hidden&gt;</mark>
   &lt;p&gt;The review discusses the ending.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
@@ -652,8 +679,7 @@
 						<div class="demo" data-demo-label="Live example">
 							<content-warning
 								type="plot details"
-								label-prefix="Review note"
-								label-suffix="Show details"
+								reveal-label="Review note: {type}. Show details"
 								hidden
 							>
 								<p>The review discusses the ending.</p>
@@ -665,9 +691,9 @@
 				<div class="demo-section" id="spanish-translation">
 					<h3>Spanish Translation</h3>
 					<p>
-						Translate the warning and image alternative, and use
-						<code>lang="es"</code> to identify Spanish content. This
-						photo is a placeholder, not a graphic image.
+						The warning and image alternative inherit Spanish from
+						their containing element. This photo is a placeholder,
+						not a graphic image.
 					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
@@ -677,40 +703,27 @@
 							data-label="HTML"
 						>
 							<pre
-								aria-label="Spanish Translation code 12"
+								aria-label="Traducción al español, código 12"
+								lang="es"
+								data-language="html"
 								tabindex="0"
-							><code>&lt;style&gt;
-  .spanish-warning::part(label-type) {
-    font-style: italic;
-    text-transform: capitalize;
-  }
-&lt;/style&gt;
-
-<mark>&lt;content-warning
+							><code><mark>&lt;content-warning
   type="violencia gore"
-  label-prefix="Advertencia de Contenido"
-  label-suffix="Haz clic para revelar"
-  class="spanish-warning"
-  lang="es"
+  reveal-label="Advertencia: {type}. Mostrar contenido"
   hidden
 &gt;</mark>
   &lt;img src="https://picsum.photos/600/400?random=5"
     alt="Fotografía de ejemplo" style="display: block; max-width: 100%"&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<style>
-								.spanish-warning::part(label-type) {
-									font-style: italic;
-									text-transform: capitalize;
-								}
-							</style>
+						<div
+							class="demo"
+							data-demo-label="Ejemplo en vivo"
+							lang="es"
+						>
 							<content-warning
 								type="violencia gore"
-								label-prefix="Advertencia de Contenido"
-								label-suffix="Haz clic para revelar"
-								class="spanish-warning"
-								lang="es"
+								reveal-label="Advertencia: {type}. Mostrar contenido"
 								hidden
 							>
 								<img
@@ -725,9 +738,9 @@
 				<div class="demo-section" id="french-translation">
 					<h3>French Translation</h3>
 					<p>
-						Use <code>lang="fr"</code> for French. Each label part
-						can also be styled, while the button keeps an opaque
-						background.
+						The warning inherits French from its containing element.
+						Style the complete label while the button keeps an
+						opaque background.
 					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
@@ -737,53 +750,49 @@
 							data-label="HTML"
 						>
 							<pre
-								aria-label="French Translation code 13"
+								aria-label="Traduction française, code 13"
+								lang="fr"
+								data-language="html"
 								tabindex="0"
 							><code>&lt;style&gt;
   .french-warning::part(button) {
     background: #111;
     color: #fff;
   }
-  .french-warning::part(label-prefix) {
+  .french-warning::part(label) {
     font-weight: bold;
     color: #ffeb3b;
-  }
-  .french-warning::part(label-suffix) {
-    font-size: 0.875em;
   }
 &lt;/style&gt;
 
 <mark>&lt;content-warning
   type="contenu sensible"
-  label-prefix="Avertissement"
-  label-suffix="Cliquez pour révéler"
+  reveal-label="Afficher le contenu : {type}"
   class="french-warning"
-  lang="fr"
   hidden
 &gt;</mark>
   &lt;p&gt;Ce contenu pourrait être considéré comme sensible par certains utilisateurs. Veuillez faire preuve de discrétion.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
+						<div
+							class="demo"
+							data-demo-label="Exemple interactif"
+							lang="fr"
+						>
 							<style>
 								.french-warning::part(button) {
 									background: #111;
 									color: #fff;
 								}
-								.french-warning::part(label-prefix) {
+								.french-warning::part(label) {
 									font-weight: bold;
 									color: #ffeb3b;
-								}
-								.french-warning::part(label-suffix) {
-									font-size: 0.875em;
 								}
 							</style>
 							<content-warning
 								type="contenu sensible"
-								label-prefix="Avertissement"
-								label-suffix="Cliquez pour révéler"
+								reveal-label="Afficher le contenu : {type}"
 								class="french-warning"
-								lang="fr"
 								hidden
 							>
 								<p>
@@ -796,10 +805,10 @@
 					</div>
 				</div>
 				<div class="demo-section" id="no-suffix">
-					<h3>No Suffix</h3>
+					<h3>A Shorter Label</h3>
 					<p>
-						Set <code>label-suffix="false"</code> to hide the suffix
-						entirely.
+						Leave extra instructions out of your template when a
+						short label says enough.
 					</p>
 					<div class="code-demo-pair">
 						<micro-lighter
@@ -809,27 +818,90 @@
 							data-label="HTML"
 						>
 							<pre
-								aria-label="No Suffix code 14"
+								aria-label="A Shorter Label code"
 								tabindex="0"
 							><code><mark>&lt;content-warning
   type="graphic content"
-  label-suffix="false"
+  reveal-label="Reveal {type}"
   hidden
 &gt;</mark>
-  &lt;p&gt;This warning has no suffix text—just the prefix and type.&lt;/p&gt;
+  &lt;p&gt;This warning uses a short reveal label.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
 						</micro-lighter>
 						<div class="demo" data-demo-label="Live example">
 							<content-warning
 								type="graphic content"
-								label-suffix="false"
+								reveal-label="Reveal {type}"
 								hidden
 							>
-								<p>
-									This warning has no suffix text—just the
-									prefix and type.
-								</p>
+								<p>This warning uses a short reveal label.</p>
 							</content-warning>
+						</div>
+					</div>
+					<div class="demo-section" id="shared-labels">
+						<h3>Shared Labels</h3>
+						<p>
+							An inline JSON script supplies defaults for every
+							warning on this page. The first example below uses
+							that wording; the second overrides it with its own
+							<code>reveal-label</code>. Replace the shared text
+							with your application’s vocabulary or translation.
+							Editing the JSON later requires
+							<code>refresh()</code> on each initialized warning;
+							it doesn’t reset revealed content.
+						</p>
+						<div class="code-demo-pair">
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Shared Labels code"
+									tabindex="0"
+								><code><mark>&lt;script type="application/json" data-content-warning-config&gt;
+  {
+    "reveal-label": "Content Warning: {type} Click to reveal",
+    "type-label": "content"
+  }
+&lt;/script&gt;</mark>
+
+<mark>&lt;content-warning type="plot details" hidden&gt;</mark>
+  &lt;p&gt;The final scene introduces another narrator.&lt;/p&gt;
+<mark>&lt;/content-warning&gt;</mark>
+
+<mark>&lt;content-warning
+  type="spoilers"
+  reveal-label="Read the ending: {type}"
+  hidden&gt;</mark>
+  &lt;p&gt;The narrator returns home.&lt;/p&gt;
+<mark>&lt;/content-warning&gt;</mark></code></pre>
+							</micro-lighter>
+							<div class="demo" data-demo-label="Live example">
+								<script
+									type="application/json"
+									data-content-warning-config
+								>
+									{
+										"reveal-label": "Content Warning: {type} Click to reveal",
+										"type-label": "content"
+									}
+								</script>
+								<content-warning type="plot details" hidden>
+									<p>
+										The final scene introduces another
+										narrator.
+									</p>
+								</content-warning>
+								<content-warning
+									type="spoilers"
+									reveal-label="Read the ending: {type}"
+									hidden
+								>
+									<p>The narrator returns home.</p>
+								</content-warning>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -862,5 +934,15 @@
 
 		<script src="../define.js" type="module"></script>
 		<script type="module" src="./code-examples.js"></script>
+		<script type="module">
+			if (new URLSearchParams(location.search).has('tabs')) {
+				import('./tabs-prototype.js').catch((error) => {
+					console.error('Demo tabs could not load:', error);
+					const status = document.getElementById('demo-tabs-status');
+					status.textContent = status.dataset.loadFailureMessage;
+					status.hidden = false;
+				});
+			}
+		</script>
 	</body>
 </html>

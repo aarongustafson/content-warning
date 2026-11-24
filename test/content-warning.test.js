@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ContentWarningElement } from '../content-warning.js';
 
 describe('ContentWarningElement', () => {
@@ -15,6 +15,10 @@ describe('ContentWarningElement', () => {
 
 	afterEach(() => {
 		element.remove();
+		document
+			.querySelectorAll('[data-content-warning-config]')
+			.forEach((script) => script.remove());
+		vi.restoreAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -341,6 +345,256 @@ describe('ContentWarningElement', () => {
 			expect(prefixSpan.textContent).toBe('Aviso');
 			expect(typeSpan.textContent).toBe('violencia');
 			expect(suffixSpan.textContent).toBe('Clic para ver');
+		});
+	});
+
+	describe('Label templates', () => {
+		function configure(value) {
+			const script = document.createElement('script');
+			script.type = 'application/json';
+			script.setAttribute('data-content-warning-config', '');
+			script.textContent = JSON.stringify(value);
+			document.head.appendChild(script);
+			return script;
+		}
+
+		it('reflects whole-phrase templates and substitutes context literally without replacing the button', () => {
+			const button = element.shadowRoot.querySelector('button');
+			element.type = '$& <img src=x> {type}';
+			element.revealLabel = 'Reveal {type}; {type}';
+			expect(element.getAttribute('reveal-label')).toBe(
+				'Reveal {type}; {type}',
+			);
+			expect(button.textContent).toBe(
+				'Reveal $& <img src=x> {type}; $& <img src=x> {type}',
+			);
+			expect(button.querySelector('img')).toBeNull();
+			expect(element.shadowRoot.querySelector('button')).toBe(button);
+
+			element.setAttribute('reveal-label', 'Show {type}');
+			expect(element.revealLabel).toBe('Show {type}');
+			expect(button.textContent).toBe('Show $& <img src=x> {type}');
+		});
+
+		it('shares partial page defaults with instance and legacy overrides and explicit refresh', async () => {
+			const script = configure({
+				'reveal-label': 'Ver {type}',
+				'type-label': 'contenido',
+			});
+			const second = document.createElement('content-warning');
+			document.body.appendChild(second);
+			try {
+				await new Promise((resolve) => requestAnimationFrame(resolve));
+				expect(element.refresh()).toBe(true);
+				const button = element.shadowRoot.querySelector('button');
+				expect(button.textContent).toBe('Ver contenido');
+				expect(
+					second.shadowRoot.querySelector('button').textContent,
+				).toBe('Ver contenido');
+				element.labelPrefix = 'Legacy';
+				expect(
+					button.querySelector('[part="label-prefix"]').textContent,
+				).toBe('Legacy');
+				element.revealLabel = 'Instance: {type}';
+				expect(button.textContent).toBe('Instance: contenido');
+				element.typeLabel = 'detalle';
+				expect(button.textContent).toBe('Instance: detalle');
+				element.revealLabel = null;
+				element.labelPrefix = null;
+				element.typeLabel = undefined;
+				expect(element.hasAttribute('type-label')).toBe(false);
+				expect(button.textContent).toBe('Ver contenido');
+
+				script.textContent = JSON.stringify({
+					'reveal-label': 'Leer {type}',
+				});
+				expect(button.textContent).toBe('Ver contenido');
+				expect(element.refresh()).toBe(true);
+				expect(button.textContent).toBe('Leer content');
+				expect(
+					second.shadowRoot.querySelector('button').textContent,
+				).toBe('Ver contenido');
+			} finally {
+				second.remove();
+			}
+		});
+
+		it('upgrades template properties assigned before definition', async () => {
+			const tag = 'content-warning-template-late';
+			const late = document.createElement(tag);
+			late.revealLabel = 'Show {type}';
+			late.typeLabel = 'details';
+			document.body.appendChild(late);
+			try {
+				customElements.define(
+					tag,
+					class extends ContentWarningElement {},
+				);
+				await new Promise((resolve) => requestAnimationFrame(resolve));
+				expect(Object.hasOwn(late, 'revealLabel')).toBe(false);
+				expect(Object.hasOwn(late, 'typeLabel')).toBe(false);
+				expect(
+					late.shadowRoot.querySelector('button').textContent,
+				).toBe('Show details');
+			} finally {
+				late.remove();
+			}
+		});
+
+		it.each([
+			{ 'reveal-label': '' },
+			{ 'reveal-label': 'Show {unknown}' },
+			{ 'reveal-label': 'Show {type' },
+			{ 'type-label': 3 },
+			{ unknown: 'Show' },
+			[],
+		])(
+			'reports invalid shared templates without changing the last good label: %j',
+			(value) => {
+				const error = vi
+					.spyOn(console, 'error')
+					.mockImplementation(() => {});
+				element.revealLabel = 'Show {type}';
+				configure(value);
+				expect(element.refresh()).toBe(false);
+				expect(error).toHaveBeenCalledWith(
+					'content-warning: label configuration failed.',
+					expect.any(Error),
+				);
+				expect(
+					element.shadowRoot.querySelector('button').textContent,
+				).toBe('Show content');
+			},
+		);
+
+		it('reports malformed JSON, duplicate config, and unsupported scopes with recoverable refresh', () => {
+			vi.spyOn(console, 'error').mockImplementation(() => {});
+			const script = configure({ 'reveal-label': 'Read {type}' });
+			script.textContent = '{';
+			expect(element.refresh()).toBe(false);
+			script.textContent = '{}';
+			script.setAttribute('data-content-warning-config', 'group');
+			expect(element.refresh()).toBe(false);
+			script.setAttribute('data-content-warning-config', '');
+			const duplicate = configure({});
+			expect(element.refresh()).toBe(false);
+			duplicate.remove();
+			script.type = 'text/javascript';
+			expect(element.refresh()).toBe(false);
+			script.type = 'application/json';
+			expect(element.refresh()).toBe(true);
+		});
+
+		it('retains a valid label after invalid instance input and exposes defaults after removal', () => {
+			vi.spyOn(console, 'error').mockImplementation(() => {});
+			configure({
+				'reveal-label': 'Ver {type}',
+				'type-label': 'contenido',
+			});
+			element.revealLabel = 'Show {type}';
+			const button = element.shadowRoot.querySelector('button');
+			element.revealLabel = 'Show {unknown}';
+			expect(element.refresh()).toBe(false);
+			expect(button.textContent).toBe('Show contenido');
+			element.revealLabel = undefined;
+			expect(button.textContent).toBe('Ver contenido');
+			element.type = 'spoilers';
+			expect(button.textContent).toBe('Ver spoilers');
+			element.type = '';
+			expect(button.textContent).toBe('Ver contenido');
+		});
+
+		it('rejects a resolved template that would leave the control unnamed', () => {
+			vi.spyOn(console, 'error').mockImplementation(() => {});
+			element.revealLabel = 'Show {type}';
+			element.type = ' ';
+			element.revealLabel = '{type}';
+			expect(element.refresh()).toBe(false);
+			expect(element.shadowRoot.querySelector('button').textContent).toBe(
+				'Show  ',
+			);
+		});
+
+		it('keeps the initial reveal control usable after a configuration error and recovers in place', async () => {
+			const error = vi
+				.spyOn(console, 'error')
+				.mockImplementation(() => {});
+			const script = configure({ 'reveal-label': '{unknown}' });
+			const initial = document.createElement('content-warning');
+			document.body.appendChild(initial);
+			try {
+				await new Promise((resolve) => requestAnimationFrame(resolve));
+				const button = initial.shadowRoot.querySelector('button');
+				expect(error).toHaveBeenCalled();
+				expect(button.textContent).toContain('Content Warning');
+				script.textContent = '{"reveal-label":"Read {type}"}';
+				expect(initial.refresh()).toBe(true);
+				expect(initial.shadowRoot.querySelector('button')).toBe(button);
+				expect(button.textContent).toBe('Read content');
+				button.click();
+				expect(initial.revealed).toBe(true);
+			} finally {
+				initial.remove();
+			}
+		});
+
+		it('keeps new labels and legacy fields literal on initial rendering', async () => {
+			const initial = document.createElement('content-warning');
+			initial.setAttribute('type', '<em>spoilers</em>');
+			initial.setAttribute('label-prefix', '<b>Warning</b>');
+			document.body.appendChild(initial);
+			try {
+				await new Promise((resolve) => requestAnimationFrame(resolve));
+				expect(
+					initial.shadowRoot.querySelector('button').textContent,
+				).toContain('<b>Warning</b>');
+				expect(
+					initial.shadowRoot.querySelector('button em, button b'),
+				).toBeNull();
+			} finally {
+				initial.remove();
+			}
+		});
+
+		it('does not rehide revealed content or emit reveal events during refresh, render, or reconnection', async () => {
+			const revealed = vi.fn();
+			element.addEventListener('content-warning:revealed', revealed);
+			element.revealLabel = 'Show {type}';
+			const button = element.shadowRoot.querySelector('button');
+			expect(revealed).not.toHaveBeenCalled();
+			button.click();
+			expect(revealed).toHaveBeenCalledOnce();
+			expect(revealed.mock.calls[0][0]).toMatchObject({
+				detail: { type: null },
+				bubbles: true,
+				composed: true,
+				cancelable: false,
+			});
+			element.revealLabel = 'Read instead';
+			expect(element.refresh()).toBe(true);
+			element.render();
+			element.remove();
+			document.body.appendChild(element);
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+			expect(element.revealed).toBe(true);
+			expect(element.shadowRoot.querySelector('button')).toBeNull();
+			expect(
+				element.shadowRoot.querySelector('.content-wrapper').hidden,
+			).toBe(false);
+			expect(revealed).toHaveBeenCalledOnce();
+		});
+
+		it('does not initialize after disconnection and reports disconnected refresh', async () => {
+			const error = vi
+				.spyOn(console, 'error')
+				.mockImplementation(() => {});
+			const detached = document.createElement('content-warning');
+			document.body.appendChild(detached);
+			detached.remove();
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+			expect(detached.shadowRoot.querySelector('button')).toBeNull();
+			expect(detached.refresh()).toBe(false);
+			expect(error).toHaveBeenCalled();
 		});
 	});
 

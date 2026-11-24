@@ -1,3 +1,53 @@
+const labelConfigurations = new WeakMap();
+
+function validateLabels(labels) {
+	if (!labels || typeof labels !== 'object' || Array.isArray(labels)) {
+		throw new TypeError('content-warning labels must be an object.');
+	}
+	for (const [name, value] of Object.entries(labels)) {
+		if (!['reveal-label', 'type-label'].includes(name)) {
+			throw new TypeError(`Unknown content-warning label: ${name}.`);
+		}
+		if (typeof value !== 'string' || !value.trim()) {
+			throw new TypeError(`${name} must be a nonempty string.`);
+		}
+		if (
+			name === 'reveal-label' &&
+			value.replaceAll('{type}', '').match(/[{}]/)
+		) {
+			throw new TypeError('reveal-label supports only the {type} token.');
+		}
+	}
+}
+
+function sharedLabels(document) {
+	const scripts = document.querySelectorAll('[data-content-warning-config]');
+	if (scripts.length > 1) {
+		throw new TypeError(
+			'Only one data-content-warning-config script is allowed per document.',
+		);
+	}
+	if (!scripts.length) return {};
+	const script = scripts[0];
+	if (
+		script.localName !== 'script' ||
+		script.type.trim().toLowerCase() !== 'application/json' ||
+		script.hasAttribute('src') ||
+		script.getAttribute('data-content-warning-config') !== ''
+	) {
+		throw new TypeError(
+			'Use an inline <script type="application/json" data-content-warning-config> without a named scope.',
+		);
+	}
+	const text = script.textContent;
+	const cached = labelConfigurations.get(script);
+	if (cached?.text === text) return cached.labels;
+	const labels = JSON.parse(text);
+	validateLabels(labels);
+	labelConfigurations.set(script, { text, labels });
+	return labels;
+}
+
 /**
  * ContentWarningElement - A web component for block and inline content warnings.
  *
@@ -6,8 +56,10 @@
  * @element content-warning
  *
  * @attr {string} type - Space-separated list of warning types (e.g., "violence spoilers")
- * @attr {string} label-prefix - The prefix text for the warning (default: "Content Warning")
- * @attr {string} label-suffix - The suffix text for the warning (default: "Click to reveal"). Set to "false" to hide.
+ * @attr {string} reveal-label - Complete button label; supports literal {type} substitution.
+ * @attr {string} type-label - Fallback for {type} when type is absent or empty (default: "content").
+ * @attr {string} label-prefix - Deprecated: use reveal-label. Legacy prefix (default: "Content Warning").
+ * @attr {string} label-suffix - Deprecated: use reveal-label. Legacy suffix (default: "Click to reveal"). Set to "false" to hide.
  * @attr {boolean} inline - Display the warning inline instead of as a block overlay
  * @attr {boolean} blur - Use blur visual effect instead of complete hiding (NOT Reader Mode safe)
  *
@@ -15,8 +67,8 @@
  * @cssproperty [--content-warning-blur-amount] - Amount of blur in blur mode (default: 10px)
  *
  * @description
- * Button label format: {prefix}: {type} {suffix}
- * Punctuation is controlled via CSS pseudo-elements for easy customization.
+ * Complete label templates own their punctuation. Without a template, legacy
+ * label parts and their CSS punctuation remain supported.
  *
  * @fires content-warning:revealed - Fired when the content is revealed by the user
  *
@@ -27,6 +79,7 @@
  * @csspart label-prefix - The prefix text span (e.g., "Content Warning")
  * @csspart label-type - The warning type text span (e.g., "violence spoilers")
  * @csspart label-suffix - The suffix text span (e.g., "Click to reveal")
+ * @csspart label - The complete text span when a label template is used.
  */
 export class ContentWarningElement extends HTMLElement {
 	// Cache the style element to avoid recreating it
@@ -129,7 +182,14 @@ export class ContentWarningElement extends HTMLElement {
 	`;
 
 	static get observedAttributes() {
-		return ['type', 'label-prefix', 'label-suffix', 'blur'];
+		return [
+			'type',
+			'reveal-label',
+			'type-label',
+			'label-prefix',
+			'label-suffix',
+			'blur',
+		];
 	}
 
 	constructor() {
@@ -140,6 +200,7 @@ export class ContentWarningElement extends HTMLElement {
 			revealed: false,
 			isInline: false,
 		};
+		this._renderFrame = null;
 
 		// Cached DOM references (set after render)
 		this._refs = {
@@ -164,6 +225,8 @@ export class ContentWarningElement extends HTMLElement {
 
 		// Upgrade properties that may have been set before the element was defined
 		this._upgradeProperty('type');
+		this._upgradeProperty('revealLabel');
+		this._upgradeProperty('typeLabel');
 		this._upgradeProperty('labelPrefix');
 		this._upgradeProperty('labelSuffix');
 
@@ -171,10 +234,20 @@ export class ContentWarningElement extends HTMLElement {
 		this._internals.isInline = this.hasAttribute('inline');
 
 		// Defer render to avoid blocking main thread
-		requestAnimationFrame(() => this.render());
+		if (this._internals.isRendered) {
+			this._refs.overlay?.addEventListener('click', this._handleClick);
+			this.refresh();
+		} else {
+			this._renderFrame = requestAnimationFrame(() => {
+				this._renderFrame = null;
+				if (this.isConnected) this.render();
+			});
+		}
 	}
 
 	disconnectedCallback() {
+		cancelAnimationFrame(this._renderFrame);
+		this._renderFrame = null;
 		// Clean up event listener
 		if (this._refs.overlay) {
 			this._refs.overlay.removeEventListener('click', this._handleClick);
@@ -188,11 +261,13 @@ export class ContentWarningElement extends HTMLElement {
 
 		switch (name) {
 			case 'type':
+			case 'reveal-label':
+			case 'type-label':
 			case 'label-prefix':
 			case 'label-suffix':
 				// Update the warning message
 				if (this._internals.isRendered && !this._internals.revealed) {
-					this._updateWarningMessage();
+					this.refresh();
 				}
 				break;
 			case 'blur':
@@ -235,8 +310,39 @@ export class ContentWarningElement extends HTMLElement {
 	}
 
 	/**
+	 * Authored complete label override, or null when absent.
+	 */
+	get revealLabel() {
+		return this.getAttribute('reveal-label');
+	}
+
+	set revealLabel(value) {
+		if (value === null || value === undefined) {
+			this.removeAttribute('reveal-label');
+		} else {
+			this.setAttribute('reveal-label', value);
+		}
+	}
+
+	/**
+	 * Authored fallback type label, or null when absent.
+	 */
+	get typeLabel() {
+		return this.getAttribute('type-label');
+	}
+
+	set typeLabel(value) {
+		if (value === null || value === undefined) {
+			this.removeAttribute('type-label');
+		} else {
+			this.setAttribute('type-label', value);
+		}
+	}
+
+	/**
 	 * Label prefix property.
 	 * Reflects between property and attribute to keep them in sync.
+	 * @deprecated Use revealLabel for a complete phrase.
 	 */
 	get labelPrefix() {
 		return this.getAttribute('label-prefix');
@@ -253,6 +359,7 @@ export class ContentWarningElement extends HTMLElement {
 	/**
 	 * Label suffix property.
 	 * Reflects between property and attribute to keep them in sync.
+	 * @deprecated Use revealLabel; omit suffix text from the template.
 	 */
 	get labelSuffix() {
 		return this.getAttribute('label-suffix');
@@ -330,14 +437,44 @@ export class ContentWarningElement extends HTMLElement {
 	 * Update the warning message in the button
 	 * @private
 	 */
-	_updateWarningMessage() {
-		if (!this._refs.button) return;
+	_updateWarningMessage(initial = false) {
+		const shared = sharedLabels(this.ownerDocument);
+		const overrides = {};
+		for (const name of ['reveal-label', 'type-label']) {
+			if (this.hasAttribute(name))
+				overrides[name] = this.getAttribute(name);
+		}
+		validateLabels(overrides);
+		const labels = { 'type-label': 'content', ...shared, ...overrides };
+		const legacy =
+			this.hasAttribute('label-prefix') ||
+			this.hasAttribute('label-suffix');
+		const template =
+			overrides['reveal-label'] ??
+			(legacy ? null : shared['reveal-label']);
+		const type = this.type || labels['type-label'];
+		if (template !== null && template !== undefined) {
+			const text = template.replaceAll('{type}', () => type);
+			if (!text.trim()) {
+				throw new TypeError(
+					'The resolved reveal-label must not be empty.',
+				);
+			}
+			const span = document.createElement('span');
+			span.setAttribute('part', 'label');
+			span.textContent = text;
+			this._refs.button.replaceChildren(span);
+			return;
+		}
+		this._updateLegacyLabel(initial, type);
+	}
 
+	_updateLegacyLabel(initial, types = this.type || 'content') {
 		// Calculate values once
 		const prefix = this.labelPrefix || 'Content Warning';
-		const types = this.type || 'content';
 		const suffix =
-			this.labelSuffix !== null && this.labelSuffix !== 'false'
+			(initial || this.labelSuffix !== null) &&
+			this.labelSuffix !== 'false'
 				? this.labelSuffix || 'Click to reveal'
 				: null;
 
@@ -368,6 +505,29 @@ export class ContentWarningElement extends HTMLElement {
 		// Single DOM update
 		this._refs.button.textContent = '';
 		this._refs.button.appendChild(fragment);
+	}
+
+	/**
+	 * Reread shared and instance labels without rebuilding or concealing content.
+	 * @returns {boolean} Whether labels were applied, or a revealed instance needed no update.
+	 */
+	refresh() {
+		try {
+			if (!this.isConnected || !this._internals.isRendered) {
+				throw new DOMException(
+					'Connect and initialize content-warning before refreshing labels.',
+					'InvalidStateError',
+				);
+			}
+			if (!this._internals.revealed) this._updateWarningMessage();
+			return true;
+		} catch (error) {
+			console.error(
+				'content-warning: label configuration failed.',
+				error,
+			);
+			return false;
+		}
 	}
 
 	/**
@@ -421,24 +581,20 @@ export class ContentWarningElement extends HTMLElement {
 	}
 
 	render() {
-		// Cache attribute values
-		const prefix = this.labelPrefix || 'Content Warning';
-		const types = this.type || 'content';
-		const suffix = this.labelSuffix;
-		const showSuffix = suffix !== 'false';
-		const suffixText = suffix || 'Click to reveal';
+		if (this._internals.revealed) return;
+		if (this._internals.isRendered) {
+			this.refresh();
+			return;
+		}
 
 		// Use cached style element
 		const styleEl = ContentWarningElement.#getStyleElement();
-
-		// Build button label HTML in one go
-		const buttonLabel = `<span class="label-prefix" part="label-prefix">${prefix}</span><span part="label-type">${types}</span>${showSuffix ? `<span part="label-suffix">${suffixText}</span>` : ''}`;
 
 		// Build shadow DOM structure
 		const shadowRoot = this.shadowRoot;
 		shadowRoot.innerHTML = `
 		<div part="overlay" class="overlay">
-			<button part="button">${buttonLabel}</button>
+			<button part="button"></button>
 		</div>
 		<div class="content-wrapper">
 			<slot></slot>
@@ -455,6 +611,16 @@ export class ContentWarningElement extends HTMLElement {
 		this._refs.wrapper = shadowRoot.querySelector('.content-wrapper');
 		this._refs.announcement = shadowRoot.querySelector('.sr-announcement');
 		this._refs.slot = shadowRoot.querySelector('slot');
+
+		try {
+			this._updateWarningMessage(true);
+		} catch (error) {
+			console.error(
+				'content-warning: label configuration failed.',
+				error,
+			);
+			this._updateLegacyLabel(true);
+		}
 
 		// Add event listener
 		if (this._refs.overlay) {

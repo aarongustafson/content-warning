@@ -79,6 +79,69 @@ async function fixture(page, attributes = '') {
 	await expect(page.locator('#sample button')).toBeVisible();
 }
 
+test('shared templates name controls literally and refresh without losing keyboard focus or reveal state', async ({
+	page,
+}) => {
+	await page.goto('http://component.test/demo/index.html');
+	await page.setContent(`<!doctype html><html lang="fr"><head>
+		<script type="application/json" data-content-warning-config>
+			{"reveal-label":"Afficher : {type}","type-label":"le contenu"}
+		</script>
+		</head><body>
+			<content-warning id="first" tabindex="-1"><p>Premier récit</p></content-warning>
+			<content-warning id="second" reveal-label="Lire {type}" type="la fin"><p>Deuxième récit</p></content-warning>
+		</body></html>`);
+	const first = page.locator('#first');
+	const button = first.getByRole('button', {
+		name: 'Afficher : le contenu',
+		exact: true,
+	});
+	await expect(button).toBeVisible();
+	await expect(
+		page
+			.locator('#second')
+			.getByRole('button', { name: 'Lire la fin', exact: true }),
+	).toBeVisible();
+	await button.focus();
+	await first.evaluate((node) => {
+		node.type = '$& <em>fin</em> {type}';
+	});
+	await expect(button).toHaveCount(0);
+	const updated = first.getByRole('button', {
+		name: 'Afficher : $& <em>fin</em> {type}',
+		exact: true,
+	});
+	await expect(updated).toBeFocused();
+	await expect(updated.locator('em')).toHaveCount(0);
+	expect(
+		await updated.locator('[part="label"]').evaluate((node) => ({
+			before: getComputedStyle(node, '::before').content,
+			after: getComputedStyle(node, '::after').content,
+		})),
+	).toEqual({ before: 'none', after: 'none' });
+	await page.evaluate(() => {
+		document.querySelector('[data-content-warning-config]').textContent =
+			'{"reveal-label":"Voir {type}"}';
+		document.querySelector('#first').refresh();
+	});
+	await expect(
+		first.getByRole('button', {
+			name: 'Voir $& <em>fin</em> {type}',
+			exact: true,
+		}),
+	).toBeFocused();
+	await page.keyboard.press('Enter');
+	await expect(first).toHaveAttribute('revealed', '');
+	await expect(first).toBeFocused();
+	await first.evaluate((node) => {
+		node.refresh();
+		node.remove();
+		document.body.appendChild(node);
+	});
+	await expect(first.getByRole('button')).toHaveCount(0);
+	await expect(first.locator(':scope > p')).toBeVisible();
+});
+
 async function contrast(locator) {
 	return locator.evaluate((element) => {
 		const style = getComputedStyle(element);

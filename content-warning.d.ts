@@ -4,6 +4,8 @@
  * @element content-warning
  *
  * @attr {string} type - Space-separated list of warning types (e.g., "violence spoilers")
+ * @attr {string} reveal-label - Complete label template supporting {type}.
+ * @attr {string} type-label - Fallback type text for an absent or empty type.
  * @attr {boolean} inline - Display the warning inline instead of as a block overlay
  *
  * @fires content-warning:revealed - Fired when the content is revealed by the user
@@ -31,11 +33,6 @@ export class ContentWarningElement extends HTMLElement {
 	 * Event handler for click events
 	 */
 	private _handleClick: (e: MouseEvent) => void;
-
-	/**
-	 * Event handler for keydown events
-	 */
-	private _handleKeydown: (e: KeyboardEvent) => void;
 
 	constructor();
 
@@ -76,22 +73,26 @@ export class ContentWarningElement extends HTMLElement {
 	get type(): string | null;
 	set type(value: string | null | undefined);
 
+	/** Authored template override; null means use legacy or shared/default labels. */
+	get revealLabel(): string | null;
+	set revealLabel(value: string | null | undefined);
+
+	/** Authored fallback type override; null means use shared/default text. */
+	get typeLabel(): string | null;
+	set typeLabel(value: string | null | undefined);
+
+	/** @deprecated Use revealLabel for a complete phrase. */
+	get labelPrefix(): string | null;
+	set labelPrefix(value: string | null | undefined);
+
+	/** @deprecated Use revealLabel; omit suffix text from the template. */
+	get labelSuffix(): string | null;
+	set labelSuffix(value: string | null | undefined);
+
 	/**
 	 * Check if the content has been revealed
 	 */
 	get revealed(): boolean;
-
-	/**
-	 * Handle click events to reveal content
-	 * @private
-	 */
-	private _handleClick(e: MouseEvent): void;
-
-	/**
-	 * Handle keydown events (Enter key) to reveal content
-	 * @private
-	 */
-	private _handleKeydown(e: KeyboardEvent): void;
 
 	/**
 	 * Reveal the content
@@ -103,12 +104,43 @@ export class ContentWarningElement extends HTMLElement {
 	 * Update the warning message in the overlay
 	 * @private
 	 */
-	private _updateWarningMessage(): void;
+	private _updateWarningMessage(initial?: boolean): void;
 
 	/**
-	 * Renders the component's shadow DOM content
+	 * Update connected, initialized labels in place; true is a no-op after reveal.
+	 * Logs configuration failures and returns false without replacing existing text.
+	 * Changes to shared JSON require an explicit call on each affected instance.
+	 */
+	refresh(): boolean;
+
+	/**
+	 * Initializes shadow content once, or refreshes labels. Never conceals revealed content.
 	 */
 	render(): void;
+
+	addEventListener<K extends keyof ContentWarningEventMap>(
+		type: K,
+		listener: (
+			this: ContentWarningElement,
+			event: ContentWarningEventMap[K],
+		) => void,
+		options?: boolean | AddEventListenerOptions,
+	): void;
+	addEventListener(
+		type: string,
+		listener: EventListenerOrEventListenerObject | null,
+		options?: boolean | AddEventListenerOptions,
+	): void;
+}
+
+/** Partial, page-level authored defaults; no built-in locale catalog or named scopes. */
+export interface ContentWarningLabels {
+	'reveal-label'?: string;
+	'type-label'?: string;
+}
+
+export interface ContentWarningEventMap extends HTMLElementEventMap {
+	'content-warning:revealed': ContentWarningRevealedEvent;
 }
 
 /**
@@ -118,4 +150,10 @@ export interface ContentWarningRevealedEvent extends CustomEvent {
 	detail: {
 		type: string | null;
 	};
+}
+
+declare global {
+	interface HTMLElementTagNameMap {
+		'content-warning': ContentWarningElement;
+	}
 }

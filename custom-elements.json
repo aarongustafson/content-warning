@@ -24,6 +24,10 @@
 					],
 					"cssParts": [
 						{
+							"description": "Complete literal text for template labels; punctuation belongs to the template.",
+							"name": "label"
+						},
+						{
 							"description": "The full-area overlay div that covers the content",
 							"name": "overlay"
 						},
@@ -33,15 +37,18 @@
 						},
 						{
 							"description": "The prefix text span (e.g., \"Content Warning\")",
-							"name": "label-prefix"
+							"name": "label-prefix",
+							"deprecated": "Use label with reveal-label. Retained for legacy labels until the next major release."
 						},
 						{
 							"description": "The warning type text span (e.g., \"violence spoilers\")",
-							"name": "label-type"
+							"name": "label-type",
+							"deprecated": "Use label with reveal-label. Retained for legacy labels until the next major release."
 						},
 						{
 							"description": "The suffix text span (e.g., \"Click to reveal\")",
-							"name": "label-suffix"
+							"name": "label-suffix",
+							"deprecated": "Use label with reveal-label. Retained for legacy labels until the next major release."
 						}
 					],
 					"slots": [
@@ -51,6 +58,34 @@
 						}
 					],
 					"members": [
+						{
+							"kind": "field",
+							"name": "revealLabel",
+							"type": { "text": "string | null" },
+							"attribute": "reveal-label",
+							"reflects": true,
+							"description": "Authored whole-label override. Null/undefined assignment removes it. Nonempty plain text supporting only {type}; overrides legacy fragments and shared defaults. Updates in place before reveal."
+						},
+						{
+							"kind": "field",
+							"name": "typeLabel",
+							"type": { "text": "string | null" },
+							"attribute": "type-label",
+							"reflects": true,
+							"description": "Authored fallback for missing/empty type. Null/undefined assignment removes it. Overrides shared type-label and default content. Nonempty plain text."
+						},
+						{
+							"kind": "method",
+							"name": "refresh",
+							"description": "Rereads page-level inline application/json data-content-warning-config and instance labels. Flat partial reveal-label/type-label object only; no named scopes or automatic language selection. Precedence: instance template, explicit legacy fragments, shared template, legacy defaults. Shared JSON is cached until its text changes; edits require refresh per instance. Updates text in place, preserving focus and reveal state. Returns false and logs errors for invalid configuration or disconnected/uninitialized calls; retains previous text, or legacy initial text on initialization failure. Returns true without changes after reveal.",
+							"return": { "type": { "text": "boolean" } }
+						},
+						{
+							"kind": "method",
+							"name": "render",
+							"description": "Initializes shadow content once, or refreshes labels. Never conceals revealed content.",
+							"return": { "type": { "text": "void" } }
+						},
 						{
 							"kind": "field",
 							"name": "type",
@@ -68,6 +103,7 @@
 								"text": "string | null"
 							},
 							"description": "The prefix text for the warning label (default: \"Content Warning\")",
+							"deprecated": "Use revealLabel. Planned for removal in the next major release.",
 							"attribute": "label-prefix",
 							"reflects": true
 						},
@@ -78,6 +114,7 @@
 								"text": "string | null"
 							},
 							"description": "The suffix text for the warning label (default: \"Click to reveal\"). Set to \"false\" to hide.",
+							"deprecated": "Use revealLabel. Planned for removal in the next major release.",
 							"attribute": "label-suffix",
 							"reflects": true
 						},
@@ -95,17 +132,29 @@
 						{
 							"name": "content-warning:revealed",
 							"type": {
-								"text": "CustomEvent"
+								"text": "CustomEvent<{ type: string | null }>"
 							},
-							"description": "Fired when the content is revealed by the user",
+							"description": "Fired once after reveal state/DOM updates and before the host focus attempt. Bubbles and is composed; not cancelable. Label changes and refresh do not emit it.",
 							"eventDetail": {
 								"type": {
-									"text": "{ type: string }"
+									"text": "{ type: string | null }"
 								}
 							}
 						}
 					],
 					"attributes": [
+						{
+							"name": "reveal-label",
+							"type": { "text": "string" },
+							"fieldName": "revealLabel",
+							"description": "Nonempty complete visible/accessibility label template with optional {type} tokens. Own punctuation; takes precedence over deprecated fragments and page defaults."
+						},
+						{
+							"name": "type-label",
+							"type": { "text": "string" },
+							"fieldName": "typeLabel",
+							"description": "Nonempty plain-text fallback for absent/empty type; default content, overridden by shared or instance configuration."
+						},
 						{
 							"name": "type",
 							"type": {
@@ -120,6 +169,7 @@
 								"text": "string"
 							},
 							"description": "The prefix text for the warning label (default: \"Content Warning\")",
+							"deprecated": "Use reveal-label. Planned for removal in the next major release.",
 							"fieldName": "labelPrefix"
 						},
 						{
@@ -128,6 +178,7 @@
 								"text": "string"
 							},
 							"description": "The suffix text for the warning label (default: \"Click to reveal\"). Set to \"false\" to hide.",
+							"deprecated": "Use reveal-label. Planned for removal in the next major release.",
 							"fieldName": "labelSuffix"
 						},
 						{
