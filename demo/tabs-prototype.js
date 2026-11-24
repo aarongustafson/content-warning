@@ -50,7 +50,7 @@ const examples = [...document.querySelectorAll('.code-demo-pair')].map(
 				'Demo tabs require a heading and a code/live pair.',
 			);
 		}
-		return { pair, code, live, heading, tabs: null, activeIndex: 1 };
+		return { pair, code, live, heading, tabs: null, activeIndex: 0 };
 	},
 );
 

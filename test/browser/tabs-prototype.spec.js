@@ -112,9 +112,9 @@ for (const width of [1280, 320]) {
 		await page.setViewportSize({ width, height: 900 });
 		await page.goto(`${origin}/demo/index.html?tabs`);
 		const pair = page.locator('#inline-usage .code-demo-pair');
-		await expect(
-			pair.getByRole('tab', { name: 'Live example', exact: true }),
-		).toHaveAttribute('aria-selected', 'true');
+		await pair
+			.getByRole('tab', { name: 'Live example', exact: true })
+			.click();
 		await expect
 			.poll(() =>
 				pair.locator('.demo').evaluate((demo) => {
@@ -190,31 +190,37 @@ for (const width of [1280, 320]) {
 	});
 }
 
-test('defaults to Live example with Code first and supports native keyboard navigation', async ({
+test('starts every example on Code and preserves keyboard-selected tabs when toggled', async ({
 	page,
 }) => {
 	await page.goto(`${origin}/demo/index.html?tabs`);
 	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
 	await expect(toggle(page).locator('[data-tabs-state]')).toHaveText('On');
+	for (const example of await page.locator('.code-demo-pair').all()) {
+		await expect(
+			example.getByRole('tab', { name: 'Code', exact: true }),
+		).toHaveAttribute('aria-selected', 'true');
+		await expect(example.locator('pre')).toBeVisible();
+		await expect(example.locator('.demo')).toBeHidden();
+	}
 	const pair = firstPair(page);
 	await expect(pair.getByRole('tab')).toHaveText(['Code', 'Live example']);
 	const live = pair.getByRole('tab', { name: 'Live example', exact: true });
 	const code = pair.getByRole('tab', { name: 'Code', exact: true });
+	await expect(code).toHaveAttribute('aria-selected', 'true');
+	await code.focus();
+	await page.keyboard.press('ArrowRight');
+	await expect(live).toBeFocused();
+	await expect(code).toHaveAttribute('aria-selected', 'true');
+	await page.keyboard.press('Space');
 	await expect(live).toHaveAttribute('aria-selected', 'true');
 	await expect(pair.locator('pre')).toBeHidden();
 	await expect(pair.locator('.demo')).toBeVisible();
-	await live.focus();
-	await page.keyboard.press('ArrowLeft');
-	await expect(code).toBeFocused();
-	await expect(live).toHaveAttribute('aria-selected', 'true');
-	await page.keyboard.press('Space');
-	await expect(code).toHaveAttribute('aria-selected', 'true');
-	await expect(pair.locator('pre')).toBeVisible();
-	await expect(pair.locator('.demo')).toBeHidden();
 	await expectNativeFocus(toggle(page));
 	await page.keyboard.press('Space');
 	await page.keyboard.press('Space');
-	await expect(code).toHaveAttribute('aria-selected', 'true');
+	await expect(live).toHaveAttribute('aria-selected', 'true');
+	await code.click();
 	await expect(
 		pair.getByRole('button', { name: 'Copy', exact: true }),
 	).toHaveCount(1);
@@ -226,6 +232,7 @@ test('switches every pair without replacing examples, losing values, or resettin
 	await page.goto(`${origin}/demo/index.html?tabs`);
 	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
 	const pair = firstPair(page);
+	await pair.getByRole('tab', { name: 'Live example', exact: true }).click();
 	const warning = pair.locator('content-warning');
 	const original = await warning.elementHandle();
 	await warning.getByRole('button').click();
@@ -282,7 +289,7 @@ test('remembers the choice across reloads and sibling repository paths', async (
 	await page.reload();
 	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
 	await expect(
-		firstPair(page).getByRole('tab', { name: 'Live example', exact: true }),
+		firstPair(page).getByRole('tab', { name: 'Code', exact: true }),
 	).toHaveAttribute('aria-selected', 'true');
 });
 
@@ -358,7 +365,8 @@ test('stays within a narrow viewport and exposes both panels in print', async ({
 			),
 		)
 		.toBe(true);
-	await expect(firstPair(page).locator('.demo')).toBeVisible();
+	await expect(firstPair(page).locator('pre')).toBeVisible();
+	await expect(firstPair(page).locator('.demo')).toBeHidden();
 	await page.emulateMedia({ media: 'print' });
 	await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
 	await expect(firstPair(page).locator('pre')).toBeVisible();
@@ -371,7 +379,7 @@ test('stays within a narrow viewport and exposes both panels in print', async ({
 	await page.emulateMedia({ media: 'screen' });
 	await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
 	await expect(
-		firstPair(page).getByRole('tab', { name: 'Live example', exact: true }),
+		firstPair(page).getByRole('tab', { name: 'Code', exact: true }),
 	).toHaveAttribute('aria-selected', 'true');
 });
 
