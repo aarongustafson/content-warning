@@ -77,6 +77,15 @@ the private workspace. Do not use a directory-wide template overwrite.
 
 ## Page structure and localization
 
+For an example in one translated language, put `lang` on the displayed code's
+wrapper (`pre` or `code`) and the live example's containing element. Let the
+component markup inherit the language; omit redundant `lang` attributes from
+the snippet. Keep English explanations and controls outside that scope, and
+translate any labels inside it. Use inline `lang` when the example actually
+mixes languages. Keep syntax metadata separate: MicroLighter also reads the
+legacy `pre[lang]` syntax hint, so set `data-language="html"` (or the actual
+syntax) on translated `pre` elements to prevent spurious grammar requests.
+
 Full demo pages load `demo-shell.css` first, an optional component runtime
 stylesheet next, and local `styles.css` last. Set `data-demo-page="full"` on
 the body. Embedded examples and fixtures keep their own layout; classify every
@@ -97,6 +106,11 @@ the example needs that space; the shared checks follow the computed grid.
 Preserve the browser’s native focus ring, including on Copy controls. Leave
 space for the ring around focused controls; do not clip it to a rounded panel.
 Keep scrolling on the code block itself, not on its surrounding panel.
+
+Paint the syntax background on the MicroLighter host. Keep its slotted code
+block and line-number gutter transparent so square child backgrounds cannot
+cover the rounded frame border. Do not clip the host to hide those corners;
+that can also clip keyboard focus outlines.
 
 Native popovers, modal dialogs, and fullscreen content are drawn above the
 surrounding page. The shared focus check stops at that boundary; clipping
