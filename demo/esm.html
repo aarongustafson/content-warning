@@ -48,6 +48,32 @@ if (!customElements.get('content-warning')) {
 				<a href="./index.html">All examples</a>
 				<a href="./unpkg.html">unpkg example</a>
 			</nav>
+			<div
+				id="demo-tabs-controls"
+				class="demo-tabs-controls"
+				data-code-label="Code"
+				data-live-label="Live example"
+				data-on-label="On"
+				data-off-label="Off"
+				hidden
+			>
+				<button type="button" aria-pressed="false">
+					Use tabs for examples
+					<span data-tabs-state aria-hidden="true"></span>
+				</button>
+				<p>
+					Your choice is saved in this browser across demos on this
+					site that support tabs.
+				</p>
+			</div>
+			<p
+				id="demo-tabs-status"
+				class="enhancement-status"
+				data-load-failure-message="Demo tabs could not load. Code and live examples remain available together."
+				data-preference-failure-message="Your browser could not save or read the tabs preference. Your choice still applies on this page."
+				role="status"
+				hidden
+			></p>
 		</header>
 		<main id="main" tabindex="-1">
 			<p
@@ -67,31 +93,36 @@ if (!customElements.get('content-warning')) {
 					reveals it.
 				</p>
 				<div class="code-demo-pair">
-					<micro-lighter
-						class="code-panel"
-						language="html"
-						controls="copy"
-						data-label="HTML"
-					>
-						<pre
-							aria-label="Block Content Warning code 1"
-							tabindex="0"
-						><code><mark>&lt;content-warning type="violence spoilers" hidden&gt;</mark>
+					<tabbed-interface data-demo-tabs presentation="linear">
+						<h3 data-demo-tab="code" hidden>Code</h3>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Block Content Warning code 1"
+								tabindex="0"
+							><code><mark>&lt;content-warning type="violence spoilers" hidden&gt;</mark>
   &lt;p&gt;This content contains graphic violence and spoilers.&lt;/p&gt;
   &lt;p&gt;The scene describes a battle and its aftermath.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-					</micro-lighter>
-					<div class="demo" data-demo-label="Live example">
-						<content-warning type="violence spoilers" hidden>
-							<p>
-								This content contains graphic violence and
-								spoilers.
-							</p>
-							<p>
-								The scene describes a battle and its aftermath.
-							</p>
-						</content-warning>
-					</div>
+						</micro-lighter>
+						<h3 data-demo-tab="live" hidden>Live example</h3>
+						<div class="demo" data-demo-label="Live example">
+							<content-warning type="violence spoilers" hidden>
+								<p>
+									This content contains graphic violence and
+									spoilers.
+								</p>
+								<p>
+									The scene describes a battle and its
+									aftermath.
+								</p>
+							</content-warning>
+						</div>
+					</tabbed-interface>
 				</div>
 			</section>
 
@@ -102,27 +133,31 @@ if (!customElements.get('content-warning')) {
 					sentence.
 				</p>
 				<div class="code-demo-pair">
-					<micro-lighter
-						class="code-panel"
-						language="html"
-						controls="copy"
-						data-label="HTML"
-					>
-						<pre
-							aria-label="Inline Content Warning code 2"
-							tabindex="0"
-						><code>&lt;p&gt;The character dies in
+					<tabbed-interface data-demo-tabs presentation="linear">
+						<h3 data-demo-tab="code" hidden>Code</h3>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Inline Content Warning code 2"
+								tabindex="0"
+							><code>&lt;p&gt;The character dies in
   <mark>&lt;content-warning type="spoilers" inline hidden&gt;</mark>episode 5<mark>&lt;/content-warning&gt;</mark>.
 &lt;/p&gt;</code></pre>
-					</micro-lighter>
-					<div class="demo" data-demo-label="Live example">
-						<p>
-							The character dies in
-							<content-warning type="spoilers" inline hidden
-								>episode 5</content-warning
-							>.
-						</p>
-					</div>
+						</micro-lighter>
+						<h3 data-demo-tab="live" hidden>Live example</h3>
+						<div class="demo" data-demo-label="Live example">
+							<p>
+								The character dies in
+								<content-warning type="spoilers" inline hidden
+									>episode 5</content-warning
+								>.
+							</p>
+						</div>
+					</tabbed-interface>
 				</div>
 			</section>
 		</main>
