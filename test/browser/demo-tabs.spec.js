@@ -91,3 +91,33 @@ test('preserves an early reveal and focused draft when demo tabs arrive late', a
 	await expect(draft).toHaveValue('Keep this early draft');
 	await expect(draft).toBeFocused();
 });
+
+test('keeps a warning revealed during loading visible without a focused draft', async ({
+	page,
+}) => {
+	await serveDemo(page, { tabs: true });
+	let release;
+	const ready = new Promise((resolve) => {
+		release = resolve;
+	});
+	await page.route(`${cdn}define.js`, async (route) => {
+		await ready;
+		await route.fallback();
+	});
+	await page.goto(`${origin}/demo/index.html`, {
+		waitUntil: 'domcontentloaded',
+	});
+	const warning = pair(page).locator('content-warning');
+	const reveal = warning.getByRole('button');
+	await reveal.focus();
+	await page.keyboard.press('Enter');
+	await expect(warning).toHaveJSProperty('revealed', true);
+	await expect(reveal).toHaveCount(0);
+	release();
+	await expect(toggle(page)).toHaveAttribute('aria-pressed', 'true');
+	await expect(
+		pair(page).getByRole('tab', { name: 'Live example', exact: true }),
+	).toHaveAttribute('aria-selected', 'true');
+	await expect(warning).toBeVisible();
+	await expect(warning).toHaveJSProperty('revealed', true);
+});
