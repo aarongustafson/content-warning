@@ -318,14 +318,25 @@ for (const demo of ['index', 'esm', 'unpkg']) {
 		for (const width of [1280, 320]) {
 			await page.setViewportSize({ width, height: 900 });
 			for (const pair of await pairs.all()) {
+				const columns = pair.locator(
+					':scope > tabbed-interface[data-demo-tabs]',
+				);
 				await expect(
-					pair.locator(':scope > micro-lighter'),
+					columns.locator(':scope > micro-lighter'),
 				).toHaveCount(1);
-				await expect(pair.locator(':scope > .demo')).toHaveCount(1);
-				const code = await pair
-					.locator(':scope > micro-lighter')
-					.boundingBox();
-				const live = await pair.locator(':scope > .demo').boundingBox();
+				await expect(columns.locator(':scope > .demo')).toHaveCount(1);
+				const { code, live } = await columns.evaluate((host) => {
+					const code = host
+						.querySelector(':scope > micro-lighter')
+						.getBoundingClientRect();
+					const live = host
+						.querySelector(':scope > .demo')
+						.getBoundingClientRect();
+					return {
+						code: { x: code.x, y: code.y, height: code.height },
+						live: { x: live.x, y: live.y },
+					};
+				});
 				if (width >= 768) expect(live.x).toBeGreaterThan(code.x);
 				else
 					expect(live.y).toBeGreaterThanOrEqual(code.y + code.height);
