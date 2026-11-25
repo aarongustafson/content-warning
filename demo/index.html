@@ -106,29 +106,35 @@
 						<code>hidden</code> keeps this content hidden.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Single Warning Type code 1"
-								tabindex="0"
-							><code><mark>&lt;content-warning type="violence" hidden&gt;</mark>
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Single Warning Type code 1"
+									tabindex="0"
+								><code><mark>&lt;content-warning type="violence" hidden&gt;</mark>
   &lt;p&gt;This content contains graphic violence.&lt;/p&gt;
   &lt;p&gt;The scene describes a battle and its aftermath.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<content-warning type="violence" hidden>
-								<p>This content contains graphic violence.</p>
-								<p>
-									The scene describes a battle and its
-									aftermath.
-								</p>
-							</content-warning>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<content-warning type="violence" hidden>
+									<p>
+										This content contains graphic violence.
+									</p>
+									<p>
+										The scene describes a battle and its
+										aftermath.
+									</p>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 				<div class="demo-section" id="multiple-warning-types">
@@ -138,36 +144,40 @@
 						categories.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Multiple Warning Types code 2"
-								tabindex="0"
-							><code><mark>&lt;content-warning type="violence spoilers nsfw" hidden&gt;</mark>
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Multiple Warning Types code 2"
+									tabindex="0"
+								><code><mark>&lt;content-warning type="violence spoilers nsfw" hidden&gt;</mark>
   &lt;p&gt;Contains violence, spoilers, and mature content.&lt;/p&gt;
   &lt;p&gt;The protagonist dies in the final battle, sacrificing themselves to save their friends.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<content-warning
-								type="violence spoilers nsfw"
-								hidden
-							>
-								<p>
-									Contains violence, spoilers, and mature
-									content.
-								</p>
-								<p>
-									The protagonist dies in the final battle,
-									sacrificing themselves to save their
-									friends.
-								</p>
-							</content-warning>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<content-warning
+									type="violence spoilers nsfw"
+									hidden
+								>
+									<p>
+										Contains violence, spoilers, and mature
+										content.
+									</p>
+									<p>
+										The protagonist dies in the final
+										battle, sacrificing themselves to save
+										their friends.
+									</p>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 			</section>
@@ -187,30 +197,34 @@
 						content you need to conceal.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Inline Usage code 3"
-								tabindex="0"
-							><code>&lt;p&gt;
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Inline Usage code 3"
+									tabindex="0"
+								><code>&lt;p&gt;
   The character dies in
   <mark>&lt;content-warning type="spoilers" inline&gt;</mark>
     episode 5
   <mark>&lt;/content-warning&gt;</mark>.
 &lt;/p&gt;</code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<p>
-								The character dies in
-								<content-warning type="spoilers" inline
-									>episode 5</content-warning
-								>.
-							</p>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<p>
+									The character dies in
+									<content-warning type="spoilers" inline
+										>episode 5</content-warning
+									>.
+								</p>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 				<div class="demo-section" id="multiple-inline-warnings">
@@ -219,33 +233,37 @@
 						You can have multiple inline warnings in one sentence.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Multiple Inline Warnings code 4"
-								tabindex="0"
-							><code>&lt;p&gt;
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Multiple Inline Warnings code 4"
+									tabindex="0"
+								><code>&lt;p&gt;
   <mark>&lt;content-warning type="spoilers" inline&gt;</mark>Jon<mark>&lt;/content-warning&gt;</mark>
   meets <mark>&lt;content-warning type="spoilers" inline&gt;</mark>Daenerys<mark>&lt;/content-warning&gt;</mark>
   in season 7.
 &lt;/p&gt;</code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<p>
-								<content-warning type="spoilers" inline
-									>Jon</content-warning
-								>
-								meets
-								<content-warning type="spoilers" inline
-									>Daenerys</content-warning
-								>
-								in season 7.
-							</p>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<p>
+									<content-warning type="spoilers" inline
+										>Jon</content-warning
+									>
+									meets
+									<content-warning type="spoilers" inline
+										>Daenerys</content-warning
+									>
+									in season 7.
+								</p>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 			</section>
@@ -272,27 +290,34 @@
 						upgrade; Reader Mode behavior still varies across tools.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Default Mode (Dark Overlay) code 5"
-								tabindex="0"
-							><code><mark>&lt;content-warning type="sensitive content" hidden&gt;</mark>
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Default Mode (Dark Overlay) code 5"
+									tabindex="0"
+								><code><mark>&lt;content-warning type="sensitive content" hidden&gt;</mark>
   &lt;p&gt;The overlay covers this content until you reveal it.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<content-warning type="sensitive content" hidden>
-								<p>
-									The overlay covers this content until you
-									reveal it.
-								</p>
-							</content-warning>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<content-warning
+									type="sensitive content"
+									hidden
+								>
+									<p>
+										The overlay covers this content until
+										you reveal it.
+									</p>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 				<div class="demo-section" id="blur-mode">
@@ -311,27 +336,31 @@
 						>
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Blur Mode (Visual Only; Not Guaranteed Hidden from Reader Mode) code 6"
-								tabindex="0"
-							><code><mark>&lt;content-warning type="spoilers" blur hidden&gt;</mark>
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Blur Mode (Visual Only; Not Guaranteed Hidden from Reader Mode) code 6"
+									tabindex="0"
+								><code><mark>&lt;content-warning type="spoilers" blur hidden&gt;</mark>
   &lt;p&gt;This content is blurred visually and may be extracted by Reader Mode.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<content-warning type="spoilers" blur hidden>
-								<p>
-									This content is blurred visually and may be
-									extracted by Reader Mode.
-								</p>
-							</content-warning>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<content-warning type="spoilers" blur hidden>
+									<p>
+										This content is blurred visually and may
+										be extracted by Reader Mode.
+									</p>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 				<div class="demo-section" id="custom-blur-amount">
@@ -342,16 +371,18 @@
 						property.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Custom Blur Amount code 7"
-								tabindex="0"
-							><code>&lt;style&gt;
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Custom Blur Amount code 7"
+									tabindex="0"
+								><code>&lt;style&gt;
   .light-blur {
     --content-warning-blur-amount: 5px;
   }
@@ -370,39 +401,43 @@
   &lt;p&gt;Heavily blurred content (20px blur)&lt;/p&gt;
   &lt;p&gt;Text is much harder to read through the blur.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<style>
-								.light-blur {
-									--content-warning-blur-amount: 5px;
-								}
-								.heavy-blur {
-									--content-warning-blur-amount: 20px;
-								}
-							</style>
-							<content-warning
-								type="spoilers"
-								blur
-								class="light-blur"
-								hidden
-							>
-								<p>Lightly blurred content (5px blur)</p>
-								<p>Text is more readable through the blur.</p>
-							</content-warning>
-							<br /><br />
-							<content-warning
-								type="spoilers"
-								blur
-								class="heavy-blur"
-								hidden
-							>
-								<p>Heavily blurred content (20px blur)</p>
-								<p>
-									Text is much harder to read through the
-									blur.
-								</p>
-							</content-warning>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<style>
+									.light-blur {
+										--content-warning-blur-amount: 5px;
+									}
+									.heavy-blur {
+										--content-warning-blur-amount: 20px;
+									}
+								</style>
+								<content-warning
+									type="spoilers"
+									blur
+									class="light-blur"
+									hidden
+								>
+									<p>Lightly blurred content (5px blur)</p>
+									<p>
+										Text is more readable through the blur.
+									</p>
+								</content-warning>
+								<br /><br />
+								<content-warning
+									type="spoilers"
+									blur
+									class="heavy-blur"
+									hidden
+								>
+									<p>Heavily blurred content (20px blur)</p>
+									<p>
+										Text is much harder to read through the
+										blur.
+									</p>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 				<div class="demo-section" id="hiding-comparison">
@@ -413,40 +448,46 @@
 						lets their shapes show around the button.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Comparison code 8"
-								tabindex="0"
-							><code><mark>&lt;content-warning type="test" hidden&gt;</mark>
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Comparison code 8"
+									tabindex="0"
+								><code><mark>&lt;content-warning type="test" hidden&gt;</mark>
   &lt;p&gt;Content covered by the overlay.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark>
 
 <mark>&lt;content-warning type="test" blur hidden&gt;</mark>
   &lt;p&gt;Visually blurred content.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div
-							class="demo demo-comparison"
-							data-demo-label="Live example"
-						>
-							<div>
-								<h4 style="margin-top: 0">Default (Overlay)</h4>
-								<content-warning type="test" hidden>
-									<p>Content covered by the overlay.</p>
-								</content-warning>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div
+								class="demo demo-comparison"
+								data-demo-label="Live example"
+							>
+								<div>
+									<h4 style="margin-top: 0">
+										Default (Overlay)
+									</h4>
+									<content-warning type="test" hidden>
+										<p>Content covered by the overlay.</p>
+									</content-warning>
+								</div>
+								<div>
+									<h4 style="margin-top: 0">Blur Mode</h4>
+									<content-warning type="test" blur hidden>
+										<p>Visually blurred content.</p>
+									</content-warning>
+								</div>
 							</div>
-							<div>
-								<h4 style="margin-top: 0">Blur Mode</h4>
-								<content-warning type="test" blur hidden>
-									<p>Visually blurred content.</p>
-								</content-warning>
-							</div>
-						</div>
+						</tabbed-interface>
 					</div>
 				</div>
 			</section>
@@ -464,16 +505,18 @@
 						keep the focus outline visible.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Custom Colors code 9"
-								tabindex="0"
-							><code>&lt;style&gt;
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Custom Colors code 9"
+									tabindex="0"
+								><code>&lt;style&gt;
   .custom-warning::part(overlay) {
     background: rgba(139, 0, 0, 0.95);
   }
@@ -490,50 +533,55 @@
   &lt;p&gt;This is scary content with custom styling!&lt;/p&gt;
   &lt;p&gt;The dark red background and red border make it stand out.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<style>
-								.custom-warning::part(overlay) {
-									background: rgba(139, 0, 0, 0.95);
-								}
-								.custom-warning::part(button) {
-									color: #fff;
-									border: 3px solid #ff6b6b;
-									padding: 2rem;
-									background: #260000;
-									border-radius: 0.5rem;
-								}
-							</style>
-							<content-warning
-								type="horror"
-								class="custom-warning"
-								hidden
-							>
-								<p>
-									This is scary content with custom styling!
-								</p>
-								<p>
-									The dark red background and red border make
-									it stand out.
-								</p>
-							</content-warning>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<style>
+									.custom-warning::part(overlay) {
+										background: rgba(139, 0, 0, 0.95);
+									}
+									.custom-warning::part(button) {
+										color: #fff;
+										border: 3px solid #ff6b6b;
+										padding: 2rem;
+										background: #260000;
+										border-radius: 0.5rem;
+									}
+								</style>
+								<content-warning
+									type="horror"
+									class="custom-warning"
+									hidden
+								>
+									<p>
+										This is scary content with custom
+										styling!
+									</p>
+									<p>
+										The dark red background and red border
+										make it stand out.
+									</p>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 				<div class="demo-section" id="styled-button-text">
 					<h3>Styled Button Text</h3>
 					<p>Style the button text and appearance.</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Styled Button Text code 10"
-								tabindex="0"
-							><code>&lt;style&gt;
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Styled Button Text code 10"
+									tabindex="0"
+								><code>&lt;style&gt;
   .styled-parts::part(button) {
     text-transform: uppercase;
     letter-spacing: 0.15em;
@@ -547,26 +595,28 @@
 <mark>&lt;content-warning type="mature" class="styled-parts" hidden&gt;</mark>
   &lt;p&gt;This content is for mature audiences.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<style>
-								.styled-parts::part(button) {
-									text-transform: uppercase;
-									letter-spacing: 0.15em;
-									font-weight: 900;
-									background: #333;
-									color: #fff;
-									border-radius: 0.5rem;
-								}
-							</style>
-							<content-warning
-								type="mature"
-								class="styled-parts"
-								hidden
-							>
-								<p>This content is for mature audiences.</p>
-							</content-warning>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<style>
+									.styled-parts::part(button) {
+										text-transform: uppercase;
+										letter-spacing: 0.15em;
+										font-weight: 900;
+										background: #333;
+										color: #fff;
+										border-radius: 0.5rem;
+									}
+								</style>
+								<content-warning
+									type="mature"
+									class="styled-parts"
+									hidden
+								>
+									<p>This content is for mature audiences.</p>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 			</section>
@@ -583,16 +633,18 @@
 						<code>type</code>.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Tracking Reveals code 11"
-								tabindex="0"
-							><code><mark>&lt;content-warning type="spoilers" id="tracked" hidden&gt;</mark>
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Tracking Reveals code 11"
+									tabindex="0"
+								><code><mark>&lt;content-warning type="spoilers" id="tracked" hidden&gt;</mark>
   &lt;p&gt;This is the secret content that was revealed!&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark>
 &lt;p id="status"&gt;Status: Hidden&lt;/p&gt;
@@ -604,33 +656,35 @@
         `Status: Revealed (${e.detail.type})`;
     });
 &lt;/script&gt;</code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<content-warning
-								type="spoilers"
-								id="tracked"
-								hidden
-							>
-								<p>
-									This is the secret content that was
-									revealed!
-								</p>
-							</content-warning>
-							<p id="status">Status: Hidden</p>
-							<script>
-								document
-									.getElementById('tracked')
-									.addEventListener(
-										'content-warning:revealed',
-										(e) => {
-											document.getElementById(
-												'status',
-											).textContent =
-												`Status: Revealed (${e.detail.type})`;
-										},
-									);
-							</script>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<content-warning
+									type="spoilers"
+									id="tracked"
+									hidden
+								>
+									<p>
+										This is the secret content that was
+										revealed!
+									</p>
+								</content-warning>
+								<p id="status">Status: Hidden</p>
+								<script>
+									document
+										.getElementById('tracked')
+										.addEventListener(
+											'content-warning:revealed',
+											(e) => {
+												document.getElementById(
+													'status',
+												).textContent =
+													`Status: Revealed (${e.detail.type})`;
+											},
+										);
+								</script>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 			</section>
@@ -660,31 +714,35 @@
 						the reveal behavior.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Custom vocabulary code"
-								tabindex="0"
-							><code><mark>&lt;content-warning
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Custom vocabulary code"
+									tabindex="0"
+								><code><mark>&lt;content-warning
   type="plot details"
   reveal-label="Review note: {type}. Show details"
   hidden&gt;</mark>
   &lt;p&gt;The review discusses the ending.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<content-warning
-								type="plot details"
-								reveal-label="Review note: {type}. Show details"
-								hidden
-							>
-								<p>The review discusses the ending.</p>
-							</content-warning>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<content-warning
+									type="plot details"
+									reveal-label="Review note: {type}. Show details"
+									hidden
+								>
+									<p>The review discusses the ending.</p>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 
@@ -696,18 +754,20 @@
 						not a graphic image.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Traducción al español, código 12"
-								lang="es"
-								data-language="html"
-								tabindex="0"
-							><code><mark>&lt;content-warning
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Traducción al español, código 12"
+									lang="es"
+									data-language="html"
+									tabindex="0"
+								><code><mark>&lt;content-warning
   type="violencia gore"
   reveal-label="Advertencia: {type}. Mostrar contenido"
   hidden
@@ -715,24 +775,26 @@
   &lt;img src="https://picsum.photos/600/400?random=5"
     alt="Fotografía de ejemplo" style="display: block; max-width: 100%"&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div
-							class="demo"
-							data-demo-label="Ejemplo en vivo"
-							lang="es"
-						>
-							<content-warning
-								type="violencia gore"
-								reveal-label="Advertencia: {type}. Mostrar contenido"
-								hidden
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div
+								class="demo"
+								data-demo-label="Ejemplo en vivo"
+								lang="es"
 							>
-								<img
-									src="https://picsum.photos/600/400?random=5"
-									alt="Fotografía de ejemplo"
-									style="display: block; max-width: 100%"
-								/>
-							</content-warning>
-						</div>
+								<content-warning
+									type="violencia gore"
+									reveal-label="Advertencia: {type}. Mostrar contenido"
+									hidden
+								>
+									<img
+										src="https://picsum.photos/600/400?random=5"
+										alt="Fotografía de ejemplo"
+										style="display: block; max-width: 100%"
+									/>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 				<div class="demo-section" id="french-translation">
@@ -743,18 +805,20 @@
 						opaque background.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="Traduction française, code 13"
-								lang="fr"
-								data-language="html"
-								tabindex="0"
-							><code>&lt;style&gt;
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="Traduction française, code 13"
+									lang="fr"
+									data-language="html"
+									tabindex="0"
+								><code>&lt;style&gt;
   .french-warning::part(button) {
     background: #111;
     color: #fff;
@@ -773,35 +837,37 @@
 &gt;</mark>
   &lt;p&gt;Ce contenu pourrait être considéré comme sensible par certains utilisateurs. Veuillez faire preuve de discrétion.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div
-							class="demo"
-							data-demo-label="Exemple interactif"
-							lang="fr"
-						>
-							<style>
-								.french-warning::part(button) {
-									background: #111;
-									color: #fff;
-								}
-								.french-warning::part(label) {
-									font-weight: bold;
-									color: #ffeb3b;
-								}
-							</style>
-							<content-warning
-								type="contenu sensible"
-								reveal-label="Afficher le contenu : {type}"
-								class="french-warning"
-								hidden
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div
+								class="demo"
+								data-demo-label="Exemple interactif"
+								lang="fr"
 							>
-								<p>
-									Ce contenu pourrait être considéré comme
-									sensible par certains utilisateurs. Veuillez
-									faire preuve de discrétion.
-								</p>
-							</content-warning>
-						</div>
+								<style>
+									.french-warning::part(button) {
+										background: #111;
+										color: #fff;
+									}
+									.french-warning::part(label) {
+										font-weight: bold;
+										color: #ffeb3b;
+									}
+								</style>
+								<content-warning
+									type="contenu sensible"
+									reveal-label="Afficher le contenu : {type}"
+									class="french-warning"
+									hidden
+								>
+									<p>
+										Ce contenu pourrait être considéré comme
+										sensible par certains utilisateurs.
+										Veuillez faire preuve de discrétion.
+									</p>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 				</div>
 				<div class="demo-section" id="no-suffix">
@@ -811,32 +877,38 @@
 						short label says enough.
 					</p>
 					<div class="code-demo-pair">
-						<micro-lighter
-							class="code-panel"
-							language="html"
-							controls="copy"
-							data-label="HTML"
-						>
-							<pre
-								aria-label="A Shorter Label code"
-								tabindex="0"
-							><code><mark>&lt;content-warning
+						<tabbed-interface data-demo-tabs presentation="linear">
+							<h4 data-demo-tab="code" hidden>Code</h4>
+							<micro-lighter
+								class="code-panel"
+								language="html"
+								controls="copy"
+								data-label="HTML"
+							>
+								<pre
+									aria-label="A Shorter Label code"
+									tabindex="0"
+								><code><mark>&lt;content-warning
   type="graphic content"
   reveal-label="Reveal {type}"
   hidden
 &gt;</mark>
   &lt;p&gt;This warning uses a short reveal label.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-						</micro-lighter>
-						<div class="demo" data-demo-label="Live example">
-							<content-warning
-								type="graphic content"
-								reveal-label="Reveal {type}"
-								hidden
-							>
-								<p>This warning uses a short reveal label.</p>
-							</content-warning>
-						</div>
+							</micro-lighter>
+							<h4 data-demo-tab="live" hidden>Live example</h4>
+							<div class="demo" data-demo-label="Live example">
+								<content-warning
+									type="graphic content"
+									reveal-label="Reveal {type}"
+									hidden
+								>
+									<p>
+										This warning uses a short reveal label.
+									</p>
+								</content-warning>
+							</div>
+						</tabbed-interface>
 					</div>
 					<div class="demo-section" id="shared-labels">
 						<h3>Shared Labels</h3>
@@ -851,16 +923,21 @@
 							it doesn’t reset revealed content.
 						</p>
 						<div class="code-demo-pair">
-							<micro-lighter
-								class="code-panel"
-								language="html"
-								controls="copy"
-								data-label="HTML"
+							<tabbed-interface
+								data-demo-tabs
+								presentation="linear"
 							>
-								<pre
-									aria-label="Shared Labels code"
-									tabindex="0"
-								><code><mark>&lt;script type="application/json" data-content-warning-config&gt;
+								<h4 data-demo-tab="code" hidden>Code</h4>
+								<micro-lighter
+									class="code-panel"
+									language="html"
+									controls="copy"
+									data-label="HTML"
+								>
+									<pre
+										aria-label="Shared Labels code"
+										tabindex="0"
+									><code><mark>&lt;script type="application/json" data-content-warning-config&gt;
   {
     "reveal-label": "Content Warning: {type} Click to reveal",
     "type-label": "content"
@@ -877,31 +954,38 @@
   hidden&gt;</mark>
   &lt;p&gt;The narrator returns home.&lt;/p&gt;
 <mark>&lt;/content-warning&gt;</mark></code></pre>
-							</micro-lighter>
-							<div class="demo" data-demo-label="Live example">
-								<script
-									type="application/json"
-									data-content-warning-config
+								</micro-lighter>
+								<h4 data-demo-tab="live" hidden>
+									Live example
+								</h4>
+								<div
+									class="demo"
+									data-demo-label="Live example"
 								>
-									{
-										"reveal-label": "Content Warning: {type} Click to reveal",
-										"type-label": "content"
-									}
-								</script>
-								<content-warning type="plot details" hidden>
-									<p>
-										The final scene introduces another
-										narrator.
-									</p>
-								</content-warning>
-								<content-warning
-									type="spoilers"
-									reveal-label="Read the ending: {type}"
-									hidden
-								>
-									<p>The narrator returns home.</p>
-								</content-warning>
-							</div>
+									<script
+										type="application/json"
+										data-content-warning-config
+									>
+										{
+											"reveal-label": "Content Warning: {type} Click to reveal",
+											"type-label": "content"
+										}
+									</script>
+									<content-warning type="plot details" hidden>
+										<p>
+											The final scene introduces another
+											narrator.
+										</p>
+									</content-warning>
+									<content-warning
+										type="spoilers"
+										reveal-label="Read the ending: {type}"
+										hidden
+									>
+										<p>The narrator returns home.</p>
+									</content-warning>
+								</div>
+							</tabbed-interface>
 						</div>
 					</div>
 				</div>
@@ -934,15 +1018,5 @@
 
 		<script src="../define.js" type="module"></script>
 		<script type="module" src="./code-examples.js"></script>
-		<script type="module">
-			if (new URLSearchParams(location.search).has('tabs')) {
-				import('./tabs-prototype.js').catch((error) => {
-					console.error('Demo tabs could not load:', error);
-					const status = document.getElementById('demo-tabs-status');
-					status.textContent = status.dataset.loadFailureMessage;
-					status.hidden = false;
-				});
-			}
-		</script>
 	</body>
 </html>
